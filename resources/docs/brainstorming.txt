@@ -1,0 +1,39 @@
+1. Буду смотреть/Любимые фильмы (Wishlist)
+
+4. Рецензии/лайки, ответы на рецензии
+5. Любимые актёры
+6. Любимые жанры.
+**7. Предложения новых фильмов на основе любимых актёров/жанров
+**8. История ?? (История посещений, запросов)
+13. Друзья
+15. Любимые фильмы друзей.
+
+
+10. Подумать про рейтинг.
+   10.1 пример https://www.imdb.com/title/tt9680440/ratings?ref_=tt_ov_rt
+   10.2 может относительный рейтинг? по количеству лайков например.
+
+12. Статистика. Возраст, пол, вероисповедание, веган/мясоед )) и тд.
+
+9. Скрины какие нужны:
+9.1 Home Screen
+       Menu
+	     Login/Sign in
+		 Search
+	   Categories Menu
+	     Categories with subcategories
+	   Main Content (Featured movies, New reviews, may be some popularity charts)
+	Registration Screen
+	   Name
+	   Password
+	My account screen
+	   Possibility to change password, name.
+	   Possibility to select favorite categories, actors.
+	Movie screen
+	   Movie picture.
+	   Movie parameters.
+	   Rating.
+	   Comment/Review text box.
+	   Ability to read existing comments, reply on them, put likes.
+	*Statistics for movies, actors, genres.
+	   
