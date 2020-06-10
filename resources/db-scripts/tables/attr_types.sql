@@ -5,7 +5,7 @@
 CREATE TABLE public.attr_types
 (
     id integer NOT NULL DEFAULT nextval('attr_types_id_seq'::regclass),
-    type character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    descr character varying(15) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT attr_types_pkey PRIMARY KEY (id)
 )
 
