@@ -1,6 +1,11 @@
 <div class="navbar navbar-dark bg-dark shadow-sm">
   <div class="container d-flex justify-content-between">
-    <a class="navbar-brand" routerLink="/">Homepage</a>
-    <a class="navbar-brand" routerLink="404">404</a>
+    <nav class="d-flex justify-content-left">
+      <a class="navbar-brand mr-3" routerLink="/movies">Movies</a>
+      <a class="navbar-brand" routerLink="/shows">Shows</a>
+      <a class="navbar-brand" routerLink="/celebs">Celebrities</a>
+    </nav>
+    <a *ngIf="loggedIn" class="navbar-brand" (click)="logout()">Logout</a>
+    <a *ngIf="!loggedIn" class="navbar-brand" (click)="login()">Login</a>
   </div>
 </div>

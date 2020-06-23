@@ -1,0 +1,9 @@
+.carousel-control {
+  max-width: 5%;
+}
+
+.carousel-control-icon {
+  background-color: darken($color: #000000, $amount: 0);
+  border: 1px solid white;
+  border-radius: .25rem;
+}

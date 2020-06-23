@@ -7,9 +7,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PageHeaderComponent implements OnInit {
 
+  loggedIn : boolean = false;
+
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  login() : void {
+    this.loggedIn = true;
+  }
+
+  logout() : void {
+    this.loggedIn = false;
+  }
 }
