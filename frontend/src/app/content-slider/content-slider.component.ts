@@ -14,7 +14,6 @@ export class ContentSliderComponent implements OnInit {
 
   objectsPerPage = 3;
   pages = [];
-  currentItem = 0;
   currentPage = 1;
 
   constructor(private service: DatabaseService) {}
