@@ -6,9 +6,49 @@ import { HttpClient } from '@angular/common/http';
 })
 export class DatabaseService {
 
+  // for testing purposes *to be deleted*
+  data = [
+    {
+      id: 1,
+      title: 'Test Movie',
+      description: 'Test movie description.',
+      bannerSrc:
+        'https://www.velesclub.ru/wp-content/uploads/2013/01/sample-img-300x201.png',
+    },
+    {
+      id: 2,
+      title: 'Another Test Movie',
+      description: 'Another Test Movie description.',
+      bannerSrc:
+        'https://www.velesclub.ru/wp-content/uploads/2013/01/sample-img-300x201.png',
+    },
+    {
+      id: 3,
+      title: 'Test Movie 3',
+      description: 'Test Movie 3 description.',
+      bannerSrc:
+        'https://www.velesclub.ru/wp-content/uploads/2013/01/sample-img-300x201.png',
+    },
+    {
+      id: 4,
+      title: 'Test Movie 4',
+      description: 'Test Movie 4 description.',
+      bannerSrc:
+        'https://www.velesclub.ru/wp-content/uploads/2013/01/sample-img-300x201.png',
+    },
+  ];
+
   response : any;
 
   constructor(private http : HttpClient) { }
+
+  getData() {
+    return this.data;
+  }
+
+  getById(id : number) {
+    return this.data[id];
+  }
 
   fetchByType(type : string) {
     this.http.get('localhost:8081/' + type + '/all').subscribe(

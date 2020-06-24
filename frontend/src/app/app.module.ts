@@ -13,6 +13,7 @@ import { MoviesPageComponent } from './movies-page/movies-page.component';
 import { ShowsPageComponent } from './shows-page/shows-page.component';
 import { CelebsPageComponent } from './celebs-page/celebs-page.component';
 import { ContentSliderComponent } from './content-slider/content-slider.component';
+import { ContentPageComponent } from './content-page/content-page.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { ContentSliderComponent } from './content-slider/content-slider.componen
     ShowsPageComponent,
     CelebsPageComponent,
     ContentSliderComponent,
+    ContentPageComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
   providers: [],

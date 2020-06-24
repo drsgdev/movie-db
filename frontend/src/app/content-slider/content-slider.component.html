@@ -1,83 +1,105 @@
-<div id="{{name}}" class="carousel slide" data-ride="carousel">
+<div
+  id="{{ name }}"
+  class="carousel slide"
+  data-ride="carousel"
+  data-interval="false"
+>
   <div class="carousel-inner">
     <div
       [class]="isFirst ? 'carousel-item active' : 'carousel-item'"
-      data-interval="10000"
-      *ngFor="let page of pages; index as pageIdx; first as isFirst;"
+      *ngFor="let page of pages; index as pageIdx; first as isFirst"
     >
-      <div class="row mt-2">
+      <div class="row pt-2">
         <div class="col-md-4">
           <div class="card mb-4 ml-2 mr-2 shadow-sm">
             <img
-              src="{{ data[(pageIdx) * objectsPerPage].bannerSrc }}"
+              src="{{ data[pageIdx * objectsPerPage].bannerSrc }}"
               class="img-fluid"
               alt="Banner"
             />
             <div class="card-body">
               <p class="card-title h5">
-                {{ data[(pageIdx) * objectsPerPage].title }}
+                {{ data[pageIdx * objectsPerPage].title }}
               </p>
               <p class="card-text lead">
-                {{ data[(pageIdx) * objectsPerPage].description }}
+                {{ data[pageIdx * objectsPerPage].description }}
               </p>
             </div>
+            <a
+              routerLink="/movie/{{ data[pageIdx * objectsPerPage].id }}"
+              class="stretched-link"
+            ></a>
           </div>
         </div>
-        <div class="col-md-4" *ngIf="data[(pageIdx) * objectsPerPage + 1]">
+        <div class="col-md-4" *ngIf="data[pageIdx * objectsPerPage + 1]">
           <div class="card mb-4 ml-2 mr-2 shadow-sm">
             <img
-              src="{{ data[(pageIdx) * objectsPerPage + 1].bannerSrc }}"
+              src="{{ data[pageIdx * objectsPerPage + 1].bannerSrc }}"
               class="img-fluid"
               alt="Banner"
             />
             <div class="card-body">
               <p class="card-title h5">
-                {{ data[(pageIdx) * objectsPerPage + 1].title }}
+                {{ data[pageIdx * objectsPerPage + 1].title }}
               </p>
               <p class="card-text lead">
-                {{ data[(pageIdx) * objectsPerPage + 1].description }}
+                {{ data[pageIdx * objectsPerPage + 1].description }}
               </p>
             </div>
+            <a
+              routerLink="/movie/{{ data[pageIdx * objectsPerPage + 1].id }}"
+              class="stretched-link"
+            ></a>
           </div>
         </div>
-        <div class="col-md-4" *ngIf="data[(pageIdx) * objectsPerPage + 2]">
+        <div class="col-md-4" *ngIf="data[pageIdx * objectsPerPage + 2]">
           <div class="card mb-4 ml-2 mr-2 shadow-sm">
             <img
-              src="{{ data[(pageIdx) * objectsPerPage + 2].bannerSrc }}"
+              src="{{ data[pageIdx * objectsPerPage + 2].bannerSrc }}"
               alt="Banner"
             />
             <div class="card-body">
               <p class="card-title h5">
-                {{ data[(pageIdx) * objectsPerPage + 2].title }}
+                {{ data[pageIdx * objectsPerPage + 2].title }}
               </p>
               <p class="card-text lead">
-                {{ data[(pageIdx) * objectsPerPage + 2].description }}
+                {{ data[pageIdx * objectsPerPage + 2].description }}
               </p>
             </div>
+            <a
+              routerLink="/movie/{{ data[pageIdx * objectsPerPage + 2].id }}"
+              class="stretched-link"
+            ></a>
           </div>
         </div>
       </div>
     </div>
     <a
       class="carousel-control-prev carousel-control"
-      href="#{{name}}"
+      href="#{{ name }}"
       role="button"
       data-slide="prev"
       (click)="prevPage()"
       *ngIf="currentPage != 1"
     >
-      <span class="carousel-control-prev-icon carousel-control-icon" aria-hidden="true"></span>
+      <span
+        class="carousel-control-prev-icon carousel-control-icon"
+        aria-hidden="true"
+      ></span>
       <span class="sr-only">Previous</span>
     </a>
     <a
       class="carousel-control-next carousel-control"
-      href="#{{name}}"
+      href="#{{ name }}"
       role="button"
       data-slide="next"
       (click)="nextPage()"
       *ngIf="currentPage != pages.length"
     >
-      <span class="carousel-control-next-icon carousel-control-icon" aria-hidden="true"></span>
+      <span
+        class="carousel-control-next-icon carousel-control-icon"
+        aria-hidden="true"
+      ></span>
       <span class="sr-only">Next</span>
     </a>
   </div>

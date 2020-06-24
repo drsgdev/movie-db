@@ -6,6 +6,7 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { MoviesPageComponent } from './movies-page/movies-page.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ShowsPageComponent } from './shows-page/shows-page.component';
+import { ContentPageComponent } from './content-page/content-page.component';
 
 const routes: Routes = [
   { path: '', component: HomepageComponent },
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'shows', component: ShowsPageComponent },
   { path: 'celebs', component: CelebsPageComponent },
   { path: 'login', component: LoginPageComponent },
+  { path: 'movie/:id', component: ContentPageComponent },
   { path: '**', component: NotFoundComponent },
 ];
 
