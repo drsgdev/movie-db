@@ -15,6 +15,7 @@ const routes: Routes = [
   { path: 'celebs', component: CelebsPageComponent },
   { path: 'login', component: LoginPageComponent },
   { path: 'movie/:id', component: ContentPageComponent },
+  { path: 'show/:id', component: ContentPageComponent },
   { path: '**', component: NotFoundComponent },
 ];
 

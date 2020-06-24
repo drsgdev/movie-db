@@ -9,65 +9,46 @@
       [class]="isFirst ? 'carousel-item active' : 'carousel-item'"
       *ngFor="let page of pages; index as pageIdx; first as isFirst"
     >
-      <div class="row pt-2">
-        <div class="col-md-4">
-          <div class="card mb-4 ml-2 mr-2 shadow-sm">
+      <div class="d-flex flex-row pt-2">
+        <div
+          class="col-md-4 flex-fill"
+          *ngFor="let object of objects; index as objIdx"
+        >
+          <div
+            class="card mb-4 ml-2 mr-2 shadow-sm"
+            *ngIf="data[pageIdx * objectsPerPage + objIdx]"
+          >
             <img
-              src="{{ data[pageIdx * objectsPerPage].bannerSrc }}"
+              src="{{ data[pageIdx * objectsPerPage + objIdx].bannerSrc }}"
               class="img-fluid"
               alt="Banner"
+              *ngIf="dataType != 'cast'"
             />
-            <div class="card-body">
-              <p class="card-title h5">
-                {{ data[pageIdx * objectsPerPage].title }}
-              </p>
-              <p class="card-text lead">
-                {{ data[pageIdx * objectsPerPage].description }}
-              </p>
-            </div>
-            <a
-              routerLink="/movie/{{ data[pageIdx * objectsPerPage].id }}"
-              class="stretched-link"
-            ></a>
-          </div>
-        </div>
-        <div class="col-md-4" *ngIf="data[pageIdx * objectsPerPage + 1]">
-          <div class="card mb-4 ml-2 mr-2 shadow-sm">
             <img
-              src="{{ data[pageIdx * objectsPerPage + 1].bannerSrc }}"
+              src="{{ data[pageIdx * objectsPerPage + objIdx].photoSrc }}"
               class="img-fluid"
-              alt="Banner"
+              alt="Photo"
+              *ngIf="dataType === 'cast'"
             />
-            <div class="card-body">
-              <p class="card-title h5">
-                {{ data[pageIdx * objectsPerPage + 1].title }}
+            <div class="card-body p-3">
+              <p class="card-title h5" *ngIf="dataType != 'cast'">
+                {{ data[pageIdx * objectsPerPage + objIdx].title }}
               </p>
-              <p class="card-text lead">
-                {{ data[pageIdx * objectsPerPage + 1].description }}
+              <p class="card-text lead" *ngIf="dataType != 'cast'">
+                {{ data[pageIdx * objectsPerPage + objIdx].description }}
+              </p>
+
+              <p class="card-title h5" *ngIf="dataType === 'cast'">
+                {{ data[pageIdx * objectsPerPage + objIdx].name }}
+              </p>
+              <p class="card-text lead text-muted" *ngIf="dataType === 'cast'">
+                {{ data[pageIdx * objectsPerPage + objIdx].role }}
               </p>
             </div>
             <a
-              routerLink="/movie/{{ data[pageIdx * objectsPerPage + 1].id }}"
-              class="stretched-link"
-            ></a>
-          </div>
-        </div>
-        <div class="col-md-4" *ngIf="data[pageIdx * objectsPerPage + 2]">
-          <div class="card mb-4 ml-2 mr-2 shadow-sm">
-            <img
-              src="{{ data[pageIdx * objectsPerPage + 2].bannerSrc }}"
-              alt="Banner"
-            />
-            <div class="card-body">
-              <p class="card-title h5">
-                {{ data[pageIdx * objectsPerPage + 2].title }}
-              </p>
-              <p class="card-text lead">
-                {{ data[pageIdx * objectsPerPage + 2].description }}
-              </p>
-            </div>
-            <a
-              routerLink="/movie/{{ data[pageIdx * objectsPerPage + 2].id }}"
+              routerLink="/{{ dataType }}/{{
+                data[pageIdx * objectsPerPage + objIdx].id
+              }}"
               class="stretched-link"
             ></a>
           </div>
