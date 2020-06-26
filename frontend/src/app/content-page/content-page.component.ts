@@ -21,4 +21,14 @@ export class ContentPageComponent implements OnInit {
     // this.content = this.db.fetchById(this.id);
     this.content = this.db.getById(this.id - 1);
   }
+
+  getRatings() {
+    let ratings = [];
+
+    Object.keys(this.content.ratings).map((key) => {
+      ratings.push(this.content.ratings[key]);
+    });
+
+    return ratings;
+  }
 }

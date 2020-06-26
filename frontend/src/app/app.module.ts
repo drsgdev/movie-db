@@ -14,6 +14,7 @@ import { ShowsPageComponent } from './shows-page/shows-page.component';
 import { CelebsPageComponent } from './celebs-page/celebs-page.component';
 import { ContentSliderComponent } from './content-slider/content-slider.component';
 import { ContentPageComponent } from './content-page/content-page.component';
+import { RatingComponent } from './rating/rating.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ContentPageComponent } from './content-page/content-page.component';
     CelebsPageComponent,
     ContentSliderComponent,
     ContentPageComponent,
+    RatingComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
   providers: [],

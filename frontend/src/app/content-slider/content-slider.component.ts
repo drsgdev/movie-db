@@ -22,9 +22,10 @@ export class ContentSliderComponent implements OnInit {
   ngOnInit(): void {
     // this.data = this.service.fetchNewByType(this.dataType);
 
-    // initialization is for testing purposes
-    console.log(this.dataType);
-
+    /** 
+     * for testing purposes only
+     * TODO: *to be deleted*
+     */
     switch (this.dataType) {
       case 'cast':
         this.data = this.db.cast;
@@ -33,8 +34,6 @@ export class ContentSliderComponent implements OnInit {
         this.data = this.db.data;
         break;
     }
-
-    console.log(this.data);
 
     const maxPages = this.data.length / this.objectsPerPage;
 
