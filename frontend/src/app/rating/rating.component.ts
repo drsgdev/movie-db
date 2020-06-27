@@ -9,7 +9,8 @@ import { Component, OnInit } from '@angular/core';
 export class RatingComponent implements OnInit {
   ratings: [];
   relative_ratings = new Array<number>();
-  total: number;
+  total: number = 0;
+  average: number = 0;
 
   constructor() {}
 
@@ -23,8 +24,15 @@ export class RatingComponent implements OnInit {
       })
       .reduce((sum, current) => (sum += current));
 
-    this.relative_ratings.forEach(
-      (val, index) => (this.relative_ratings[index] = (val / this.total) * 100)
-    );
+    this.relative_ratings.forEach((val, index) => {
+      this.average += val * (5 - index);
+      this.relative_ratings[index] = (val / this.total) * 100;
+    }, this);
+
+    this.average = this.average / this.total;
+  }
+
+  getFlooredGrade() {
+    return Math.floor(this.average);
   }
 }
