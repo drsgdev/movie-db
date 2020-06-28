@@ -15,6 +15,7 @@ import { CelebsPageComponent } from './celebs-page/celebs-page.component';
 import { ContentSliderComponent } from './content-slider/content-slider.component';
 import { ContentPageComponent } from './content-page/content-page.component';
 import { RatingComponent } from './rating/rating.component';
+import { RateThisComponent } from './rate-this/rate-this.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { RatingComponent } from './rating/rating.component';
     ContentSliderComponent,
     ContentPageComponent,
     RatingComponent,
+    RateThisComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
   providers: [],

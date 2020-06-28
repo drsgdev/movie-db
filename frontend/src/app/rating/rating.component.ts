@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-rating',
   templateUrl: './rating.component.html',
   styleUrls: ['./rating.component.scss'],
-  inputs: ['ratings'],
+  inputs: ['id', 'ratings'],
 })
 export class RatingComponent implements OnInit {
+  id: number;
   ratings: [];
-  relative_ratings = new Array<number>();
+  relative_ratings = new Array();
   total: number = 0;
   average: number = 0;
 

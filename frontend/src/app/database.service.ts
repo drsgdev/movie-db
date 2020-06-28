@@ -173,4 +173,13 @@ export class DatabaseService {
 
     return this.response;
   }
+
+  rate(id: number, rate: number) {
+    this.http.post('localhost:8081/rate', {
+      params: {
+        id: id,
+        rate: rate,
+      },
+    });
+  }
 }

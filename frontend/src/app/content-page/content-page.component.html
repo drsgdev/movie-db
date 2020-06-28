@@ -32,7 +32,7 @@
 </div>
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Rating</label>
-  <app-rating [ratings]="getRatings()"></app-rating>
+  <app-rating [id]="id" [ratings]="getRatings()"></app-rating>
 </div>
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Cast</label>
@@ -41,4 +41,7 @@
     name="cast-slider"
     page-size="6"
   ></app-content-slider>
+</div>
+<div class="border-bottom pr-3 pl-3">
+  <label class="h2 ml-3 mt-3 mb-3">Reviews</label>
 </div>
