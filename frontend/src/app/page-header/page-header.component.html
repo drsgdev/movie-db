@@ -6,7 +6,7 @@
       <a class="navbar-brand" routerLink="/shows">Shows</a>
       <a class="navbar-brand" routerLink="/celebs">Celebrities</a>
     </nav>
-    <a *ngIf="loggedIn" class="navbar-brand mr-0" (click)="logout()" href="#">Logout</a>
-    <a *ngIf="!loggedIn" class="navbar-brand mr-0" (click)="login()" href="#">Login</a>
+    <a *ngIf="loggedIn" class="navbar-brand mr-0" (click)="logout()">Logout</a>
+    <a *ngIf="!loggedIn" class="navbar-brand mr-0" (click)="login()">Login</a>
   </div>
 </div>

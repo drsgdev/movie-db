@@ -1,4 +1,53 @@
-<div
+<ngb-carousel #carousel *ngIf="data">
+  <ng-template ngbSlide *ngFor="let page of [].constructor(pages); index as pageIdx;">
+    <div class="d-flex flex-row pt-2">
+      <div
+        class="col-md-4 flex-fill"
+        *ngFor="let object of [].constructor(objectsPerPage); index as objIdx"
+      >
+        <div
+          class="card mb-4 ml-2 mr-2 shadow-sm"
+          *ngIf="data[pageIdx * objectsPerPage + objIdx]"
+        >
+          <img
+            src="{{ data[pageIdx * objectsPerPage + objIdx].bannerSrc }}"
+            class="img-fluid"
+            alt="Banner"
+            *ngIf="dataType != 'cast'"
+          />
+          <img
+            src="{{ data[pageIdx * objectsPerPage + objIdx].photoSrc }}"
+            class="img-fluid"
+            alt="Photo"
+            *ngIf="dataType === 'cast'"
+          />
+          <div class="card-body p-3">
+            <p class="card-title h5" *ngIf="dataType != 'cast'">
+              {{ data[pageIdx * objectsPerPage + objIdx].title }}
+            </p>
+            <p class="card-text lead" *ngIf="dataType != 'cast'">
+              {{ data[pageIdx * objectsPerPage + objIdx].description }}
+            </p>
+
+            <p class="card-title h5" *ngIf="dataType === 'cast'">
+              {{ data[pageIdx * objectsPerPage + objIdx].name }}
+            </p>
+            <p class="card-text lead text-muted" *ngIf="dataType === 'cast'">
+              {{ data[pageIdx * objectsPerPage + objIdx].role }}
+            </p>
+          </div>
+          <a
+            routerLink="/{{ dataType }}/{{
+              data[pageIdx * objectsPerPage + objIdx].id
+            }}"
+            class="stretched-link"
+          ></a>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ngb-carousel>
+<!-- <div
   id="{{ name }}"
   class="carousel slide"
   data-ride="carousel"
@@ -12,7 +61,7 @@
       <div class="d-flex flex-row pt-2">
         <div
           class="col-md-4 flex-fill"
-          *ngFor="let object of objects; index as objIdx"
+          *ngFor="let object of [].constructor(objectsPerPage); index as objIdx"
         >
           <div
             class="card mb-4 ml-2 mr-2 shadow-sm"
@@ -75,7 +124,7 @@
       role="button"
       data-slide="next"
       (click)="nextPage()"
-      *ngIf="currentPage != pages.length"
+      *ngIf="currentPage != pages"
     >
       <span
         class="carousel-control-next-icon carousel-control-icon"
@@ -84,4 +133,4 @@
       <span class="sr-only">Next</span>
     </a>
   </div>
-</div>
+</div> -->

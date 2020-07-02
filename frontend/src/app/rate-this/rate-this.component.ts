@@ -9,29 +9,15 @@ import { DatabaseService } from '../database.service';
 })
 export class RateThisComponent implements OnInit {
   id: number;
-  selected_paths = [1,1,1,1,1];
+  current_rate: number;
 
   constructor(private db: DatabaseService) {}
 
   ngOnInit(): void {}
 
-  mouseover(event) {
-    this.selected_paths.forEach((val, id) => {
-      if (id <= event.target.id - 1) {
-        this.selected_paths[id] = 2;
-      }
-    })
-  }
-
-  mouseleave(event) {
-    this.selected_paths.forEach((val, id) => {
-      if (id <= event.target.id - 1) {
-        this.selected_paths[id] = 1;
-      }
-    })
-  }
-
   rate(event) {
-    this.db.rate(this.id, event.target.id);
+    if (this.current_rate > 0) {
+      this.db.rate(this.id, this.current_rate);
+    }
   }
 }

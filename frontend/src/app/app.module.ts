@@ -16,6 +16,8 @@ import { ContentSliderComponent } from './content-slider/content-slider.componen
 import { ContentPageComponent } from './content-page/content-page.component';
 import { RatingComponent } from './rating/rating.component';
 import { RateThisComponent } from './rate-this/rate-this.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ReviewsListComponent } from './reviews-list/reviews-list.component';
 
 @NgModule({
   declarations: [
@@ -31,8 +33,9 @@ import { RateThisComponent } from './rate-this/rate-this.component';
     ContentPageComponent,
     RatingComponent,
     RateThisComponent,
+    ReviewsListComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule, NgbModule],
   providers: [],
   bootstrap: [AppComponent],
 })

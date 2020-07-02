@@ -126,6 +126,36 @@ export class DatabaseService {
     },
   ];
 
+  reviews = [
+    {
+      rate: '4',
+      date: '03 April 2020',
+      title: 'Test review title',
+      description:
+        'No in he real went find mr. Wandered or strictly raillery stanhill as. Jennings appetite disposed me an at subjects an. To no indulgence diminution so discovered mr apartments. Are off under folly death wrote cause her way spite. Plan upon yet way get cold spot its week. Almost do am or limits hearts. Resolve parties but why she shewing. She sang know now how nay cold real case.',
+      user_id: '24',
+      user_name: 'Test user name',
+    },
+    {
+      rate: '3',
+      date: '05 April 2020',
+      title: 'Test review title 2',
+      description:
+        'No in he real went find mr. Wandered or strictly raillery stanhill as. Jennings appetite disposed me an at subjects an. To no indulgence diminution so discovered mr apartments. Are off under folly death wrote cause her way spite. Plan upon yet way get cold spot its week. Almost do am or limits hearts. Resolve parties but why she shewing. She sang know now how nay cold real case.',
+      user_id: '25',
+      user_name: 'Test user name 2',
+    },
+    {
+      rate: '5',
+      date: '03 May 2019',
+      title: 'Test review title 3',
+      description:
+        'No in he real went find mr. Wandered or strictly raillery stanhill as. Jennings appetite disposed me an at subjects an. To no indulgence diminution so discovered mr apartments. Are off under folly death wrote cause her way spite. Plan upon yet way get cold spot its week. Almost do am or limits hearts. Resolve parties but why she shewing. She sang know now how nay cold real case.',
+      user_id: '26',
+      user_name: 'Test user name 3',
+    },
+  ];
+
   response: any;
 
   constructor(private http: HttpClient) {}
@@ -181,5 +211,9 @@ export class DatabaseService {
         rate: rate,
       },
     });
+  }
+
+  review(review : any) {
+
   }
 }

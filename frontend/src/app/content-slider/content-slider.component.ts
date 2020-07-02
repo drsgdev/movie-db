@@ -13,9 +13,9 @@ export class ContentSliderComponent implements OnInit {
   data: any[];
 
   objectsPerPage = 3;
-  pages = [];
-  objects = [];
-  currentPage = 1;
+  pages = 1;
+
+  @ViewChild('carousel', {static : true}) carousel: NgbCarousel;
 
   constructor(private db: DatabaseService) {}
 
@@ -35,22 +35,9 @@ export class ContentSliderComponent implements OnInit {
         break;
     }
 
-    const maxPages = this.data.length / this.objectsPerPage;
+    this.pages = Math.ceil(this.data.length / this.objectsPerPage);
 
-    for (let index = 0; index < maxPages; index++) {
-      this.pages.push(index);
-    }
-
-    for (let index = 0; index < this.objectsPerPage; index++) {
-      this.objects.push(index);
-    }
-  }
-
-  nextPage() {
-    this.currentPage++;
-  }
-
-  prevPage() {
-    this.currentPage--;
+    console.log('pages: ' + this.pages + ' obj/page: ' + this.objectsPerPage);
+    
   }
 }
