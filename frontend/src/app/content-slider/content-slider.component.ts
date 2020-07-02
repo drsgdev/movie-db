@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DatabaseService } from '../database.service';
+import { NgbCarousel } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-content-slider',
@@ -15,14 +16,14 @@ export class ContentSliderComponent implements OnInit {
   objectsPerPage = 3;
   pages = 1;
 
-  @ViewChild('carousel', {static : true}) carousel: NgbCarousel;
+  @ViewChild('carousel') carousel: NgbCarousel;
 
   constructor(private db: DatabaseService) {}
 
   ngOnInit(): void {
     // this.data = this.service.fetchNewByType(this.dataType);
 
-    /** 
+    /**
      * for testing purposes only
      * TODO: *to be deleted*
      */
@@ -36,8 +37,9 @@ export class ContentSliderComponent implements OnInit {
     }
 
     this.pages = Math.ceil(this.data.length / this.objectsPerPage);
+  }
 
-    console.log('pages: ' + this.pages + ' obj/page: ' + this.objectsPerPage);
-    
+  ngAfterViewInit() {
+    this.carousel.pause();
   }
 }
