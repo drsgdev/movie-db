@@ -1,6 +1,6 @@
-<div class="dropleft ml-auto mr-4">
-  <div class="dropdown-menu mr-3 p-0">
-    <div class="d-flex flex-row pl-3 pr-75">
+<div ngbDropdown class="d-inline-block ml-auto mr-4" placement="left" autoClose=true>
+  <div ngbDropdownMenu class="mr-3 p-0" aria-labelledby="toggle">
+    <div ngbDropdownItem class="d-flex flex-row pb-0">
       <ngb-rating
         class="text-primary h1"
         [max]="5"
@@ -11,11 +11,10 @@
     </div>
   </div>
   <button
+    id="toggle"
     type="button"
-    class="btn btn-outline-primary mt-1 dropdown-toggle"
-    data-toggle="dropdown"
-    aria-haspopup="true"
-    aria-expanded="false"
+    class="btn btn-outline-primary mt-1"
+    ngbDropdownToggle
   >
     Rate this
   </button>

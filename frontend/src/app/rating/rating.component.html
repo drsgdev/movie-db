@@ -6,8 +6,9 @@
       ngbTooltip="Click to expand"
       data-toggle="collapse"
       href="#full_ratings"
-      aria-expanded="false"
+      [attr.aria-expanded]="isCollapsed"
       aria-controls="full_ratings"
+      (click)="isCollapsed = !isCollapsed;"
     >
       <ngb-rating
         class="text-primary font-weight-bold h1"
@@ -19,7 +20,7 @@
     </div>
     <app-rate-this id="{{ id }}"></app-rate-this>
   </div>
-  <div class="collapse" id="full_ratings">
+  <div id="full_ratings" [ngbCollapse]="isCollapsed">
     <ul class="list-group pr-3 pl-3 pb-3 mb-3">
       <li class="list-group-item" *ngFor="let rating of ratings; index as idx">
         <div class="d-flex flex-row">

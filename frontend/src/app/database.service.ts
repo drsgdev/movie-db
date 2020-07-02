@@ -71,7 +71,7 @@ export class DatabaseService {
         bad: '0',
         very_bad: '0',
       },
-    },
+    }
   ];
 
   cast = [
@@ -117,13 +117,13 @@ export class DatabaseService {
       photoSrc:
         'https://www.velesclub.ru/wp-content/uploads/2013/01/sample-img-300x201.png',
     },
-    {
+    {                                                 
       id: '7',
       name: 'Cast Member 7',
       role: 'role',
       photoSrc:
         'https://www.velesclub.ru/wp-content/uploads/2013/01/sample-img-300x201.png',
-    },
+    }
   ];
 
   reviews = [

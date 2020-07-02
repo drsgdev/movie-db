@@ -1,45 +1,49 @@
 <ngb-carousel #carousel *ngIf="data">
-  <ng-template ngbSlide *ngFor="let page of [].constructor(pages); index as pageIdx;">
+  <ng-template
+    ngbSlide
+    *ngFor="let page of [].constructor(pages); index as pageIdx;"
+  >
     <div class="d-flex flex-row pt-2">
       <div
         class="col-md-4 flex-fill"
-        *ngFor="let object of [].constructor(objectsPerPage); index as objIdx"
+        *ngFor="let object of data; index as objIdx;"
+        [hidden]="
+          objIdx >= pageIdx * objectsPerPage &&
+          objIdx < (pageIdx + 1) * objectsPerPage &&
+          object
+        "
       >
-        <div
-          class="card mb-4 ml-2 mr-2 shadow-sm"
-          *ngIf="data[pageIdx * objectsPerPage + objIdx]"
-        >
+        <div class="card mb-4 ml-2 mr-2 shadow-sm">
           <img
-            src="{{ data[pageIdx * objectsPerPage + objIdx].bannerSrc }}"
+            src="{{ object.bannerSrc }}"
             class="img-fluid"
             alt="Banner"
-            *ngIf="dataType != 'cast'"
+            *ngIf="object.bannerSrc"
           />
           <img
-            src="{{ data[pageIdx * objectsPerPage + objIdx].photoSrc }}"
+            src="{{ object.photoSrc }}"
             class="img-fluid"
-            alt="Photo"
-            *ngIf="dataType === 'cast'"
+            alt="Banner"
+            *ngIf="object.photoSrc"
           />
-          <div class="card-body p-3">
-            <p class="card-title h5" *ngIf="dataType != 'cast'">
-              {{ data[pageIdx * objectsPerPage + objIdx].title }}
+          <div class="card-body p-3" *ngIf="object.title">
+            <p class="card-title h5">
+              {{ object.title }}
             </p>
-            <p class="card-text lead" *ngIf="dataType != 'cast'">
-              {{ data[pageIdx * objectsPerPage + objIdx].description }}
+            <p class="card-text lead">
+              {{ object.description }}
             </p>
-
-            <p class="card-title h5" *ngIf="dataType === 'cast'">
-              {{ data[pageIdx * objectsPerPage + objIdx].name }}
+          </div>
+          <div class="card-body p-3" *ngIf="object.name">
+            <p class="card-title h5">
+              {{ object.name }}
             </p>
-            <p class="card-text lead text-muted" *ngIf="dataType === 'cast'">
-              {{ data[pageIdx * objectsPerPage + objIdx].role }}
+            <p class="card-text text-muted">
+              {{ object.role }}
             </p>
           </div>
           <a
-            routerLink="/{{ dataType }}/{{
-              data[pageIdx * objectsPerPage + objIdx].id
-            }}"
+            routerLink="/{{ dataType }}/{{ object.id }}"
             class="stretched-link"
           ></a>
         </div>
@@ -47,90 +51,3 @@
     </div>
   </ng-template>
 </ngb-carousel>
-<!-- <div
-  id="{{ name }}"
-  class="carousel slide"
-  data-ride="carousel"
-  data-interval="false"
->
-  <div class="carousel-inner">
-    <div
-      [class]="isFirst ? 'carousel-item active' : 'carousel-item'"
-      *ngFor="let page of pages; index as pageIdx; first as isFirst"
-    >
-      <div class="d-flex flex-row pt-2">
-        <div
-          class="col-md-4 flex-fill"
-          *ngFor="let object of [].constructor(objectsPerPage); index as objIdx"
-        >
-          <div
-            class="card mb-4 ml-2 mr-2 shadow-sm"
-            *ngIf="data[pageIdx * objectsPerPage + objIdx]"
-          >
-            <img
-              src="{{ data[pageIdx * objectsPerPage + objIdx].bannerSrc }}"
-              class="img-fluid"
-              alt="Banner"
-              *ngIf="dataType != 'cast'"
-            />
-            <img
-              src="{{ data[pageIdx * objectsPerPage + objIdx].photoSrc }}"
-              class="img-fluid"
-              alt="Photo"
-              *ngIf="dataType === 'cast'"
-            />
-            <div class="card-body p-3">
-              <p class="card-title h5" *ngIf="dataType != 'cast'">
-                {{ data[pageIdx * objectsPerPage + objIdx].title }}
-              </p>
-              <p class="card-text lead" *ngIf="dataType != 'cast'">
-                {{ data[pageIdx * objectsPerPage + objIdx].description }}
-              </p>
-
-              <p class="card-title h5" *ngIf="dataType === 'cast'">
-                {{ data[pageIdx * objectsPerPage + objIdx].name }}
-              </p>
-              <p class="card-text lead text-muted" *ngIf="dataType === 'cast'">
-                {{ data[pageIdx * objectsPerPage + objIdx].role }}
-              </p>
-            </div>
-            <a
-              routerLink="/{{ dataType }}/{{
-                data[pageIdx * objectsPerPage + objIdx].id
-              }}"
-              class="stretched-link"
-            ></a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <a
-      class="carousel-control-prev carousel-control"
-      href="#{{ name }}"
-      role="button"
-      data-slide="prev"
-      (click)="prevPage()"
-      *ngIf="currentPage != 1"
-    >
-      <span
-        class="carousel-control-prev-icon carousel-control-icon"
-        aria-hidden="true"
-      ></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a
-      class="carousel-control-next carousel-control"
-      href="#{{ name }}"
-      role="button"
-      data-slide="next"
-      (click)="nextPage()"
-      *ngIf="currentPage != pages"
-    >
-      <span
-        class="carousel-control-next-icon carousel-control-icon"
-        aria-hidden="true"
-      ></span>
-      <span class="sr-only">Next</span>
-    </a>
-  </div>
-</div> -->

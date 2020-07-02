@@ -1,5 +1,5 @@
-ngb-carousel a {
-  max-width: 5%;
+.carousel-control-next-icon .carousel-control-prev-icon {
+  max-width: 5% !important;
   background-color: darken($color: #000000, $amount: 0);
   border: 1px solid white;
   border-radius: 0.25rem;

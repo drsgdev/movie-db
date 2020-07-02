@@ -14,6 +14,8 @@ export class RatingComponent implements OnInit {
   total: number = 0;
   average: number = 0;
 
+  isCollapsed = true;
+
   constructor() {}
 
   ngOnInit(): void {
