@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -39,6 +40,7 @@ public class Attribute {
   private AttributeType type;
 
   @Column
+  @JsonValue
   private String descr;
 
   @OneToMany(mappedBy = "attribute")

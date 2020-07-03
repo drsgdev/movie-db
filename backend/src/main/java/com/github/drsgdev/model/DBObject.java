@@ -1,5 +1,7 @@
 package com.github.drsgdev.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,9 +15,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -43,8 +47,12 @@ public class DBObject {
   private String descr;
 
   @OneToMany(mappedBy = "object", fetch = FetchType.EAGER)
-  @JsonManagedReference
+  @JsonIgnore
   private Set<AttributeValue> attributes;
+
+  @Transient
+  @JsonProperty("fields")
+  private Map<String, String> attributeMap = new HashMap<>();
 
   @Override
   public boolean equals(Object obj) {

@@ -13,6 +13,8 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -25,6 +27,7 @@ import lombok.NoArgsConstructor;
 @DynamicUpdate
 @Data
 @NoArgsConstructor
+@JsonInclude(Include.NON_NULL)
 public class AttributeValue {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

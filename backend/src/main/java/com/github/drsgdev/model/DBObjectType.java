@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -31,8 +32,9 @@ public class DBObjectType {
   @JsonIgnore
   private long id;
 
-  @Column
-  private String descr;
+  @Column(name = "descr")
+  @JsonValue
+  private String type;
 
   @OneToMany(mappedBy = "type")
   @JsonBackReference
@@ -47,11 +49,11 @@ public class DBObjectType {
     if (getClass() != obj.getClass())
       return false;
     DBObjectType other = (DBObjectType) obj;
-    return Objects.equals(descr, other.descr) && id == other.id;
+    return Objects.equals(type, other.type) && id == other.id;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(descr, id);
+    return Objects.hash(type, id);
   }
 }

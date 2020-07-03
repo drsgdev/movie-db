@@ -1,7 +1,9 @@
 package com.github.drsgdev.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.model.DBObjectType;
@@ -12,7 +14,10 @@ import com.github.drsgdev.repository.DBObjectTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class DBObjectService {
   @Autowired
   DBObjectRepository objRepository;
@@ -34,7 +39,7 @@ public class DBObjectService {
   }
 
   public Optional<List<DBObject>> findAllByType(String type) {
-    Optional<DBObjectType> objType = typesRepository.findByDescr(type);
+    Optional<DBObjectType> objType = typesRepository.findByType(type);
 
     if (!objType.isPresent()) {
       return Optional.empty();
@@ -45,6 +50,16 @@ public class DBObjectService {
     if (!obj.isPresent()) {
       return Optional.empty();
     }
+
+    log.info("Found {} objects", obj.get().size());
+
+    obj.get().forEach((object) -> {
+      Map<String, String> fields = object.getAttributes().parallelStream()
+          .collect(Collectors.toMap((attr) -> attr.getAttribute().getDescr(),
+              (attr) -> attr.getVal() == null ? attr.getDate_val().toString() : attr.getVal()));
+
+      object.setAttributeMap(fields);
+    });
 
     return obj;
   }
