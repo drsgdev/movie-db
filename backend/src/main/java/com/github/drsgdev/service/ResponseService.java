@@ -24,14 +24,20 @@ public class ResponseService {
   }
 
   public ResponseEntity<DBObject> fetchObjectById(Long id) {
-    Optional<DBObject> movie = service.findObjectById(id);
+    Optional<DBObject> object = service.findObjectById(id);
 
-    return ResponseService.createResponse(movie);
+    return createResponse(object);
   }
 
   public ResponseEntity<List<DBObject>> fetchAllObjectsByType(String type) {
-    Optional<List<DBObject>> movies = service.findAllByType(type);
+    Optional<List<DBObject>> objectList = service.findAllByType(type);
 
-    return ResponseService.createResponse(movies);
+    return createResponse(objectList);
+  }
+
+  public ResponseEntity<List<DBObject>> fetchCastById(Long id) {
+    Optional<List<DBObject>> castList = service.findCastById(id);
+
+    return createResponse(castList);
   }
 }

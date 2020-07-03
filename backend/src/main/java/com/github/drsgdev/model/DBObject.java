@@ -17,9 +17,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -51,8 +52,17 @@ public class DBObject {
   private Set<AttributeValue> attributes;
 
   @Transient
-  @JsonProperty("fields")
   private Map<String, String> attributeMap = new HashMap<>();
+
+  @JsonAnyGetter
+  public Map<String, String> getAttributeMap() {
+    return this.attributeMap;
+  }
+
+  @JsonAnySetter
+  public void setAttribute(String name, String value) {
+    this.attributeMap.put(name, value);
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -69,5 +79,10 @@ public class DBObject {
   @Override
   public int hashCode() {
     return Objects.hash(id, descr, type);
+  }
+
+  @Override
+  public String toString() {
+    return "DBObject [id=" + id + ", type=" + type.getType() + ", descr=" + descr + "]";
   }
 }
