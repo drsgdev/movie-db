@@ -1,6 +1,7 @@
 package com.github.drsgdev.model;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class DBObject {
 
   @OneToMany(mappedBy = "object", fetch = FetchType.EAGER)
   @JsonIgnore
-  private Set<AttributeValue> attributes;
+  private Set<AttributeValue> attributes = new HashSet<>();
 
   @Transient
   private Map<String, String> attributeMap = new HashMap<>();
