@@ -1,13 +1,14 @@
 package com.github.drsgdev.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.github.drsgdev.model.Attribute;
+import com.github.drsgdev.model.AttributeType;
 import com.github.drsgdev.model.AttributeValue;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.model.DBObjectType;
 import com.github.drsgdev.repository.AttributeRepository;
+import com.github.drsgdev.repository.AttributeTypeRepository;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
@@ -27,45 +28,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ApiService {
-  interface FieldList {
-    public long getId();
-  }
-  enum MovieFields implements FieldList {
-    TITLE(1), ORIGINAL_TITLE(2), TAGLINE(3), ORIGINAL_LANGUAGE(4), POSTER_PATH(5), RELEASE_DATE(6), RUNTIME(7),
-    REVENUE(8), BUDGET(9), HOMEPAGE(10);
-
-    private final long id;
-
-    private MovieFields(long id) {
-      this.id = id;
-    }
-
-    @Override
-    public long getId() {
-      return this.id;
-    }
-
-    public String toString() {
-      return this.name().toLowerCase();
-    }
-  }
-
   private final String apiKey = "903ffebdb80a3af1d4c8a15ad338e3ea";
   private final String apiPath = "https://api.themoviedb.org/3";
   private final String imgPath = "https://image.tmdb.org/t/p/original";
 
   private final AttributeRepository attributes;
   private final AttributeValueRepository attrValues;
+  private final AttributeTypeRepository attrTypes;
   private final DBObjectRepository objects;
   private final DBObjectTypeRepository objectTypes;
 
   private HttpStatus status;
 
   public HttpStatus addMovieToDB(String id) {
+    return addObjectToDB(id, "movie");
+  }
+
+  public HttpStatus addShowToDB(String id) {
+    return addObjectToDB(id, "show");
+  }
+
+  public HttpStatus addPersonToDB(String id) {
+    return addObjectToDB(id, "person");
+  }
+
+  private HttpStatus addObjectToDB(String id, String type) {
     JSONObject json = new JSONObject();
 
     try {
-      HttpResponse<JsonNode> res = Unirest.get(apiPath + "/movie/{id}").routeParam("id", id)
+      HttpResponse<JsonNode> res = Unirest.get(apiPath + "/" + type + "/{id}").routeParam("id", id)
           .queryString("api_key", apiKey).asJson();
 
       status = HttpStatus.valueOf(res.getStatus());
@@ -78,10 +69,10 @@ public class ApiService {
     if (status != HttpStatus.OK) {
       return status;
     } else {
-      log.info("Fetched movie: {}, status: {}", json.get("title").toString(), status.toString());
+      log.info("Fetched " + type + ": {}, status: {}", description(json), status.toString());
     }
 
-    parseObject(json, "movie");
+    parseObject(json, type);
 
     return status;
   }
@@ -93,54 +84,73 @@ public class ApiService {
 
     if (!objTypeFromDB.isPresent()) {
       log.error("Object type {} not found!", type);
-      status = HttpStatus.BAD_REQUEST;
-      return;
+
+      DBObjectType newType = new DBObjectType();
+      newType.setType(type);
+
+      objectTypes.save(newType);
+      log.info("Saved new type: {}", type);
+
+      objTypeFromDB = Optional.of(newType);
     }
 
     object.setType(objTypeFromDB.get());
-    object.setDescr(json.get("title").toString());
-    
-    objects.save(object);
+    object.setDescr(description(json));
 
-    switch (type) {
-      case "movie":
-        parseAttributes(json, object, List.of(MovieFields.values()));
-        break;
-      default:
-        break;
-    }
+    objects.saveAndFlush(object);
+
+    parseAttributes(json, object);
   }
 
-  private void parseAttributes(JSONObject json, DBObject object, List<? extends FieldList> fields) {
-    fields.forEach((field) -> {
-      String value = json.get(field.toString()).toString();
-      
+  private void parseAttributes(JSONObject json, DBObject object) {
+
+    json.keySet().forEach((key) -> {
+      String value = json.get(key).toString();
+
       AttributeValue attributeValue = new AttributeValue();
 
-      Optional<Attribute> attributeFromDB = attributes.findById(field.getId());
+      Optional<Attribute> attributeFromDB = attributes.findByDescr(key);
 
       if (!attributeFromDB.isPresent()) {
-        log.error("Attribute with id {} not found!", field.getId());
-        status = HttpStatus.BAD_REQUEST;
-        return;
+        log.error("Attribute {} not found!", key);
+
+        Attribute newAttribute = new Attribute();
+        newAttribute.setDescr(key);
+
+        Optional<AttributeType> attrTypeFromDB = attrTypes.findByType("text");
+
+        if (!attrTypeFromDB.isPresent()) {
+          log.error("Attribute type \"text\" not found!");
+
+          AttributeType newAttrType = new AttributeType();
+          newAttrType.setType("text");
+
+          attrTypes.save(newAttrType);
+          log.info("Saved new attribute type: text");
+
+          attrTypeFromDB = Optional.of(newAttrType);
+        }
+        newAttribute.setType(attrTypeFromDB.get());
+
+        attributes.save(newAttribute);
+        log.info("Saved new attribute: {}", key);
+
+        attributeFromDB = Optional.of(newAttribute);
       }
       attributeValue.setAttribute(attributeFromDB.get());
 
-      Optional<DBObject> objectFromDB = objects.findById(object.getId());
+      attributeValue.setObject(object);
 
-      if (!objectFromDB.isPresent()) {
-        log.error("Object with id {} not found!", object.getId());
-        status = HttpStatus.BAD_REQUEST;
-        return;
-      }
-      attributeValue.setObject(objectFromDB.get());
-
-      if (field.getId() == 5) {
+      if (key.contains("_path")) {
         value = imgPath + value;
       }
 
       attributeValue.setVal(value);
-      attrValues.save(attributeValue);
+      attrValues.saveAndFlush(attributeValue);
     });
+  }
+
+  private String description(JSONObject json) {
+    return json.has("title") ? json.get("title").toString() : json.get("name").toString();
   }
 }

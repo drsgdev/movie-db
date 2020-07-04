@@ -6,7 +6,6 @@ import { NgbCarousel } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-content-slider',
   templateUrl: './content-slider.component.html',
-  encapsulation: ViewEncapsulation.None,
   styleUrls: ['./content-slider.component.scss'],
   inputs: ['name', 'dataType: data-type', 'objectsPerPage: page-size'],
 })
@@ -24,16 +23,13 @@ export class ContentSliderComponent implements OnInit {
   constructor(private db: DatabaseService) {}
 
   ngOnInit(): void {
-    // this.data = this.service.fetchNewByType(this.dataType);
-
-    switch (this.dataType) {
-      case 'cast':
-        this.data = this.db.cast;
-        break;
-      default:
-        this.data = this.db.data;
-        break;
-    }
+    this.db.fetchByType(this.dataType).subscribe(
+      (res) => {
+        this.data = res as any[];
+      },
+      (err) => console.log(err)
+    );
+    console.log(this.data);
 
     this.pages = Math.ceil(this.data.length / this.objectsPerPage);
   }

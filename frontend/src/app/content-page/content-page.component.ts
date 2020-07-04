@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../database.service';
 import { ActivatedRoute } from '@angular/router';
+import { Content } from '@angular/compiler/src/render3/r3_ast';
+import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-content-page',
@@ -18,17 +21,19 @@ export class ContentPageComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.id = params['id'];
     });
-    // this.content = this.db.fetchById(this.id);
-    this.content = this.db.getById(this.id - 1);
+
+    this.db.fetchById(this.id).subscribe((res) => (this.content = res));
   }
 
-  getRatings() {
-    let ratings = [];
+  ngOnViewInit() {}
 
-    Object.keys(this.content.ratings).map((key) => {
-      ratings.push(this.content.ratings[key]);
-    });
+  // getRatings() {
+  //   let ratings = [];
 
-    return ratings;
-  }
+  //   Object.keys(this.content.ratings).map((key) => {
+  //     ratings.push(this.content.ratings[key]);
+  //   });
+
+  //   return ratings;
+  // }
 }

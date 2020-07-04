@@ -44,7 +44,7 @@ public class AttributeValue {
   @JsonBackReference
   private DBObject object;
 
-  @Column
+  @Column(length = 1000)
   private String val;
 
   @Column

@@ -34,10 +34,4 @@ public class ResponseService {
 
     return createResponse(objectList);
   }
-
-  public ResponseEntity<List<DBObject>> fetchCastById(Long id) {
-    Optional<List<DBObject>> castList = service.findCastById(id);
-
-    return createResponse(castList);
-  }
 }

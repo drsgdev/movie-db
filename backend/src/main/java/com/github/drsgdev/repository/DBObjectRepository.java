@@ -12,4 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DBObjectRepository extends JpaRepository<DBObject, Long> {
   public Optional<List<DBObject>> findAllByType(DBObjectType type);
+
+  public Optional<DBObject> findByDescr(String descr);
 }

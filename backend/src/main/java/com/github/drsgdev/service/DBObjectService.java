@@ -1,6 +1,5 @@
 package com.github.drsgdev.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,24 +7,21 @@ import java.util.stream.Collectors;
 
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.model.DBObjectType;
-import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class DBObjectService {
-  @Autowired
-  DBObjectRepository objRepository;
-  @Autowired
-  DBObjectTypeRepository typesRepository;
-  @Autowired
-  AttributeValueRepository attrRepository;
+
+  private final DBObjectRepository objRepository;
+  private final DBObjectTypeRepository typesRepository;
 
   private void mapAttributes(List<DBObject> list) {
     list.forEach((object) -> mapAttributes(object));
@@ -71,27 +67,5 @@ public class DBObjectService {
     mapAttributes(objectList.get());
 
     return objectList;
-  }
-
-
-
-  public Optional<List<DBObject>> findCastById(Long id) {
-    Optional<DBObject> object = findObjectById(id);
-
-    if (!object.isPresent()) {
-      return Optional.empty();
-    }
-
-    String[] castIds = object.get().getAttributeMap().getOrDefault("cast", "").split(",");
-    List<DBObject> cast = new ArrayList<>();
-    for (String entryId : castIds) {
-      findObjectById(Long.parseLong(entryId)).ifPresent((entry) -> cast.add(entry));
-    }
-
-    if (cast.size() == 0) {
-      return Optional.empty();
-    }
-
-    return Optional.of(cast);
   }
 }

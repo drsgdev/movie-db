@@ -24,7 +24,6 @@ export class ReviewsListComponent implements OnInit {
   constructor(private db: DatabaseService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.reviews = this.db.reviews;
   }
 
   openReviewModal(modal) {

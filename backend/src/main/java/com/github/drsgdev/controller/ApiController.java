@@ -21,4 +21,14 @@ public class ApiController {
   public ResponseEntity<String> addMovie(@RequestParam String id) {
     return ResponseEntity.status(api.addMovieToDB(id)).build();
   }
+
+  @GetMapping(value = "/show")
+  public ResponseEntity<String> addShow(@RequestParam String id) {
+    return ResponseEntity.status(api.addShowToDB(id)).build();
+  }
+
+  @GetMapping(value = "/person")
+  public ResponseEntity<String> addPerson(@RequestParam String id) {
+    return ResponseEntity.status(api.addPersonToDB(id)).build();
+  }
 }

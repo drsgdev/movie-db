@@ -1,7 +1,7 @@
-<div class="d-flex border-bottom">
+<div class="d-flex border-bottom" *ngIf="content">
   <div class="col-4 ml-3">
     <img
-      src="{{ content.bannerSrc }}"
+      src="{{ content.poster_path }}"
       class="img-fluid mb-3 mt-3"
       alt="Banner"
     />
@@ -10,29 +10,26 @@
         {{ content.title }}
       </p>
       <p class="lead">
-        {{ content.description }}
-      </p>
-      <p class="h5 mt-xl-5">
-        Release date:
-      </p>
-      <p>
-        {{ content.release_date }}
+        {{ content.tagline }}
       </p>
     </div>
-    <!-- <div class="mt-2">
-
-    </div> -->
   </div>
   <div class="col-7 flex-fill">
     <label class="mt-2 h2">Storyline</label>
     <p class="text-wrap mt-2 pt-0 pr-5 pb-3">
-      {{ content.full_description }}
+      {{ content.overview }}
+    </p>
+    <p class="h5 mt-xl-5">
+      Release date: {{ content.release_date }}
+    </p>
+    <p class="h5 mt-3">
+      Budget: {{ content.budget | currency }}
     </p>
   </div>
 </div>
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Rating</label>
-  <app-rating [id]="id" [ratings]="getRatings()"></app-rating>
+  <!-- <app-rating [id]="id" [ratings]="getRatings()"></app-rating> -->
 </div>
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Cast</label>
@@ -44,5 +41,5 @@
 </div>
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Reviews</label>
-  <app-reviews-list [id]="id"></app-reviews-list>
+  <!-- <app-reviews-list [id]="id"></app-reviews-list> -->
 </div>
