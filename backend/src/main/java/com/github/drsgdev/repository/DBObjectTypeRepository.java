@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DBObjectTypeRepository extends JpaRepository<DBObjectType, Long> {
-  public Optional<DBObjectType> findByType(String type);
+  public Optional<DBObjectType> findByName(String name);
 }

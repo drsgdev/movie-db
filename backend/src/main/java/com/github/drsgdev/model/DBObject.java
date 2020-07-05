@@ -84,6 +84,6 @@ public class DBObject {
 
   @Override
   public String toString() {
-    return "DBObject [id=" + id + ", type=" + type.getType() + ", descr=" + descr + "]";
+    return "DBObject [id=" + id + ", type=" + type.getName() + ", descr=" + descr + "]";
   }
 }

@@ -13,5 +13,12 @@ import org.springframework.stereotype.Repository;
 public interface DBObjectRepository extends JpaRepository<DBObject, Long> {
   public Optional<List<DBObject>> findAllByType(DBObjectType type);
 
-  public Optional<DBObject> findByDescr(String descr);
+  public Optional<List<DBObject>> findAllByTypeName(String typeName);
+
+  public Optional<List<DBObject>> findAllByTypeNameAndAttributesTypeNameAndAttributesVal(String typeName,
+      String attributeType, String val);
+
+  public Optional<DBObject> findByDescrAndTypeName(String descr, String typeName);
+
+  public boolean existsByDescr(String descr);
 }

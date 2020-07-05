@@ -30,4 +30,13 @@ public class PersonController {
     return response.fetchAllObjectsByType("person");
   }
 
+  @GetMapping(value = "/credits/cast")
+  public ResponseEntity<List<DBObject>> getCastByPersonId(@RequestParam String id) {
+    return response.fetchCreditsByPersonId(id, "cast");
+  }
+
+  @GetMapping(value = "/credits/crew")
+  public ResponseEntity<List<DBObject>> getCreditsByPersonId(@RequestParam String id) {
+    return response.fetchCreditsByPersonId(id, "crew");
+  }
 }

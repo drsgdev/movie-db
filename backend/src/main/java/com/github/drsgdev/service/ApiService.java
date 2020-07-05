@@ -17,6 +17,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,6 @@ public class ApiService {
           .queryString("api_key", apiKey).asJson();
 
       status = HttpStatus.valueOf(res.getStatus());
-
       json = res.getBody().getObject();
     } catch (UnirestException ex) {
       log.error("Fetching failed!", ex);
@@ -69,24 +69,76 @@ public class ApiService {
     if (status != HttpStatus.OK) {
       return status;
     } else {
-      log.info("Fetched " + type + ": {}, status: {}", description(json), status.toString());
+      log.info("Fetched " + type + ": {}, status: {}", description(json, type), status.toString());
     }
 
     parseObject(json, type);
+
+    if (type.equals("person")) {
+      return addCreditsToDB(id);
+    }
+
+    return status;
+  }
+
+  private HttpStatus addCreditsToDB(String id) {
+    JSONArray cast = new JSONArray();
+    JSONArray crew = new JSONArray();
+
+    try {
+      HttpResponse<JsonNode> res = Unirest.get(apiPath + "/person/{id}/movie_credits").routeParam("id", id)
+          .queryString("api_key", apiKey).asJson();
+
+      status = HttpStatus.valueOf(res.getStatus());
+      cast = res.getBody().getObject().getJSONArray("cast");
+      crew = res.getBody().getObject().getJSONArray("crew");
+    } catch (UnirestException ex) {
+      log.error("Fetching failed!", ex);
+    }
+
+    if (status != HttpStatus.OK) {
+      return status;
+    } else {
+      log.info("Fetched credits for person id {}, status: {}", id, status.toString());
+    }
+
+    for (int i = 0; i < cast.length(); i++) {
+      cast.getJSONObject(i).put("person_id", id);
+      parseObject(cast.getJSONObject(i), "cast");
+    }
+    for (int i = 0; i < crew.length(); i++) {
+      crew.getJSONObject(i).put("person_id", id);
+      parseObject(crew.getJSONObject(i), "crew");
+    }
 
     return status;
   }
 
   private void parseObject(JSONObject json, String type) {
-    DBObject object = new DBObject();
+    DBObject newObject;
 
-    Optional<DBObjectType> objTypeFromDB = objectTypes.findByType(type);
+    Optional<DBObject> objFromDB = objects.findByDescrAndTypeName(description(json, type), type);
+
+    if (objFromDB.isPresent()) {
+      newObject = objFromDB.get();
+
+      newObject.setDescr(description(json, type));
+      objects.save(newObject);
+
+      parseAttributes(json, newObject);
+
+      return;
+    } else {
+      newObject = new DBObject();
+    }
+
+    Optional<DBObjectType> objTypeFromDB = objectTypes.findByName(type);
 
     if (!objTypeFromDB.isPresent()) {
       log.error("Object type {} not found!", type);
 
       DBObjectType newType = new DBObjectType();
-      newType.setType(type);
+      newType.setName(type);
 
       objectTypes.save(newType);
       log.info("Saved new type: {}", type);
@@ -94,36 +146,52 @@ public class ApiService {
       objTypeFromDB = Optional.of(newType);
     }
 
-    object.setType(objTypeFromDB.get());
-    object.setDescr(description(json));
+    newObject.setType(objTypeFromDB.get());
+    newObject.setDescr(description(json, type));
 
-    objects.saveAndFlush(object);
+    objects.save(newObject);
 
-    parseAttributes(json, object);
+    parseAttributes(json, newObject);
   }
 
   private void parseAttributes(JSONObject json, DBObject object) {
 
     json.keySet().forEach((key) -> {
       String value = json.get(key).toString();
+      if (key.contains("_path")) {
+        value = imgPath + value;
+      }
 
-      AttributeValue attributeValue = new AttributeValue();
+      AttributeValue newAttrValue;
 
-      Optional<Attribute> attributeFromDB = attributes.findByDescr(key);
+      Optional<AttributeValue> attrValFromDB = attrValues.findByTypeNameAndValAndObjectId(key, value, object.getId());
+
+      if (attrValFromDB.isPresent()) {
+        newAttrValue = attrValFromDB.get();
+
+        newAttrValue.setVal(value);
+        attrValues.save(newAttrValue);
+
+        return;
+      } else {
+        newAttrValue = new AttributeValue();
+      }
+
+      Optional<Attribute> attributeFromDB = attributes.findByName(key);
 
       if (!attributeFromDB.isPresent()) {
         log.error("Attribute {} not found!", key);
 
         Attribute newAttribute = new Attribute();
-        newAttribute.setDescr(key);
+        newAttribute.setName(key);
 
-        Optional<AttributeType> attrTypeFromDB = attrTypes.findByType("text");
+        Optional<AttributeType> attrTypeFromDB = attrTypes.findByName("text");
 
         if (!attrTypeFromDB.isPresent()) {
           log.error("Attribute type \"text\" not found!");
 
           AttributeType newAttrType = new AttributeType();
-          newAttrType.setType("text");
+          newAttrType.setName("text");
 
           attrTypes.save(newAttrType);
           log.info("Saved new attribute type: text");
@@ -137,20 +205,38 @@ public class ApiService {
 
         attributeFromDB = Optional.of(newAttribute);
       }
-      attributeValue.setAttribute(attributeFromDB.get());
+      newAttrValue.setType(attributeFromDB.get());
 
-      attributeValue.setObject(object);
+      newAttrValue.setObject(object);
 
-      if (key.contains("_path")) {
-        value = imgPath + value;
-      }
-
-      attributeValue.setVal(value);
-      attrValues.saveAndFlush(attributeValue);
+      newAttrValue.setVal(value);
+      attrValues.save(newAttrValue);
     });
   }
 
-  private String description(JSONObject json) {
-    return json.has("title") ? json.get("title").toString() : json.get("name").toString();
+  private String description(JSONObject json, String type) {
+    String description = "";
+
+    switch (type) {
+      case "movie":
+        description = json.get("title").toString();
+        break;
+      case "show":
+        description = json.get("title").toString();
+        break;
+      case "person":
+        description = json.get("name").toString();
+        break;
+      case "cast":
+        description = json.get("title").toString() + " as " + json.get("character").toString();
+        break;
+      case "crew":
+        description = json.get("title").toString() + " as " + json.get("job").toString();
+        break;
+      default:
+        break;
+    }
+
+    return description;
   }
 }

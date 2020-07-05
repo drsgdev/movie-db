@@ -5,15 +5,18 @@ import java.util.Optional;
 
 import com.github.drsgdev.model.DBObject;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ResponseService {
-  @Autowired
-  private DBObjectService service;
+
+  private final DBObjectService service;
+  private final PersonService personService;
 
   public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
     if (!obj.isPresent()) {
@@ -33,5 +36,11 @@ public class ResponseService {
     Optional<List<DBObject>> objectList = service.findAllByType(type);
 
     return createResponse(objectList);
+  }
+
+  public ResponseEntity<List<DBObject>> fetchCreditsByPersonId(String id, String type) {
+    Optional<List<DBObject>> castList = personService.findCreditsByPersonId(id, type);
+
+    return createResponse(castList);
   }
 }
