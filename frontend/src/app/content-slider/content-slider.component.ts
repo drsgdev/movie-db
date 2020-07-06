@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ViewEncapsulation,
+  Input,
+} from '@angular/core';
 import { DatabaseService } from '../database.service';
 import { NgbCarousel, NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
 
@@ -53,11 +59,13 @@ export class ContentSliderComponent implements OnInit {
     this.config.showNavigationIndicators = false;
   }
 
-  enoughSpace(id: number, pageId: number) {
-    return id < pageId * this.objectsPerPage + this.objectsPerPage;
-  }
+  getObjectPool(pageId: number) {
+    let start: number = pageId * this.objectsPerPage;
+    let end: number = start + this.objectsPerPage;
 
-  sufficient(id: number, pageId: number) {
-    return id >= pageId * this.objectsPerPage && id < pageId * this.objectsPerPage + this.objectsPerPage;
+    if (end >= this.data.length) {
+      end = this.data.length - 1;
+    }
+    return this.data.slice(start, end);
   }
 }

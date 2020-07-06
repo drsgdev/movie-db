@@ -6,11 +6,10 @@
     >
       <div class="d-flex flex-row pt-2">
         <div
-          class="col-md-4 flex-fill"
-          *ngFor="let object of data; index as objIdx"
-          [hidden] = "!enoughSpace(objIdx, pageIdx)"
+          [class]="objectsPerPage < 4 ? 'col-md-4' : 'col-sm-2' + ' flex-fill'"
+          *ngFor="let object of getObjectPool(pageIdx); index as objIdx"
         >
-          <div class="card mb-4 ml-2 mr-2 shadow-sm" [hidden] = "!sufficient(objIdx, pageIdx)">
+          <div class="card mb-4 ml-2 mr-2 shadow-sm" *ngIf="object">
             <img
               src="{{ object.poster_path }}"
               class="img-fluid"
@@ -42,6 +41,12 @@
             <a
               routerLink="/{{ dataType }}/{{ object.id }}"
               class="stretched-link"
+              *ngIf="!creditType"
+            ></a>
+            <a
+              routerLink="/person/{{ object.person_id }}"
+              class="stretched-link"
+              *ngIf="creditType"
             ></a>
           </div>
         </div>
