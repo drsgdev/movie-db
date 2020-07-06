@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class ResponseService {
 
   private final DBObjectService service;
-  private final PersonService personService;
+  private final CreditsService personService;
 
   public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
     if (!obj.isPresent()) {
@@ -40,6 +40,12 @@ public class ResponseService {
 
   public ResponseEntity<List<DBObject>> fetchCreditsByPersonId(String id, String type) {
     Optional<List<DBObject>> castList = personService.findCreditsByPersonId(id, type);
+
+    return createResponse(castList);
+  }
+
+  public ResponseEntity<List<DBObject>> fetchCreditsByMovieId(String id, String type) {
+    Optional<List<DBObject>> castList = personService.findCreditsByMovieId(id, type);
 
     return createResponse(castList);
   }

@@ -6,46 +6,17 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class DatabaseService {
-  response: {};
-
   constructor(private http: HttpClient) {}
 
-  fetchByType(type: string) {
+  fetchAllByType(type: string) {
     return this.http.get(environment.apiUrl + '/' + type + '/all');
-  }
-
-  fetchNewByType(type: string) {
-    this.http.get(environment.apiUrl + '/' + type + '/new').subscribe((res) => {
-      this.response = res;
-      console.log(res);
-    });
-
-    return this.response;
   }
 
   fetchById(id: number) {
     return this.http.get(environment.apiUrl + '/find?id=' + id);
   }
 
-  fetchRecent() {
-    this.http.get('localhost:8081/recent').subscribe((res) => {
-      this.response = res;
-      console.log(res);
-    });
-
-    return this.response;
-  }
-
-  rate(id: number, rate: number) {
-    this.http.post('localhost:8081/rate', {
-      params: {
-        id: id,
-        rate: rate,
-      },
-    });
-  }
-
-  review(review : any) {
-
+  fetchCreditsById(id: number, type: string, creditType: string) {
+    return this.http.get(environment.apiUrl + "/" + type + "/credits/" + creditType + "?id=" + id);
   }
 }

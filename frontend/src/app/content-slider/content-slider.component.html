@@ -1,53 +1,51 @@
-<ngb-carousel #carousel *ngIf="data">
-  <ng-template
-    ngbSlide
-    *ngFor="let page of [].constructor(pages); index as pageIdx;"
-  >
-    <div class="d-flex flex-row pt-2">
-      <div
-        class="col-md-4 flex-fill"
-        *ngFor="let object of data; index as objIdx;"
-        [hidden]="
-          objIdx >= pageIdx * objectsPerPage &&
-          objIdx < (pageIdx + 1) * objectsPerPage &&
-          object
-        "
-      >
-        <div class="card mb-4 ml-2 mr-2 shadow-sm">
-          <img
-            src="{{ object.poster_path }}"
-            class="img-fluid"
-            alt="Banner"
-            *ngIf="object.bannerSrc"
-          />
-          <img
-            src="{{ object.photoSrc }}"
-            class="img-fluid"
-            alt="Banner"
-            *ngIf="object.photoSrc"
-          />
-          <div class="card-body p-3" *ngIf="object.title">
-            <p class="card-title h5">
-              {{ object.title }}
-            </p>
-            <p class="card-text lead">
-              {{ object.release_date }}
-            </p>
+<div *ngIf="data">
+  <ngb-carousel #carousel>
+    <ng-template
+      ngbSlide
+      *ngFor="let page of [].constructor(pages); index as pageIdx"
+    >
+      <div class="d-flex flex-row pt-2">
+        <div
+          class="col-md-4 flex-fill"
+          *ngFor="let object of data; index as objIdx"
+          [hidden] = "!enoughSpace(objIdx, pageIdx)"
+        >
+          <div class="card mb-4 ml-2 mr-2 shadow-sm" [hidden] = "!sufficient(objIdx, pageIdx)">
+            <img
+              src="{{ object.poster_path }}"
+              class="img-fluid"
+              alt="Banner"
+              *ngIf="object.poster_path"
+            />
+            <img
+              src="{{ object.profile_path }}"
+              class="img-fluid"
+              alt="Banner"
+              *ngIf="object.profile_path"
+            />
+            <div class="card-body p-3" *ngIf="!creditType">
+              <p class="card-title h5">
+                {{ object.title }}
+              </p>
+              <p class="card-text lead">
+                {{ object.release_date | date }}
+              </p>
+            </div>
+            <div class="card-body p-3" *ngIf="creditType">
+              <p class="card-title h5">
+                {{ object.name }}
+              </p>
+              <p class="card-text text-muted">
+                {{ object.character }}
+              </p>
+            </div>
+            <a
+              routerLink="/{{ dataType }}/{{ object.id }}"
+              class="stretched-link"
+            ></a>
           </div>
-          <div class="card-body p-3" *ngIf="object.name">
-            <p class="card-title h5">
-              {{ object.name }}
-            </p>
-            <p class="card-text text-muted">
-              {{ object.role }}
-            </p>
-          </div>
-          <a
-            routerLink="/{{ dataType }}/{{ object.id }}"
-            class="stretched-link"
-          ></a>
         </div>
       </div>
-    </div>
-  </ng-template>
-</ngb-carousel>
+    </ng-template>
+  </ngb-carousel>
+</div>

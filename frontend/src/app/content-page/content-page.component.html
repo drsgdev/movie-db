@@ -34,7 +34,9 @@
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Cast</label>
   <app-content-slider
-    data-type="cast"
+    [id]="id"
+    [data-type]="type"
+    credit-type="cast"
     name="cast-slider"
     page-size="6"
   ></app-content-slider>

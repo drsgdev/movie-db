@@ -29,4 +29,15 @@ public class MovieController {
   public ResponseEntity<List<DBObject>> getAllMovies() {
     return response.fetchAllObjectsByType("movie");
   }
+
+  @GetMapping(value = "/credits/cast")
+  public ResponseEntity<List<DBObject>> getCastByMovieId(@RequestParam String id) {
+    return response.fetchCreditsByMovieId(id, "cast");
+  }
+
+  @GetMapping(value = "/credits/crew")
+  public ResponseEntity<List<DBObject>> getCreditsByMovieId(@RequestParam String id) {
+    return response.fetchCreditsByMovieId(id, "crew");
+  }
+  
 }
