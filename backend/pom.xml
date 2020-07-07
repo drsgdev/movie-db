@@ -3,17 +3,17 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.drsgdev</groupId>
-  <artifactId>movie-db</artifactId>
+  <artifactId>backend</artifactId>
   <version>0.1</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
-  <name>Spring boot movie database</name>
+  <name>backend</name>
 
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.0.RELEASE</version>
-  </parent>
+    <parent>
+        <groupId>com.github.drsgdev</groupId>
+        <artifactId>movie-db-parent</artifactId>
+        <version>0.1</version>
+    </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,4 +63,37 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+      <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
+                    <warName>movie-db</warName>
+                </configuration>
+            </plugin>
+  <plugin>
+    <artifactId>maven-resources-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>copy-resources</id>
+            <phase>validate</phase>
+            <goals>
+                <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+                <outputDirectory>${project.build.directory}/classes/resources/</outputDirectory>
+                <resources>
+                    <resource>
+                        <directory>${project.parent.basedir}/frontend/dist/frontend/</directory>
+                    </resource>
+                </resources>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+        </plugins>
+    </build>
 </project>
