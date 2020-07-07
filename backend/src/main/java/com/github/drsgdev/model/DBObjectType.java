@@ -34,7 +34,7 @@ public class DBObjectType {
 
   @Column(name = "descr")
   @JsonValue
-  private String type;
+  private String name;
 
   @OneToMany(mappedBy = "type")
   @JsonBackReference
@@ -49,11 +49,11 @@ public class DBObjectType {
     if (getClass() != obj.getClass())
       return false;
     DBObjectType other = (DBObjectType) obj;
-    return Objects.equals(type, other.type) && id == other.id;
+    return Objects.equals(name, other.name) && id == other.id;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, id);
+    return Objects.hash(name, id);
   }
 }

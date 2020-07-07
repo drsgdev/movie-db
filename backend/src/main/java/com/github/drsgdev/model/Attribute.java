@@ -41,11 +41,16 @@ public class Attribute {
 
   @Column
   @JsonValue
-  private String descr;
+  private String name;
 
-  @OneToMany(mappedBy = "attribute")
+  @OneToMany(mappedBy = "type")
   @JsonBackReference
   private Set<AttributeValue> value;
+
+  public Attribute(String name, AttributeType type) {
+    this.name = name;
+    this.type = type;
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -56,11 +61,11 @@ public class Attribute {
     if (getClass() != obj.getClass())
       return false;
     Attribute other = (Attribute) obj;
-    return id == other.id && Objects.equals(descr, other.descr) && Objects.equals(type, other.type);
+    return id == other.id && Objects.equals(name, other.name) && Objects.equals(type, other.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, descr, type);
+    return Objects.hash(id, name, type);
   }
 }

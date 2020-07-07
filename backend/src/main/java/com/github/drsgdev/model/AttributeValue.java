@@ -37,7 +37,7 @@ public class AttributeValue {
   @ManyToOne
   @JoinColumn(name = "attr_id")
   @JsonManagedReference
-  private Attribute attribute;
+  private Attribute type;
 
   @ManyToOne
   @JoinColumn(name = "obj_id")

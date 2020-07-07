@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(value = "/movie")
+@RequestMapping(value = "/show")
 @RequiredArgsConstructor
-public class MovieController {
+public class ShowController {
 
   private final ResponseService response;
 
@@ -27,7 +27,7 @@ public class MovieController {
 
   @GetMapping(value = "/all")
   public ResponseEntity<List<DBObject>> getAllMovies() {
-    return response.fetchAllObjectsByType("movie");
+    return response.fetchAllObjectsByType("show");
   }
 
   @GetMapping(value = "/credits/cast")

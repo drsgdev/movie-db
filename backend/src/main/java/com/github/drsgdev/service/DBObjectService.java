@@ -6,9 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.drsgdev.model.DBObject;
-import com.github.drsgdev.model.DBObjectType;
 import com.github.drsgdev.repository.DBObjectRepository;
-import com.github.drsgdev.repository.DBObjectTypeRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -21,15 +19,14 @@ import lombok.extern.slf4j.Slf4j;
 public class DBObjectService {
 
   private final DBObjectRepository objRepository;
-  private final DBObjectTypeRepository typesRepository;
 
-  private void mapAttributes(List<DBObject> list) {
+  public static void mapAttributes(List<DBObject> list) {
     list.forEach((object) -> mapAttributes(object));
   }
 
-  private void mapAttributes(DBObject obj) {
+  public static void mapAttributes(DBObject obj) {
     Map<String, String> fields = obj.getAttributes().parallelStream()
-        .collect(Collectors.toMap((attr) -> attr.getAttribute().getDescr(),
+        .collect(Collectors.toMap((attr) -> attr.getType().getName(),
             (attr) -> attr.getVal() == null ? attr.getDate_val().toString() : attr.getVal()));
 
     obj.setAttributeMap(fields);
@@ -50,13 +47,7 @@ public class DBObjectService {
   }
 
   public Optional<List<DBObject>> findAllByType(String type) {
-    Optional<DBObjectType> objType = typesRepository.findByType(type);
-
-    if (!objType.isPresent()) {
-      return Optional.empty();
-    }
-
-    Optional<List<DBObject>> objectList = objRepository.findAllByType(objType.get());
+    Optional<List<DBObject>> objectList = objRepository.findAllByTypeName(type);
 
     if (!objectList.isPresent()) {
       return Optional.empty();

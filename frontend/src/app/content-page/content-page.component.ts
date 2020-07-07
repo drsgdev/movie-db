@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 })
 export class ContentPageComponent implements OnInit {
   id = 0;
+  type: string;
   content: any;
 
   constructor(private db: DatabaseService, private route: ActivatedRoute) {}
@@ -21,19 +22,12 @@ export class ContentPageComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.id = params['id'];
     });
+    this.route.url.subscribe((url) => {
+      this.type = url[0].path;
+    });
 
     this.db.fetchById(this.id).subscribe((res) => (this.content = res));
   }
 
   ngOnViewInit() {}
-
-  // getRatings() {
-  //   let ratings = [];
-
-  //   Object.keys(this.content.ratings).map((key) => {
-  //     ratings.push(this.content.ratings[key]);
-  //   });
-
-  //   return ratings;
-  // }
 }

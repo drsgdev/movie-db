@@ -1,7 +1,7 @@
-.carousel-control-next-icon .carousel-control-prev-icon {
-  max-width: 5% !important;
-  background-color: darken($color: #000000, $amount: 0);
-  border: 1px solid white;
-  border-radius: 0.25rem;
-  background-size: auto;
+.img-fluid {
+  min-height: 204.6px !important;
+}
+
+.col-sm-2 {
+  min-width: 17% !important;
 }

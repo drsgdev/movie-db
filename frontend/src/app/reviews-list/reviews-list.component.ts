@@ -34,7 +34,5 @@ export class ReviewsListComponent implements OnInit {
     this.review.date = new Date();
     this.review.user_id = 1;
     this.review.object_id = this.id;
-
-    this.db.review(this.review);
   }
 }

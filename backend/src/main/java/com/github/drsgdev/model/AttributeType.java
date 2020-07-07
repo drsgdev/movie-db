@@ -33,7 +33,7 @@ public class AttributeType {
 
   @Column(name = "descr")
   @JsonValue
-  private String type;
+  private String name;
 
   @OneToMany(mappedBy = "type")
   @JsonBackReference
@@ -48,11 +48,11 @@ public class AttributeType {
     if (getClass() != obj.getClass())
       return false;
     AttributeType other = (AttributeType) obj;
-    return id == other.id && Objects.equals(type, other.type);
+    return id == other.id && Objects.equals(name, other.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, type);
+    return Objects.hash(id, name);
   }
 }

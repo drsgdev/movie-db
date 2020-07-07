@@ -16,8 +16,5 @@ export class RateThisComponent implements OnInit {
   ngOnInit(): void {}
 
   rate(event) {
-    if (this.current_rate > 0) {
-      this.db.rate(this.id, this.current_rate);
-    }
   }
 }
