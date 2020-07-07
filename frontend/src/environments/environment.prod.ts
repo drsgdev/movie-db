@@ -1,5 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
 
-  apiUrl: 'http://localhost:8081',
+  apiUrl: 'http://212.109.219.119:8081/movie-db',
 };

@@ -33,21 +33,12 @@
             </goals>
         </execution>
         <execution>
-            <id>npm run build</id>
-            <goals>
-                <goal>npm</goal>
-            </goals>
-            <configuration>
-                <arguments>run build</arguments>
-            </configuration>
-        </execution>
-        <execution>
             <id>prod</id>
             <goals>
                 <goal>npm</goal>
             </goals>
             <configuration>
-                <arguments>run-script build</arguments>
+                <arguments>run-script build_prod</arguments>
             </configuration>
             <phase>generate-resources</phase>
         </execution>

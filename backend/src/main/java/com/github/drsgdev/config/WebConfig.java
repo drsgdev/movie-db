@@ -16,11 +16,4 @@ public class WebConfig implements WebMvcConfigurer {
         .allowCredentials(true);
     WebMvcConfigurer.super.addCorsMappings(registry);
   }
-
-  @Override
-  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/resources/**")
-            .addResourceLocations("/public", "classpath:/static/")
-            .setCachePeriod(31556926);
-  }
 }
