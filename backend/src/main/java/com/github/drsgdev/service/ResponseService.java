@@ -2,21 +2,24 @@ package com.github.drsgdev.service;
 
 import java.util.List;
 import java.util.Optional;
-
+import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.DBObject;
-
+import com.github.drsgdev.util.SignupFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ResponseService {
 
-  private final DBObjectService service;
+  private final DBObjectService objectService;
   private final CreditsService personService;
+  private final AuthService authService;
 
   public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
     if (!obj.isPresent()) {
@@ -27,13 +30,13 @@ public class ResponseService {
   }
 
   public ResponseEntity<DBObject> fetchObjectById(Long id) {
-    Optional<DBObject> object = service.findObjectById(id);
+    Optional<DBObject> object = objectService.findObjectById(id);
 
     return createResponse(object);
   }
 
   public ResponseEntity<List<DBObject>> fetchAllObjectsByType(String type) {
-    Optional<List<DBObject>> objectList = service.findAllByType(type);
+    Optional<List<DBObject>> objectList = objectService.findAllByType(type);
 
     return createResponse(objectList);
   }
@@ -48,5 +51,37 @@ public class ResponseService {
     Optional<List<DBObject>> castList = personService.findCreditsByMovieId(id, type);
 
     return createResponse(castList);
+  }
+
+  public ResponseEntity<String> addUserToDB(SignupRequest request) {
+    HttpStatus status = HttpStatus.OK;
+    String response = "Signup complete";
+
+    try {
+      authService.signup(request);
+    } catch (SignupFailedException ex) {
+      log.info(ex.getMessage());
+
+      status = HttpStatus.BAD_REQUEST;
+      response = ex.getMessage();
+    }
+
+    return ResponseEntity.status(status).body(response);
+  }
+
+  public ResponseEntity<String> verifyUser(String token) {
+    HttpStatus status = HttpStatus.OK;
+    String response = "User activated";
+
+    try {
+      authService.verify(token);
+    } catch (SignupFailedException ex) {
+      log.info(ex.getMessage());
+
+      status = HttpStatus.BAD_REQUEST;
+      response = ex.getMessage();
+    }
+
+    return ResponseEntity.status(status).body(response);
   }
 }

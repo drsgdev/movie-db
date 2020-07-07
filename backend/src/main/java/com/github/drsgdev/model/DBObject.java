@@ -65,6 +65,22 @@ public class DBObject {
     this.attributeMap.put(name, value);
   }
 
+  public void addAttribute(String type, String name, String value) {
+    AttributeType attrType = new AttributeType();
+    attrType.setName(name);
+
+    Attribute attr = new Attribute();
+    attr.setName(name);
+    attr.setType(attrType);
+
+    AttributeValue attrVal = new AttributeValue();
+    attrVal.setType(attr);
+    attrVal.setObject(this);
+    attrVal.setVal(value);
+
+    this.attributes.add(attrVal);
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj)

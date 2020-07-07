@@ -1,7 +1,6 @@
 package com.github.drsgdev.service;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.github.drsgdev.model.Attribute;
 import com.github.drsgdev.model.AttributeType;

@@ -47,6 +47,11 @@ public class Attribute {
   @JsonBackReference
   private Set<AttributeValue> value;
 
+  public Attribute(String name, AttributeType type) {
+    this.name = name;
+    this.type = type;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
