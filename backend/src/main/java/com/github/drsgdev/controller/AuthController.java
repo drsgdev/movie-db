@@ -1,6 +1,8 @@
 package com.github.drsgdev.controller;
 
+import javax.validation.Valid;
 import com.github.drsgdev.dto.AuthResponse;
+import com.github.drsgdev.dto.RefreshTokenRequest;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.service.ResponseService;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +34,17 @@ public class AuthController {
   }
 
   @PostMapping(value = "/login")
-  public ResponseEntity<AuthResponse> postMethodName(@RequestBody SignupRequest req) {
+  public ResponseEntity<AuthResponse> login(@RequestBody SignupRequest req) {
     return response.login(req);
   }
 
+  @PostMapping(value = "/logout")
+  public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest req) {
+    return response.logout(req);
+  }
+
+  @PostMapping(value = "/refresh")
+  public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest req) {
+    return response.refresh(req);
+  }
 }

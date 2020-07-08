@@ -3,6 +3,7 @@ package com.github.drsgdev.security;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import com.github.drsgdev.dto.RefreshTokenRequest;
 import com.github.drsgdev.dto.SignupEmail;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.AttributeValue;
@@ -41,6 +42,8 @@ public class AuthService {
   private final AuthenticationManager auth;
   private final JWTProvider jwtProvider;
 
+  private final RefreshTokenService refreshService;
+
   public void signup(SignupRequest request) throws SignupFailedException {
 
     checkIfUserExists(request.getUsername(), request.getEmail());
@@ -59,7 +62,6 @@ public class AuthService {
     user.addAttribute("text", "enabled", Boolean.toString(false));
 
     String token = generateVerificationToken(user);
-
 
     objTypes.save(user.getType());
     objects.save(user);
@@ -98,7 +100,8 @@ public class AuthService {
 
     Authentication authentication;
     try {
-      log.info("Trying to log user {} with password {}", request.getUsername(), request.getPassword());
+      log.info("Trying to log user {} with password {}", request.getUsername(),
+          request.getPassword());
       authentication = auth.authenticate(
           new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
@@ -112,15 +115,51 @@ public class AuthService {
     return token;
   }
 
+  public String refresh(RefreshTokenRequest request) throws SignupFailedException {
+    if (!refreshService.validateToken(request.getToken())) {
+      throw new SignupFailedException("Refresh token is invalid");
+    }
+    refreshService.deleteToken(request.getToken());
+
+    String newToken = jwtProvider.generateJWTUsername(request.getUsername());
+
+    return newToken;
+  }
+
+  public void logout(RefreshTokenRequest request) throws SignupFailedException {
+
+    checkIfUsernameExists(request.getUsername());
+
+    if (!refreshService.validateToken(request.getToken())) {
+      throw new SignupFailedException("Refresh token is invalid");
+    }
+
+    refreshService.deleteToken(request.getToken());
+    SecurityContextHolder.clearContext();
+  }
+
   private void checkIfUserExists(String username, String email) throws SignupFailedException {
-    objects.findByDescrAndTypeName(username, "user").ifPresent((obj) -> {
-      throw new SignupFailedException("Username already exists");
-    });
+    
+    checkIfUsernameExists(username);
 
     objects.findByTypeNameAndAttributesTypeNameAndAttributesVal("user", "email", email)
         .ifPresent((obj) -> {
           throw new SignupFailedException("Email already exists");
         });
+  }
+
+  private void checkIfUsernameExists(String username) throws SignupFailedException {
+    objects.findByDescrAndTypeName(username, "user").ifPresent((obj) -> {
+      throw new SignupFailedException("Username already exists");
+    });
+  }
+
+  public Instant tokenExpirationDate(String token) {
+    return jwtProvider.getExpirationFromJWT(token).toInstant();
+  }
+
+  public String refreshToken() {
+    return refreshService.generateToken();
   }
 
   private String generateVerificationToken(DBObject user) {

@@ -1,5 +1,6 @@
 package com.github.drsgdev.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,9 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupEmail {
+public class RefreshTokenRequest {
 
-  private String recipent;
-  private String subject;
-  private String body;
+    @NotBlank
+    private String token;
+
+    @NotBlank
+    private String username;
 }

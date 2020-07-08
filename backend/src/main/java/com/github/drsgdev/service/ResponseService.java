@@ -3,6 +3,7 @@ package com.github.drsgdev.service;
 import java.util.List;
 import java.util.Optional;
 import com.github.drsgdev.dto.AuthResponse;
+import com.github.drsgdev.dto.RefreshTokenRequest;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.security.AuthService;
@@ -21,6 +22,9 @@ public class ResponseService {
   private final DBObjectService objectService;
   private final CreditsService personService;
   private final AuthService authService;
+
+  private HttpStatus status;
+  private String message;
 
   public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
     if (!obj.isPresent()) {
@@ -55,8 +59,8 @@ public class ResponseService {
   }
 
   public ResponseEntity<String> addUserToDB(SignupRequest request) {
-    HttpStatus status = HttpStatus.OK;
-    String response = "Signup complete";
+    status = HttpStatus.OK;
+    message = "Signup complete";
 
     try {
       authService.signup(request);
@@ -64,15 +68,15 @@ public class ResponseService {
       log.info(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
-      response = ex.getMessage();
+      message = ex.getMessage();
     }
 
-    return ResponseEntity.status(status).body(response);
+    return ResponseEntity.status(status).body(message);
   }
 
   public ResponseEntity<String> verifyUser(String token) {
-    HttpStatus status = HttpStatus.OK;
-    String response = "User activated";
+    status = HttpStatus.OK;
+    message = "User activated";
 
     try {
       authService.verify(token);
@@ -80,16 +84,18 @@ public class ResponseService {
       log.info(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
-      response = ex.getMessage();
+      message = ex.getMessage();
     }
 
-    return ResponseEntity.status(status).body(response);
+    return ResponseEntity.status(status).body(message);
   }
 
   public ResponseEntity<AuthResponse> login(SignupRequest req) {
-    HttpStatus status = HttpStatus.OK;
+    status = HttpStatus.OK;
+    message = "Login successful";
+
+
     String token = "";
-    String message = "Login successful";
 
     try {
       token = authService.login(req);
@@ -105,6 +111,55 @@ public class ResponseService {
     res.setToken(token);
     res.setMessage(message);
 
+    if (status == HttpStatus.OK) {
+      res.setExpiresAt(authService.tokenExpirationDate(token));
+      res.setRefreshToken(authService.refreshToken());
+    }
+
     return ResponseEntity.status(status).body(res);
+  }
+
+  public ResponseEntity<AuthResponse> refresh(RefreshTokenRequest req) {
+    status = HttpStatus.OK;
+    message = "Token refresh successful";
+
+    String token = "";
+
+    try {
+      token = authService.refresh(req);
+    } catch (SignupFailedException ex) {
+      log.error(ex.getMessage());
+
+      status = HttpStatus.BAD_REQUEST;
+      message = ex.getMessage();
+    }
+
+    AuthResponse res = new AuthResponse();
+    res.setUsername(req.getUsername());
+    res.setToken(token);
+    res.setMessage(message);
+
+    if (status == HttpStatus.OK) {
+      res.setExpiresAt(authService.tokenExpirationDate(token));
+      res.setRefreshToken(authService.refreshToken());
+    }
+
+    return ResponseEntity.status(status).body(res);
+  }
+
+  public ResponseEntity<String> logout(RefreshTokenRequest req) {
+    status = HttpStatus.OK;
+    message = "User logged out";
+
+    try {
+      authService.logout(req);
+    } catch (SignupFailedException ex) {
+      log.error(ex.getMessage());
+
+      status = HttpStatus.BAD_REQUEST;
+      message = ex.getMessage();
+    }
+
+    return ResponseEntity.status(status).body(message);
   }
 }

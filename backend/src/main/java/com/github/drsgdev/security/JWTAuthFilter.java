@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,17 +32,30 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         String jwt = getJWTFromRequest(request);
 
-        if (StringUtils.hasText(jwt) && provider.validateJWT(jwt)) {
+        boolean jwtIsValid = true;
+        try {
+            provider.validateJWT(jwt);
+        } catch (JwtException | IllegalArgumentException ex) {
+            log.error(ex.getMessage());
+
+            jwtIsValid = false;
+            SecurityContextHolder.clearContext();
+        }
+
+        if (StringUtils.hasText(jwt) && jwtIsValid) {
             String username = provider.getUsernameFromJWT(jwt);
 
             try {
                 UserDetails user = userDetails.loadUserByUsername(username);
+
+                if (!user.isEnabled()) {
+                    throw new UsernameNotFoundException("User is disabled");
+                }
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(user.getUsername(), null,
                                 user.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
             } catch (UsernameNotFoundException ex) {

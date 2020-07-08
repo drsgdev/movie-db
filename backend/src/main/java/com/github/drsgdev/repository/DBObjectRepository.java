@@ -24,4 +24,6 @@ public interface DBObjectRepository extends JpaRepository<DBObject, Long> {
   public Optional<DBObject> findByDescrAndTypeName(String descr, String typeName);
 
   public boolean existsByDescr(String descr);
+
+  public void deleteByDescrAndTypeName(String descr, String typeName);
 }

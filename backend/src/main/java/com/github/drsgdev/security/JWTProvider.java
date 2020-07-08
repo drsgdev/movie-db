@@ -9,22 +9,27 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.time.Instant;
+import java.util.Date;
 import javax.annotation.PostConstruct;
 import com.github.drsgdev.util.SignupFailedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-@Service
+@Component
 @Slf4j
 public class JWTProvider {
 
   private KeyStore store;
+
+  @Getter
+  private Long expireTime = 30000l; // 15m jwt expiration time
 
   @PostConstruct
   public void init() {
@@ -44,7 +49,15 @@ public class JWTProvider {
   public String generateJWT(Authentication auth) {
     UserDetails principal = (UserDetails) auth.getPrincipal();
 
-    return Jwts.builder().setSubject(principal.getUsername()).signWith(getPrivateKey()).compact();
+    return Jwts.builder().setSubject(principal.getUsername())
+        .setExpiration(Date.from(Instant.now().plusMillis(expireTime))).signWith(getPrivateKey())
+        .compact();
+  }
+
+  public String generateJWTUsername(String username) {
+    return Jwts.builder().setSubject(username).setIssuedAt(Date.from(Instant.now()))
+        .setExpiration(Date.from(Instant.now().plusMillis(expireTime))).signWith(getPrivateKey())
+        .compact();
   }
 
   private PrivateKey getPrivateKey() {
@@ -66,22 +79,21 @@ public class JWTProvider {
   }
 
   public boolean validateJWT(String jwt) {
-    boolean isValid = true;
+    parseClaims(jwt);
 
-    try {
-      parseClaims(jwt);
-    } catch (JwtException | IllegalArgumentException ex) {
-      log.error("Token {} validation failed: {}", jwt, ex.getMessage());
-      isValid = false;
-    }
-
-    return isValid;
+    return true;
   }
 
   public String getUsernameFromJWT(String jwt) {
     Claims claims = parseClaims(jwt).getBody();
 
     return claims.getSubject();
+  }
+
+  public Date getExpirationFromJWT(String jwt) {
+    Claims claims = parseClaims(jwt).getBody();
+
+    return claims.getExpiration();
   }
 
   private Jws<Claims> parseClaims(String jwt) {
