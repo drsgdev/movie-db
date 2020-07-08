@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final ResponseService response;
+  private final ResponseService response;
 
-    @PostMapping(value = "/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest req) {
-        return response.addUserToDB(req);
-    }
+  @PostMapping(value = "/signup")
+  public ResponseEntity<String> signup(@RequestBody SignupRequest req) {
+    return response.addUserToDB(req);
+  }
 
-    @GetMapping(value="/verify")
-    public ResponseEntity<String> verify(@RequestParam String token) {
-        return response.verifyUser(token);
-    }
+  @GetMapping(value = "/verify")
+  public ResponseEntity<String> verify(@RequestParam String token) {
+    return response.verifyUser(token);
+  }
 }

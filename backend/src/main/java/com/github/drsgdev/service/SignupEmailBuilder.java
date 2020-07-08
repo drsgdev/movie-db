@@ -9,12 +9,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SignupEmailBuilder {
 
-    private final TemplateEngine templateEngine;
+  private final TemplateEngine templateEngine;
 
-    public String build(String body) {
-        Context context = new Context();
-        context.setVariable("body", body);
+  public String build(String body) {
+    Context context = new Context();
+    context.setVariable("body", body);
 
-        return templateEngine.process("verificationEmail", context);
-    }
+    return templateEngine.process("verificationEmail", context);
+  }
 }

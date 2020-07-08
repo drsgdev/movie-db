@@ -28,5 +28,5 @@ public class SearchController {
   public ResponseEntity<List<DBObject>> getObjectByType(@PathVariable(value = "type") String type) {
     return response.fetchAllObjectsByType(type);
   }
-  
+
 }

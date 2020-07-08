@@ -24,8 +24,8 @@ public class CreditsService {
   }
 
   private Optional<List<DBObject>> findCredits(String id, String type, String field) {
-    Optional<List<DBObject>> creditList = objects.findAllByTypeNameAndAttributesTypeNameAndAttributesVal(type,
-        field, id);
+    Optional<List<DBObject>> creditList =
+        objects.findAllByTypeNameAndAttributesTypeNameAndAttributesVal(type, field, id);
 
     if (!creditList.isPresent()) {
       return Optional.empty();

@@ -6,7 +6,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class SignupEmail {
-    String recipent;
-    String subject;
-    String body;
+
+  String recipent;
+  String subject;
+  String body;
 }

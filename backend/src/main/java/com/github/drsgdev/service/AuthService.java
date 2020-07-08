@@ -22,82 +22,82 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final DBObjectRepository objects;
-    private final AttributeTypeRepository attrTypes;
-    private final AttributeRepository attributes;
-    private final AttributeValueRepository attrValues;
-    private final DBObjectTypeRepository objTypes;
+  private final DBObjectRepository objects;
+  private final AttributeTypeRepository attrTypes;
+  private final AttributeRepository attributes;
+  private final AttributeValueRepository attrValues;
+  private final DBObjectTypeRepository objTypes;
 
-    private final PasswordEncoder encoder;
-    private final EmailService email;
+  private final PasswordEncoder encoder;
+  private final EmailService email;
 
-    public void signup(SignupRequest request) throws SignupFailedException {
+  public void signup(SignupRequest request) throws SignupFailedException {
 
-        checkIfUserExists(request.getUsername(), request.getEmail());
+    checkIfUserExists(request.getUsername(), request.getEmail());
 
-        DBObject user = new DBObject();
+    DBObject user = new DBObject();
 
-        DBObjectType type = new DBObjectType();
-        type.setName("user");
+    DBObjectType type = new DBObjectType();
+    type.setName("user");
 
-        user.setType(type);
-        user.setDescr(request.getUsername());
-        user.addAttribute("text", "username", request.getUsername());
-        user.addAttribute("text", "password", encoder.encode(request.getPassword()));
-        user.addAttribute("text", "email", request.getEmail());
-        user.addAttribute("text", "created", Instant.now().toString());
-        user.addAttribute("text", "enabled", Boolean.toString(false));
+    user.setType(type);
+    user.setDescr(request.getUsername());
+    user.addAttribute("text", "username", request.getUsername());
+    user.addAttribute("text", "password", encoder.encode(request.getPassword()));
+    user.addAttribute("text", "email", request.getEmail());
+    user.addAttribute("text", "created", Instant.now().toString());
+    user.addAttribute("text", "enabled", Boolean.toString(false));
 
-        String token = generateVerificationToken(user);
+    String token = generateVerificationToken(user);
 
 
-        objTypes.save(user.getType());
-        objects.save(user);
-        user.getAttributes().forEach((attr) -> {
-            attrTypes.save(attr.getType().getType());
-            attributes.save(attr.getType());
-            attrValues.save(attr);
+    objTypes.save(user.getType());
+    objects.save(user);
+    user.getAttributes().forEach((attr) -> {
+      attrTypes.save(attr.getType().getType());
+      attributes.save(attr.getType());
+      attrValues.save(attr);
+    });
+
+    email.send(new SignupEmail(request.getEmail(), "Please activate your account",
+        "http://localhost:8081/api/auth/verify?token=" + token));
+  }
+
+  public void verify(String token) throws SignupFailedException {
+    Optional<DBObject> user = objects.findByTypeNameAndAttributesTypeNameAndAttributesVal("user",
+        "verification_token", token);
+
+    if (!user.isPresent()) {
+      throw new SignupFailedException("User with the specified token was not found");
+    }
+
+    Optional<AttributeValue> isEnabled =
+        attrValues.findByTypeNameAndObjectId("enabled", user.get().getId());
+
+    if (isEnabled.get().getVal().equals("true")) {
+      throw new SignupFailedException("User is already activated");
+    } else {
+      isEnabled.get().setVal("true");
+      attrValues.save(isEnabled.get());
+    }
+  }
+
+  private void checkIfUserExists(String username, String email) throws SignupFailedException {
+    objects.findByDescrAndTypeName(username, "user").ifPresent((obj) -> {
+      throw new SignupFailedException("Username already exists");
+    });
+
+    objects.findByTypeNameAndAttributesTypeNameAndAttributesVal("user", "email", email)
+        .ifPresent((obj) -> {
+          throw new SignupFailedException("Email already exists");
         });
+  }
 
-        email.send(new SignupEmail(request.getEmail(), "Please activate your account",
-                "http://localhost:8081/api/auth/verify?token=" + token));
-    }
+  private String generateVerificationToken(DBObject user) {
+    String token = UUID.randomUUID().toString();
 
-    public void verify(String token) throws SignupFailedException {
-        Optional<DBObject> user = objects.findByTypeNameAndAttributesTypeNameAndAttributesVal(
-                "user", "verification_token", token);
+    user.addAttribute("text", "verification_token", token);
 
-        if (!user.isPresent()) {
-            throw new SignupFailedException("User with the specified token was not found");
-        }
-
-        Optional<AttributeValue> isEnabled =
-                attrValues.findByTypeNameAndObjectId("enabled", user.get().getId());
-
-        if (isEnabled.get().getVal().equals("true")) {
-            throw new SignupFailedException("User is already activated");
-        } else {
-            isEnabled.get().setVal("true");
-            attrValues.save(isEnabled.get());
-        }
-    }
-
-    private void checkIfUserExists(String username, String email) throws SignupFailedException {
-        objects.findByDescrAndTypeName(username, "user").ifPresent((obj) -> {
-            throw new SignupFailedException("Username already exists");
-        });
-
-        objects.findByTypeNameAndAttributesTypeNameAndAttributesVal("user", "email", email)
-                .ifPresent((obj) -> {
-                    throw new SignupFailedException("Email already exists");
-                });
-    }
-
-    private String generateVerificationToken(DBObject user) {
-        String token = UUID.randomUUID().toString();
-
-        user.addAttribute("text", "verification_token", token);
-
-        return token;
-    }
+    return token;
+  }
 }

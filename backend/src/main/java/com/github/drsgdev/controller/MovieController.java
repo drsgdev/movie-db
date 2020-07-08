@@ -39,5 +39,5 @@ public class MovieController {
   public ResponseEntity<List<DBObject>> getCreditsByMovieId(@RequestParam String id) {
     return response.fetchCreditsByMovieId(id, "crew");
   }
-  
+
 }

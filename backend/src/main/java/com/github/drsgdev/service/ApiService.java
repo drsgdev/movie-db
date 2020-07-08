@@ -32,7 +32,8 @@ public class ApiService {
   private final String apiKey = "903ffebdb80a3af1d4c8a15ad338e3ea";
   private final String apiPath = "https://api.themoviedb.org/3";
   private final String imgPath = "https://image.tmdb.org/t/p/original";
-  private final String imgPlaceholderPath = "https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-4-user-grey-d8fe957375e70239d6abdd549fd7568c89281b2179b5f4470e2e12895792dfa5.svg";
+  private final String imgPlaceholderPath =
+      "https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-4-user-grey-d8fe957375e70239d6abdd549fd7568c89281b2179b5f4470e2e12895792dfa5.svg";
 
   private final AttributeRepository attributes;
   private final AttributeValueRepository attrValues;
@@ -90,8 +91,9 @@ public class ApiService {
     JSONArray crew = new JSONArray();
 
     try {
-      HttpResponse<JsonNode> res = Unirest.get(apiPath + "/{type}/{id}/credits").routeParam("id", id)
-          .routeParam("type", linkType).queryString("api_key", apiKey).asJson();
+      HttpResponse<JsonNode> res =
+          Unirest.get(apiPath + "/{type}/{id}/credits").routeParam("id", id)
+              .routeParam("type", linkType).queryString("api_key", apiKey).asJson();
 
       status = HttpStatus.valueOf(res.getStatus());
       cast = res.getBody().getObject().getJSONArray("cast");
@@ -196,14 +198,15 @@ public class ApiService {
         }
       }
 
-      if (key.equals("id")
-          && (object.getType().getName().equals("movie") || object.getType().getName().equals("show"))) {
+      if (key.equals("id") && (object.getType().getName().equals("movie")
+          || object.getType().getName().equals("show"))) {
         value = objId;
       }
 
       AttributeValue newAttrValue;
 
-      Optional<AttributeValue> attrValFromDB = attrValues.findByTypeNameAndValAndObjectId(key, value, object.getId());
+      Optional<AttributeValue> attrValFromDB =
+          attrValues.findByTypeNameAndValAndObjectId(key, value, object.getId());
 
       if (attrValFromDB.isPresent()) {
         newAttrValue = attrValFromDB.get();
@@ -267,8 +270,8 @@ public class ApiService {
         description = json.get("name").toString();
         break;
       case "cast":
-        description = json.get("name").toString() + " as " + json.get("character").toString() + " in "
-            + json.get("title").toString();
+        description = json.get("name").toString() + " as " + json.get("character").toString()
+            + " in " + json.get("title").toString();
         break;
       case "crew":
         description = json.get("name").toString() + " as " + json.get("job").toString() + " in "

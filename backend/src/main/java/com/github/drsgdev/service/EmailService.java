@@ -16,26 +16,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailService {
 
-    private final JavaMailSender sender;
-    private final SignupEmailBuilder builder;
+  private final JavaMailSender sender;
+  private final SignupEmailBuilder builder;
 
-    @Async
-    public void send(SignupEmail mail) throws SignupFailedException {
-        MimeMessagePreparator messagePreparator = msg -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(msg);
-            messageHelper.setFrom("moviedatabase@email.com");
-            messageHelper.setTo(mail.getRecipent());
-            messageHelper.setSubject(mail.getSubject());
-            messageHelper.setText(builder.build(mail.getBody()));
-        };
+  @Async
+  public void send(SignupEmail mail) throws SignupFailedException {
+    MimeMessagePreparator messagePreparator = msg -> {
+      MimeMessageHelper messageHelper = new MimeMessageHelper(msg);
+      messageHelper.setFrom("moviedatabase@email.com");
+      messageHelper.setTo(mail.getRecipent());
+      messageHelper.setSubject(mail.getSubject());
+      messageHelper.setText(builder.build(mail.getBody()));
+    };
 
-        try {
-            sender.send(messagePreparator);
+    try {
+      sender.send(messagePreparator);
 
-            log.info("Send verification email to {}", mail.getRecipent());
-        } catch (MailException ex) {
-            log.info("Failed to send verification email to {}", mail.getRecipent());
-            throw new SignupFailedException("Failed to send verification email");
-        }
+      log.info("Send verification email to {}", mail.getRecipent());
+    } catch (MailException ex) {
+      log.info("Failed to send verification email to {}", mail.getRecipent());
+      throw new SignupFailedException("Failed to send verification email");
     }
+  }
 }
