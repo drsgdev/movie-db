@@ -13,13 +13,21 @@ import com.github.drsgdev.repository.AttributeTypeRepository;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
+import com.github.drsgdev.security.JWTProvider;
 import com.github.drsgdev.util.SignupFailedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
   private final DBObjectRepository objects;
@@ -30,6 +38,8 @@ public class AuthService {
 
   private final PasswordEncoder encoder;
   private final EmailService email;
+  private final AuthenticationManager auth;
+  private final JWTProvider jwtProvider;
 
   public void signup(SignupRequest request) throws SignupFailedException {
 
@@ -80,6 +90,24 @@ public class AuthService {
       isEnabled.get().setVal("true");
       attrValues.save(isEnabled.get());
     }
+  }
+
+  public String login(SignupRequest request) throws SignupFailedException {
+
+    Authentication authentication;
+    try {
+      log.info("Trying to log user {} with password {}", request.getUsername(), request.getPassword());
+      authentication = auth.authenticate(
+          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+    } catch (AuthenticationException ex) {
+      throw new SignupFailedException("Authentication failed: " + ex.getMessage());
+    }
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    String token = jwtProvider.generateJWTToken(authentication);
+
+    return token;
   }
 
   private void checkIfUserExists(String username, String email) throws SignupFailedException {

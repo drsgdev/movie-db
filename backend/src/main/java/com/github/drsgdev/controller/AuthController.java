@@ -1,5 +1,6 @@
 package com.github.drsgdev.controller;
 
+import com.github.drsgdev.dto.AuthResponse;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.service.ResponseService;
 import org.springframework.http.ResponseEntity;
@@ -29,4 +30,10 @@ public class AuthController {
   public ResponseEntity<String> verify(@RequestParam String token) {
     return response.verifyUser(token);
   }
+
+  @PostMapping(value = "/login")
+  public ResponseEntity<AuthResponse> postMethodName(@RequestBody SignupRequest req) {
+    return response.login(req);
+  }
+
 }

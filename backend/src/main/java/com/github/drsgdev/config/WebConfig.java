@@ -2,9 +2,6 @@ package com.github.drsgdev.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -12,7 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/api/add/**").allowedOrigins("localhost").maxAge(3600l).allowedHeaders("*")
+    registry.addMapping("/api/add/**").allowedOrigins("*").maxAge(3600l).allowedHeaders("*")
         .allowCredentials(true);
     registry.addMapping("/movie/**").allowedOrigins("*").maxAge(3600l).allowedHeaders("*")
         .allowCredentials(true);

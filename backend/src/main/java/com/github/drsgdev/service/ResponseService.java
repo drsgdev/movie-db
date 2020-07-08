@@ -2,6 +2,7 @@ package com.github.drsgdev.service;
 
 import java.util.List;
 import java.util.Optional;
+import com.github.drsgdev.dto.AuthResponse;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.util.SignupFailedException;
@@ -83,5 +84,24 @@ public class ResponseService {
     }
 
     return ResponseEntity.status(status).body(response);
+  }
+
+  public ResponseEntity<AuthResponse> login(SignupRequest req) {
+    HttpStatus status = HttpStatus.OK;
+    String token = "";
+
+    try {
+      token = authService.login(req);
+    } catch (SignupFailedException ex) {
+      log.info(ex.getMessage());
+
+      status = HttpStatus.BAD_REQUEST;
+    }
+
+    AuthResponse res = new AuthResponse();
+    res.setUsername(req.getUsername());
+    res.setToken(token);
+
+    return ResponseEntity.status(status).body(res);
   }
 }

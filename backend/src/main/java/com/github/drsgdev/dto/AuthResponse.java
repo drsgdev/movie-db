@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupEmail {
+public class AuthResponse {
 
-  String recipent;
-  String subject;
-  String body;
+  String username;
+  String token;
 }
