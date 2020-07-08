@@ -5,11 +5,11 @@ import java.util.Optional;
 import com.github.drsgdev.dto.AuthResponse;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.DBObject;
+import com.github.drsgdev.security.AuthService;
 import com.github.drsgdev.util.SignupFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -89,6 +89,7 @@ public class ResponseService {
   public ResponseEntity<AuthResponse> login(SignupRequest req) {
     HttpStatus status = HttpStatus.OK;
     String token = "";
+    String message = "Login successful";
 
     try {
       token = authService.login(req);
@@ -96,11 +97,13 @@ public class ResponseService {
       log.info(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
+      message = ex.getMessage();
     }
 
     AuthResponse res = new AuthResponse();
     res.setUsername(req.getUsername());
     res.setToken(token);
+    res.setMessage(message);
 
     return ResponseEntity.status(status).body(res);
   }

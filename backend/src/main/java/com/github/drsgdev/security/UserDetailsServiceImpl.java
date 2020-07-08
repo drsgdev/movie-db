@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     Optional<DBObject> user = objects.findByDescrAndTypeName(username, "user");
 
     if (!user.isPresent()) {
-      throw new UsernameNotFoundException("User " + username + "not found");
+      throw new UsernameNotFoundException("User " + username + " not found");
     }
 
     DBObjectService.mapAttributes(user.get());

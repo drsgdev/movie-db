@@ -1,4 +1,4 @@
-package com.github.drsgdev.service;
+package com.github.drsgdev.security;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import com.github.drsgdev.repository.AttributeTypeRepository;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
-import com.github.drsgdev.security.JWTProvider;
+import com.github.drsgdev.service.EmailService;
 import com.github.drsgdev.util.SignupFailedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,6 +69,8 @@ public class AuthService {
       attrValues.save(attr);
     });
 
+    log.info("Saved new user: {}", request.getUsername());
+
     email.send(new SignupEmail(request.getEmail(), "Please activate your account",
         "http://localhost:8081/api/auth/verify?token=" + token));
   }
@@ -105,7 +107,7 @@ public class AuthService {
     }
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    String token = jwtProvider.generateJWTToken(authentication);
+    String token = jwtProvider.generateJWT(authentication);
 
     return token;
   }
