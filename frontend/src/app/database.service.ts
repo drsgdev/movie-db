@@ -52,12 +52,17 @@ export class DatabaseService {
     }))
   }
 
-  logout(payload: any) {
-    return this.http.post(environment.apiUrl + "/auth/logout", payload).pipe(tap(res => {
+  logout() {
+    let payload = {
+      username: this.storage.retrieve('username'),
+      refreshToken: this.storage.retrieve('refreshToken')
+    }
+
+    this.http.post(environment.apiUrl + "/auth/logout", payload).pipe(tap(() => {
       this.storage.clear('authToken');
       this.storage.clear('refreshToken');
       this.storage.clear('expiresAt');
-    }))
+    }));
   }
 
   getAuthToken() {

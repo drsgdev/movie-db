@@ -8,8 +8,16 @@ import { DatabaseService } from '../database.service';
 })
 export class PageHeaderComponent implements OnInit {
 
-  constructor(db : DatabaseService) { }
+  constructor(private db : DatabaseService) { }
 
   ngOnInit(): void {
+  }
+
+  isLoggedIn() {
+    return this.db.isLoggedIn();
+  }
+
+  logout() {
+    this.db.logout();
   }
 }
