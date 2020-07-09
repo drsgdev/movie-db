@@ -18,6 +18,10 @@ import { RatingComponent } from './rating/rating.component';
 import { RateThisComponent } from './rate-this/rate-this.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReviewsListComponent } from './reviews-list/reviews-list.component';
+import { SignupPageComponent } from './signup-page/signup-page.component';
+import { NgxWebstorageModule } from 'ngx-webstorage';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -34,8 +38,18 @@ import { ReviewsListComponent } from './reviews-list/reviews-list.component';
     RatingComponent,
     RateThisComponent,
     ReviewsListComponent,
+    SignupPageComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule, NgbModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule,
+    NgbModule,
+    NgxWebstorageModule.forRoot(),
+    BrowserAnimationsModule,
+    ToastrModule,
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })

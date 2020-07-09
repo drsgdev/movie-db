@@ -24,7 +24,7 @@
           [(ngModel)]="payload.password"
           id="password_input"
           name="password_input"
-          type="text"
+          type="password"
           class="form-control"
           maxlength="50"
           required
@@ -37,12 +37,39 @@
           This field is required!
         </div>
       </div>
+      <div class="form-group mb-3">
+        <label for="email_input">Email</label>
+        <input
+          [(ngModel)]="payload.email"
+          name="email_input"
+          id="email_input"
+          maxlength="30"
+          minlength="9"
+          class="form-control"
+          required
+          #email_input="ngModel"
+        />
+        <div
+          class="alert alert-danger mt-1"
+          *ngIf="
+            !email_input.valid && email_input.touched && email_input.pristine
+          "
+        >
+          This field is required!
+        </div>
+        <div
+          class="alert alert-danger mt-1"
+          *ngIf="!email_input.valid && email_input.control.dirty"
+        >
+          Email is too short!
+        </div>
+      </div>
       <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary" (click)="login()">
-          Login
+        <button type="submit" class="btn btn-primary" (click)="signup()">
+          Submit
         </button>
-        <a class="navbar-brand mr-0" routerLink="/signup"
-          >Doesn't have an account? Sign up</a
+        <a class="navbar-brand mr-0" routerLink="/login"
+          >Already have an account? Log in</a
         >
       </div>
     </form>

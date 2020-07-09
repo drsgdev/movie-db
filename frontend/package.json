@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -23,7 +23,10 @@
     "@angular/router": "~10.0.2",
     "@ng-bootstrap/ng-bootstrap": "^6.1.0",
     "@types/jquery": "^3.5.0",
+    "bcrypt": "^5.0.0",
     "bootstrap": "^4.5.0",
+    "ngx-toastr": "^12.1.0",
+    "ngx-webstorage": "^5.0.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-page-header',
@@ -7,18 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PageHeaderComponent implements OnInit {
 
-  loggedIn : boolean = false;
-
-  constructor() { }
+  constructor(db : DatabaseService) { }
 
   ngOnInit(): void {
-  }
-
-  login() : void {
-    this.loggedIn = true;
-  }
-
-  logout() : void {
-    this.loggedIn = false;
   }
 }
