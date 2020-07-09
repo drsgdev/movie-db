@@ -9,11 +9,10 @@ import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.AttributeValue;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.model.DBObjectType;
-import com.github.drsgdev.repository.AttributeRepository;
-import com.github.drsgdev.repository.AttributeTypeRepository;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
+import com.github.drsgdev.service.DBObjectService;
 import com.github.drsgdev.service.EmailService;
 import com.github.drsgdev.util.SignupFailedException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,142 +30,152 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
 
-  private final DBObjectRepository objects;
-  private final AttributeTypeRepository attrTypes;
-  private final AttributeRepository attributes;
-  private final AttributeValueRepository attrValues;
-  private final DBObjectTypeRepository objTypes;
+    private final DBObjectRepository objects;
+    private final AttributeValueRepository attrValues;
+    private final DBObjectTypeRepository objTypes;
 
-  private final PasswordEncoder encoder;
-  private final EmailService email;
-  private final AuthenticationManager auth;
-  private final JWTProvider jwtProvider;
+    private final PasswordEncoder encoder;
+    private final EmailService email;
+    private final AuthenticationManager auth;
+    private final JWTProvider jwtProvider;
 
-  private final RefreshTokenService refreshService;
+    private final RefreshTokenService refreshService;
+    private final DBObjectService db;
 
-  public void signup(SignupRequest request) throws SignupFailedException {
+    public void signup(SignupRequest request) throws SignupFailedException {
 
-    checkIfUserExists(request.getUsername(), request.getEmail());
+        checkIfUserExists(request.getUsername(), request.getEmail());
 
-    DBObject user = new DBObject();
+        DBObject user = new DBObject();
 
-    DBObjectType type = new DBObjectType();
-    type.setName("user");
+        DBObjectType type = new DBObjectType();
+        type.setName("user");
 
-    user.setType(type);
-    user.setDescr(request.getUsername());
-    user.addAttribute("text", "username", request.getUsername());
-    user.addAttribute("text", "password", encoder.encode(request.getPassword()));
-    user.addAttribute("text", "email", request.getEmail());
-    user.addAttribute("text", "created", Instant.now().toString());
-    user.addAttribute("text", "enabled", Boolean.toString(false));
+        user.setType(type);
+        user.setDescr(request.getUsername());
+        user.addAttribute("text", "username", request.getUsername());
+        user.addAttribute("text", "password", encoder.encode(request.getPassword()));
+        user.addAttribute("text", "email", request.getEmail());
+        user.addAttribute("text", "created", Instant.now().toString());
+        user.addAttribute("text", "enabled", Boolean.toString(false));
 
-    String token = generateVerificationToken(user);
+        String token = generateVerificationToken(user);
 
-    objTypes.save(user.getType());
-    objects.save(user);
-    user.getAttributes().forEach((attr) -> {
-      attrTypes.save(attr.getType().getType());
-      attributes.save(attr.getType());
-      attrValues.save(attr);
-    });
-
-    log.info("Saved new user: {}", request.getUsername());
-
-    email.send(new SignupEmail(request.getEmail(), "Please activate your account",
-        "http://localhost:8081/api/auth/verify?token=" + token));
-  }
-
-  public void verify(String token) throws SignupFailedException {
-    Optional<DBObject> user = objects.findByTypeNameAndAttributesTypeNameAndAttributesVal("user",
-        "verification_token", token);
-
-    if (!user.isPresent()) {
-      throw new SignupFailedException("User with the specified token was not found");
-    }
-
-    Optional<AttributeValue> isEnabled =
-        attrValues.findByTypeNameAndObjectId("enabled", user.get().getId());
-
-    if (isEnabled.get().getVal().equals("true")) {
-      throw new SignupFailedException("User is already activated");
-    } else {
-      isEnabled.get().setVal("true");
-      attrValues.save(isEnabled.get());
-    }
-  }
-
-  public String login(SignupRequest request) throws SignupFailedException {
-
-    Authentication authentication;
-    try {
-      log.info("Trying to log user {} with password {}", request.getUsername(),
-          request.getPassword());
-      authentication = auth.authenticate(
-          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-
-    } catch (AuthenticationException ex) {
-      throw new SignupFailedException("Authentication failed: " + ex.getMessage());
-    }
-
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String token = jwtProvider.generateJWT(authentication);
-
-    return token;
-  }
-
-  public String refresh(RefreshTokenRequest request) throws SignupFailedException {
-    if (!refreshService.validateToken(request.getToken())) {
-      throw new SignupFailedException("Refresh token is invalid");
-    }
-    refreshService.deleteToken(request.getToken());
-
-    String newToken = jwtProvider.generateJWTUsername(request.getUsername());
-
-    return newToken;
-  }
-
-  public void logout(RefreshTokenRequest request) throws SignupFailedException {
-
-    checkIfUsernameExists(request.getUsername());
-
-    if (!refreshService.validateToken(request.getToken())) {
-      throw new SignupFailedException("Refresh token is invalid");
-    }
-
-    refreshService.deleteToken(request.getToken());
-    SecurityContextHolder.clearContext();
-  }
-
-  private void checkIfUserExists(String username, String email) throws SignupFailedException {
-    
-    checkIfUsernameExists(username);
-
-    objects.findByTypeNameAndAttributesTypeNameAndAttributesVal("user", "email", email)
-        .ifPresent((obj) -> {
-          throw new SignupFailedException("Email already exists");
+        objTypes.save(user.getType());
+        objects.save(user);
+        user.getAttributes().forEach((attr) -> {
+            db.saveOrUpdateNewAttributeValue(attr.getVal(), attr.getType().getType().getName(),
+                    attr.getType().getName(), user);
         });
-  }
 
-  private void checkIfUsernameExists(String username) throws SignupFailedException {
-    objects.findByDescrAndTypeName(username, "user").ifPresent((obj) -> {
-      throw new SignupFailedException("Username already exists");
-    });
-  }
+        log.info("Saved new user: {}", request.getUsername());
 
-  public Instant tokenExpirationDate(String token) {
-    return jwtProvider.getExpirationFromJWT(token).toInstant();
-  }
+        email.send(new SignupEmail(request.getEmail(), "Please activate your account",
+                "http://localhost:8081/api/auth/verify?token=" + token));
+    }
 
-  public String refreshToken() {
-    return refreshService.generateToken();
-  }
+    public void verify(String token) throws SignupFailedException {
+        Optional<DBObject> user = objects.findByTypeNameAndAttributesTypeNameAndAttributesVal(
+                "user", "verification_token", token);
 
-  private String generateVerificationToken(DBObject user) {
-    String token = UUID.randomUUID().toString();
+        if (!user.isPresent()) {
+            throw new SignupFailedException("User with the specified token was not found");
+        }
 
-    user.addAttribute("text", "verification_token", token);
+        Optional<AttributeValue> isEnabled =
+                attrValues.findByTypeNameAndObjectId("enabled", user.get().getId());
 
-    return token;
-  }
+        if (isEnabled.get().getVal().equals("true")) {
+            throw new SignupFailedException("User is already activated");
+        } else {
+            isEnabled.get().setVal("true");
+            attrValues.save(isEnabled.get());
+        }
+    }
+
+    public String login(SignupRequest request) throws SignupFailedException {
+
+        Authentication authentication;
+        try {
+            log.info("Trying to log user {} with password {}", request.getUsername(),
+                    request.getPassword());
+            authentication =
+                    auth.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
+                            request.getPassword()));
+
+        } catch (AuthenticationException ex) {
+            throw new SignupFailedException("Authentication failed: " + ex.getMessage());
+        }
+
+        if (refreshService.validateToken(request.getUsername())) {
+            throw new SignupFailedException("User is logged in");
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtProvider.generateJWT(authentication);
+
+        return token;
+    }
+
+    public String refresh(RefreshTokenRequest request) throws SignupFailedException {
+        if (!refreshService.validateToken(request.getToken(), request.getUsername())) {
+            throw new SignupFailedException("Refresh token is invalid");
+        }
+        refreshService.deleteToken(request.getToken());
+
+        String newToken = jwtProvider.generateJWTUsername(request.getUsername());
+
+        return newToken;
+    }
+
+    public void logout(RefreshTokenRequest request) throws SignupFailedException {
+
+        boolean exists = false;
+
+        try {
+            checkIfUsernameExists(request.getUsername());
+        } catch (SignupFailedException ex) {
+            log.info("Loggin out user {}", request.getUsername());
+            exists = true;
+        }
+
+        if (!refreshService.validateToken(request.getToken(), request.getUsername()) || !exists) {
+            throw new SignupFailedException("Refresh token is invalid");
+        }
+
+        refreshService.deleteToken(request.getToken());
+        SecurityContextHolder.clearContext();
+    }
+
+    private void checkIfUserExists(String username, String email) throws SignupFailedException {
+
+        checkIfUsernameExists(username);
+
+        objects.findByTypeNameAndAttributesTypeNameAndAttributesVal("user", "email", email)
+                .ifPresent((obj) -> {
+                    throw new SignupFailedException("Email already exists");
+                });
+    }
+
+    private void checkIfUsernameExists(String username) throws SignupFailedException {
+        objects.findByDescrAndTypeName(username, "user").ifPresent((obj) -> {
+            throw new SignupFailedException("Username already exists");
+        });
+    }
+
+    public Instant tokenExpirationDate(String token) {
+        return jwtProvider.getExpirationFromJWT(token).toInstant();
+    }
+
+    public String refreshToken(String username) {
+        return refreshService.generateToken(username);
+    }
+
+    private String generateVerificationToken(DBObject user) {
+        String token = UUID.randomUUID().toString();
+
+        user.addAttribute("text", "verification_token", token);
+
+        return token;
+    }
 }

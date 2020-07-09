@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ResponseService {
 
-  private final DBObjectService objectService;
-  private final CreditsService personService;
+  private final DBObjectService db;
+  private final CreditsService credits;
   private final AuthService authService;
 
   private HttpStatus status;
@@ -35,30 +35,30 @@ public class ResponseService {
   }
 
   public ResponseEntity<DBObject> fetchObjectById(Long id) {
-    Optional<DBObject> object = objectService.findObjectById(id);
+    Optional<DBObject> object = db.findObjectById(id);
 
     return createResponse(object);
   }
 
   public ResponseEntity<List<DBObject>> fetchAllObjectsByType(String type) {
-    Optional<List<DBObject>> objectList = objectService.findAllByType(type);
+    Optional<List<DBObject>> objectList = db.findAllByType(type);
 
     return createResponse(objectList);
   }
 
   public ResponseEntity<List<DBObject>> fetchCreditsByPersonId(String id, String type) {
-    Optional<List<DBObject>> castList = personService.findCreditsByPersonId(id, type);
+    Optional<List<DBObject>> castList = credits.findCreditsByPersonId(id, type);
 
     return createResponse(castList);
   }
 
   public ResponseEntity<List<DBObject>> fetchCreditsByMovieId(String id, String type) {
-    Optional<List<DBObject>> castList = personService.findCreditsByMovieId(id, type);
+    Optional<List<DBObject>> castList = credits.findCreditsByMovieId(id, type);
 
     return createResponse(castList);
   }
 
-  public ResponseEntity<String> addUserToDB(SignupRequest request) {
+  public ResponseEntity<String> signup(SignupRequest request) {
     status = HttpStatus.OK;
     message = "Signup complete";
 
@@ -113,7 +113,7 @@ public class ResponseService {
 
     if (status == HttpStatus.OK) {
       res.setExpiresAt(authService.tokenExpirationDate(token));
-      res.setRefreshToken(authService.refreshToken());
+      res.setRefreshToken(authService.refreshToken(req.getUsername()));
     }
 
     return ResponseEntity.status(status).body(res);
@@ -141,7 +141,7 @@ public class ResponseService {
 
     if (status == HttpStatus.OK) {
       res.setExpiresAt(authService.tokenExpirationDate(token));
-      res.setRefreshToken(authService.refreshToken());
+      res.setRefreshToken(authService.refreshToken(req.getUsername()));
     }
 
     return ResponseEntity.status(status).body(res);

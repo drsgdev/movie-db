@@ -67,7 +67,7 @@ public class DBObject {
 
   public void addAttribute(String type, String name, String value) {
     AttributeType attrType = new AttributeType();
-    attrType.setName(name);
+    attrType.setName(type);
 
     Attribute attr = new Attribute();
     attr.setName(name);

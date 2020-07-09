@@ -25,7 +25,7 @@ public class AuthController {
 
   @PostMapping(value = "/signup")
   public ResponseEntity<String> signup(@RequestBody SignupRequest req) {
-    return response.addUserToDB(req);
+    return response.signup(req);
   }
 
   @GetMapping(value = "/verify")

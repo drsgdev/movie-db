@@ -26,77 +26,79 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JWTProvider {
 
-  private KeyStore store;
+    private KeyStore store;
 
-  @Getter
-  private Long expireTime = 30000l; // 15m jwt expiration time
+    @Getter
+    private Long expireTime = 900000l; // 15m jwt expiration time
 
-  @PostConstruct
-  public void init() {
-    try {
-      store = KeyStore.getInstance("JKS");
+    @PostConstruct
+    public void init() {
+        try {
+            store = KeyStore.getInstance("JKS");
 
-      InputStream keyStoreStream = getClass().getResourceAsStream("/keystore.jks");
-      store.load(keyStoreStream, "passwordkeytool".toCharArray());
+            InputStream keyStoreStream = getClass().getResourceAsStream("/keystore.jks");
+            store.load(keyStoreStream, "passwordkeytool".toCharArray());
 
-      log.info("Successfuly loaded key store {}", store.getType());
+            log.info("Successfuly loaded key store {}", store.getType());
 
-    } catch (CertificateException | IOException | KeyStoreException | NoSuchAlgorithmException ex) {
-      throw new SignupFailedException("Error occurred while loading key store: " + ex.getMessage());
+        } catch (CertificateException | IOException | KeyStoreException
+                | NoSuchAlgorithmException ex) {
+            throw new SignupFailedException(
+                    "Error occurred while loading key store: " + ex.getMessage());
+        }
     }
-  }
 
-  public String generateJWT(Authentication auth) {
-    UserDetails principal = (UserDetails) auth.getPrincipal();
+    public String generateJWT(Authentication auth) {
+        UserDetails principal = (UserDetails) auth.getPrincipal();
 
-    return Jwts.builder().setSubject(principal.getUsername())
-        .setExpiration(Date.from(Instant.now().plusMillis(expireTime))).signWith(getPrivateKey())
-        .compact();
-  }
-
-  public String generateJWTUsername(String username) {
-    return Jwts.builder().setSubject(username).setIssuedAt(Date.from(Instant.now()))
-        .setExpiration(Date.from(Instant.now().plusMillis(expireTime))).signWith(getPrivateKey())
-        .compact();
-  }
-
-  private PrivateKey getPrivateKey() {
-    try {
-      return (PrivateKey) store.getKey("keystore", "passwordkeytool".toCharArray());
-
-    } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
-      throw new SignupFailedException("Error occured while loading private key");
+        return Jwts.builder().setSubject(principal.getUsername())
+                .setExpiration(Date.from(Instant.now().plusMillis(expireTime)))
+                .signWith(getPrivateKey()).compact();
     }
-  }
 
-  private PublicKey getPublicKey() {
-    try {
-      return store.getCertificate("keystore").getPublicKey();
-
-    } catch (KeyStoreException ex) {
-      throw new SignupFailedException("Error occured while loading public key");
+    public String generateJWTUsername(String username) {
+        return Jwts.builder().setSubject(username).setIssuedAt(Date.from(Instant.now()))
+                .setExpiration(Date.from(Instant.now().plusMillis(expireTime)))
+                .signWith(getPrivateKey()).compact();
     }
-  }
 
-  public boolean validateJWT(String jwt) {
-    parseClaims(jwt);
+    private PrivateKey getPrivateKey() {
+        try {
+            return (PrivateKey) store.getKey("keystore", "passwordkeytool".toCharArray());
 
-    return true;
-  }
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
+            throw new SignupFailedException("Error occured while loading private key");
+        }
+    }
 
-  public String getUsernameFromJWT(String jwt) {
-    Claims claims = parseClaims(jwt).getBody();
+    private PublicKey getPublicKey() {
+        try {
+            return store.getCertificate("keystore").getPublicKey();
 
-    return claims.getSubject();
-  }
+        } catch (KeyStoreException ex) {
+            throw new SignupFailedException("Error occured while loading public key");
+        }
+    }
 
-  public Date getExpirationFromJWT(String jwt) {
-    Claims claims = parseClaims(jwt).getBody();
+    public boolean validateJWT(String jwt) {
+        parseClaims(jwt);
 
-    return claims.getExpiration();
-  }
+        return true;
+    }
 
-  private Jws<Claims> parseClaims(String jwt) {
-    return Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(jwt);
-  }
+    public String getUsernameFromJWT(String jwt) {
+        Claims claims = parseClaims(jwt).getBody();
+
+        return claims.getSubject();
+    }
+
+    public Date getExpirationFromJWT(String jwt) {
+        Claims claims = parseClaims(jwt).getBody();
+
+        return claims.getExpiration();
+    }
+
+    private Jws<Claims> parseClaims(String jwt) {
+        return Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(jwt);
+    }
 }

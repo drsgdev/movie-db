@@ -9,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +24,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
     private final JWTProvider provider;
     private final UserDetailsService userDetails;
+    private final RefreshTokenService refreshService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -45,21 +45,15 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(jwt) && jwtIsValid) {
             String username = provider.getUsernameFromJWT(jwt);
 
-            try {
-                UserDetails user = userDetails.loadUserByUsername(username);
+            UserDetails user = userDetails.loadUserByUsername(username);
 
-                if (!user.isEnabled()) {
-                    throw new UsernameNotFoundException("User is disabled");
-                }
+            if (user.isEnabled() && refreshService.validateToken(username)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(user.getUsername(), null,
                                 user.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            } catch (UsernameNotFoundException ex) {
-                log.error(ex.getMessage());
             }
         }
 
@@ -75,5 +69,4 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         return header;
     }
-
 }
