@@ -25,6 +25,7 @@ export class DatabaseService {
   }
 
   signup(payload: any) {
+    console.log(payload);
     return this.http.post(environment.apiUrl + "/auth/signup", payload);
   }
 
@@ -70,7 +71,7 @@ export class DatabaseService {
   }
 
   isLoggedIn() {
-    if (this.storage.retrieve('authToken')) {
+    if (this.storage.retrieve('authToken') != null) {
       return true;
     }
 

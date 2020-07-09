@@ -15,14 +15,20 @@ export class SignupPageComponent implements OnInit {
     password: '',
   };
 
-  constructor(private db: DatabaseService, private toastr: ToastrService, private router: Router) {}
+  constructor(
+    private db: DatabaseService,
+    private toastr: ToastrService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {}
 
   signup() {
     this.db.signup(this.payload).subscribe(
       () => {
-        this.router.navigate(['/login'], { queryParams: { registered: 'true' }});
+        this.router.navigate(['/login'], {
+          queryParams: { registered: 'true' },
+        });
       },
       (err) => {
         this.toastr.error('Registration failed: ' + err);

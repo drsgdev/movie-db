@@ -23,6 +23,7 @@ export class LoginPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
+      console.log(params.registered);
       if (params.registered === 'true') {
         this.toastr.success(
           'Signup successful. Please check your inbox for activationm link.'
