@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreditsService {
   private final DBObjectRepository objects;
+  private final DBObjectService db;
 
   public Optional<List<DBObject>> findCreditsByPersonId(String id, String type) {
     return findCredits(id, type, "person_id");
@@ -31,7 +32,7 @@ public class CreditsService {
       return Optional.empty();
     }
 
-    DBObjectService.mapAttributes(creditList.get());
+    db.mapAttributes(creditList.get());
 
     return creditList;
   }

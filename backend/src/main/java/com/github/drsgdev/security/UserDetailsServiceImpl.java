@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
   private final DBObjectRepository objects;
+  private final DBObjectService db;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -29,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
       throw new UsernameNotFoundException("User " + username + " not found");
     }
 
-    DBObjectService.mapAttributes(user.get());
+    db.mapAttributes(user.get());
     String password = user.get().getAttributeMap().get("password");
     String enabled = user.get().getAttributeMap().get("enabled");
 
