@@ -3,5 +3,5 @@ export interface Auth {
   token: string;
   message: string;
   refreshToken: string;
-  expiresAt: Date;
+  expiresAt: string;
 }

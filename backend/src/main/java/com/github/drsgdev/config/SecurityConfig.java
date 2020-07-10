@@ -32,12 +32,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.csrf().disable();
 
     http.authorizeRequests()
-        .antMatchers("/api/**", "/**/find/**", "/**/all", "/**/credits/**", "/rate/get")
-        .anonymous()
-        .anyRequest()
-        .authenticated()
+        // .antMatchers("/rate/**", "/review/**").authenticated()
+        .antMatchers("/**").permitAll()
         .and()
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
   }
 
   @Bean

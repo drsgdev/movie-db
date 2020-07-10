@@ -1,7 +1,10 @@
 package com.github.drsgdev.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import com.github.drsgdev.model.AttributeValue;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
@@ -13,55 +16,59 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RatingService {
 
+    public enum Rate {
+        VERY_BAD(1), BAD(2), OK(3), GOOD(4), VERY_GOOD(5);
+
+        public int value;
+
+        private Rate(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+          return this.name().toLowerCase();
+        }
+    };
+
     private final DBObjectRepository objects;
     private final AttributeValueRepository attributes;
 
     private final DBObjectService db;
 
-    public void rate(Long id, Integer rate) {
+    public void rate(Long id, Integer rate, String username) {
         Optional<DBObject> objFromDB = objects.findById(id);
 
-        DBObject rating = db.findObjOrCreate("rating", objFromDB.get().getDescr());
-        String parsedRate = "";
+        DBObject rating = db.findObjOrCreate("rating", objFromDB.get().getDescr() + username);
+        rating.addAttribute("text", "id", id.toString());
+        rating.addAttribute("text", "username", username);
+        rating.addAttribute("text", "rate", rate.toString());
 
-        switch (rate) {
-            case 1:
-                parsedRate = "very_bad";
-                break;
-            case 2:
-                parsedRate = "bad";
-                break;
-            case 3:
-                parsedRate = "ok";
-                break;
-            case 4:
-                parsedRate = "good";
-                break;
-            case 5:
-                parsedRate = "very_good";
-                break;
-        }
-
-        Optional<AttributeValue> rateFromDB = attributes.findByTypeNameAndObjectId(parsedRate, id);
-        if (rateFromDB.isPresent()) {
-            Integer rateValue = Integer.parseInt(rateFromDB.get().getVal());
-            rateValue += rate;
-
-            rateFromDB.get().setVal(rateValue.toString());
-            attributes.save(rateFromDB.get());
-        } else {
-            db.saveOrUpdateNewAttributeValue(rate.toString(), "text", parsedRate, rating);
-        }
+        rating.getAttributes().forEach((attr) -> {
+            db.saveOrUpdateNewAttributeValue(attr.getVal(), attr.getType().getType().getName(),
+                    attr.getType().getName(), rating);
+        });
     }
 
-    public DBObject getRatingById(Long id) throws RatingException {
-        Optional<DBObject> rating = objects
-                .findByTypeNameAndAttributesTypeNameAndAttributesVal("rating", "id", id.toString());
+    public List<Integer> getRatingById(Long id) throws RatingException {
+        Optional<List<DBObject>> ratings =
+                objects.findAllByTypeNameAndAttributesTypeNameAndAttributesVal("rating", "id",
+                        id.toString());
 
-        if (!rating.isPresent()) {
-            throw new RatingException("Rating for not found");
+        if (!ratings.isPresent()) {
+            throw new RatingException("Rating not found");
         }
 
-        return rating.get();
+        db.mapAttributes(ratings.get());
+
+        List<Integer> rates = Arrays.asList(0, 0, 0, 0, 0);
+        ratings.get().parallelStream().forEach((rate) -> {
+            Integer rateValue = Integer.parseInt(rate.getAttributeMap().get("rate"));
+            
+            rates.set(rateValue - 1, rates.get(rateValue - 1) + 1);
+        });
+
+        Collections.reverse(rates);
+        return rates;
     }
 }

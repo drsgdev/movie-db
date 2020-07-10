@@ -1,5 +1,6 @@
 package com.github.drsgdev.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import com.github.drsgdev.dto.AuthResponse;
@@ -115,7 +116,7 @@ public class ResponseService {
     res.setMessage(message);
 
     if (status == HttpStatus.OK) {
-      res.setExpiresAt(authService.tokenExpirationDate(token));
+      res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
       res.setRefreshToken(authService.refreshToken(req.getUsername()));
     }
 
@@ -143,7 +144,7 @@ public class ResponseService {
     res.setMessage(message);
 
     if (status == HttpStatus.OK) {
-      res.setExpiresAt(authService.tokenExpirationDate(token));
+      res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
       res.setRefreshToken(authService.refreshToken(req.getUsername()));
     }
 
@@ -166,24 +167,22 @@ public class ResponseService {
     return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
   }
 
-  public ResponseEntity<String> rateObject(Long id, Integer rate) {
+  public ResponseEntity<String> rateObject(Long id, Integer rate, String username) {
     status = HttpStatus.OK;
     message = "Rating saved";
 
-    ratingService.rate(id, rate);
+    ratingService.rate(id, rate, username);
 
     return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
   }
 
-  public ResponseEntity<DBObject> getRatingById(Long id) {
+  public ResponseEntity<List<Integer>> getRatingById(Long id) {
     status = HttpStatus.OK;
     
-    DBObject rating = new DBObject();
+    List<Integer> rating = new ArrayList<>();
     
     try {
         rating  = ratingService.getRatingById(id);
-
-        db.mapAttributes(rating);
     } catch (RatingException ex) {
         log.warn("{} for id {}", ex.getMessage(), id);
 

@@ -7,20 +7,15 @@ import { DatabaseService } from '../database.service';
   styleUrls: ['./page-header.component.scss'],
 })
 export class PageHeaderComponent implements OnInit {
-  isLoggedIn: boolean;
-
   constructor(private db: DatabaseService) {}
 
-  ngOnInit(): void {
-    this.isLoggedIn = this.db.isLoggedIn();
-  }
+  ngOnInit(): void {}
 
   loggedIn() {
-      return this.db.isLoggedIn();
+    return this.db.isLoggedIn();
   }
 
   logout() {
-    this.isLoggedIn = false;
     this.db.logout();
   }
 }

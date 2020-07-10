@@ -1,6 +1,7 @@
 package com.github.drsgdev.security;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import com.github.drsgdev.dto.RefreshTokenRequest;
@@ -115,7 +116,7 @@ public class AuthService {
         }
 
         if (refreshService.validateToken(request.getUsername())) {
-            throw new SignupFailedException("User is logged in");
+            refreshService.deleteTokenByUsername(request.getUsername());
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -170,8 +171,8 @@ public class AuthService {
         });
     }
 
-    public Instant tokenExpirationDate(String token) {
-        return jwtProvider.getExpirationFromJWT(token).toInstant();
+    public Date tokenExpirationDate(String token) {
+        return jwtProvider.getExpirationFromJWT(token);
     }
 
     public String refreshToken(String username) {

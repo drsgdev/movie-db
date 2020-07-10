@@ -29,7 +29,7 @@ public class JWTProvider {
     private KeyStore store;
 
     @Getter
-    private Long expireTime = 20000l; // 15m jwt expiration time
+    private Long expireTime = 60000l; // 15m jwt expiration time
 
     @PostConstruct
     public void init() {
@@ -51,15 +51,19 @@ public class JWTProvider {
     public String generateJWT(Authentication auth) {
         UserDetails principal = (UserDetails) auth.getPrincipal();
 
-        return Jwts.builder().setSubject(principal.getUsername())
-                .setExpiration(Date.from(Instant.now().plusMillis(expireTime)))
-                .signWith(getPrivateKey()).compact();
+        String token = generateJWTUsername(principal.getUsername());
+
+        return token;
     }
 
     public String generateJWTUsername(String username) {
-        return Jwts.builder().setSubject(username).setIssuedAt(Date.from(Instant.now()))
+        String token = Jwts.builder().setSubject(username).setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plusMillis(expireTime)))
                 .signWith(getPrivateKey()).compact();
+
+        log.info("Generated new token {} for {} expires at {}", token, username,
+                Date.from(Instant.now().plusMillis(expireTime)));
+        return token;
     }
 
     private PrivateKey getPrivateKey() {

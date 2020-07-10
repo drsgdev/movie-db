@@ -16,19 +16,27 @@ export class DatabaseService {
   }
 
   fetchById(id: number) {
-    return this.http.get(environment.apiUrl + '/find?id=' + id);
+    return this.http.get(environment.apiUrl + '/find', {
+      params: {
+        id: id.toString(),
+      },
+    });
   }
 
   fetchCreditsById(id: number, type: string, creditType: string) {
     return this.http.get(
-      environment.apiUrl + '/' + type + '/credits/' + creditType + '?id=' + id
+      environment.apiUrl + '/' + type + '/credits/' + creditType,
+      {
+        params: {
+          id: id.toString(),
+        },
+      }
     );
   }
 
   signup(payload: any) {
-    console.log(JSON.stringify(payload));
     return this.http.post(environment.apiUrl + '/api/auth/signup', payload, {
-        responseType: 'text'
+      responseType: 'text',
     });
   }
 
@@ -49,9 +57,13 @@ export class DatabaseService {
 
   refreshToken() {
     let payload = {
-      refreshToken: this.storage.retrieve('refreshToken'),
+      token: this.storage.retrieve('refreshToken'),
       username: this.storage.retrieve('username'),
     };
+
+    this.storage.clear('authToken');
+    this.storage.clear('refreshToken');
+    this.storage.clear('expiresAt');
 
     return this.http
       .post<Auth>(environment.apiUrl + '/api/auth/refresh', payload)
@@ -72,7 +84,7 @@ export class DatabaseService {
 
     this.http
       .post(environment.apiUrl + '/api/auth/logout', payload, {
-          responseType: 'text'
+        responseType: 'text',
       })
       .subscribe(null, null, () => {
         this.storage.clear('authToken');
@@ -82,11 +94,30 @@ export class DatabaseService {
   }
 
   rate(id: number, rate: number) {
-      return this.http.get(environment.apiUrl + '/rate?id=' + id + "&rate=" + rate);
+    return this.http.get(environment.apiUrl + '/rate', {
+      params: {
+        id: id.toString(),
+        rate: rate.toString(),
+        username: this.storage.retrieve('username'),
+      },
+      responseType: 'text',
+    });
+  }
+
+  getRating(id: number) {
+    return this.http.get(environment.apiUrl + '/rate/get', {
+      params: {
+        id: id.toString(),
+      },
+    });
   }
 
   getAuthToken() {
     return this.storage.retrieve('authToken');
+  }
+
+  getExpirationDate() {
+    return Number.parseInt(this.storage.retrieve('expiresAt'));
   }
 
   isLoggedIn() {

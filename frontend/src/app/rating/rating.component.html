@@ -20,7 +20,7 @@
     </div>
     <app-rate-this id="{{ id }}"></app-rate-this>
   </div>
-  <div id="full_ratings" [ngbCollapse]="isCollapsed">
+  <div *ngIf="ratings" id="full_ratings" [ngbCollapse]="isCollapsed">
     <ul class="list-group pr-3 pl-3 pb-3 mb-3">
       <li class="list-group-item" *ngFor="let rating of ratings; index as idx">
         <div class="d-flex flex-row">

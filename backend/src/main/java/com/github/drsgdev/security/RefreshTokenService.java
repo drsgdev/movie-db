@@ -57,11 +57,19 @@ public class RefreshTokenService {
     public void deleteToken(String token) {
         Optional<DBObject> tokenObject = objects.findByDescrAndTypeName(token, "refresh_token");
 
-        tokenObject.get().getAttributes().forEach((attr) -> {
+        delete(tokenObject.get());
+    }
+
+    public void deleteTokenByUsername(String username) {
+        delete(findToken(username).get());
+    }
+
+    private void delete(DBObject tokenObject) {
+        tokenObject.getAttributes().forEach((attr) -> {
             attrValues.delete(attr);
         });
 
-        objects.delete(tokenObject.get());
+        objects.delete(tokenObject);
     }
 
     private Optional<DBObject> findToken(String username) {

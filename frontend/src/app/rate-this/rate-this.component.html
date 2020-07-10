@@ -1,4 +1,9 @@
-<div ngbDropdown class="d-inline-block ml-auto mr-4" placement="left" autoClose=true>
+<div
+  ngbDropdown
+  class="d-inline-block ml-auto mr-4"
+  placement="left"
+  autoClose="true"
+>
   <div ngbDropdownMenu class="mr-3 p-0" aria-labelledby="toggle">
     <div ngbDropdownItem class="d-flex flex-row pb-0">
       <ngb-rating
@@ -11,10 +16,19 @@
     </div>
   </div>
   <button
+    *ngIf="loggedIn()"
     id="toggle"
     type="button"
     class="btn btn-outline-primary mt-1"
     ngbDropdownToggle
+  >
+    Rate this
+  </button>
+  <button
+    *ngIf="!loggedIn()"
+    type="button"
+    class="btn btn-outline-primary mt-1"
+    routerLink="/login"
   >
     Rate this
   </button>
