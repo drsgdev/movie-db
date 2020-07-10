@@ -15,6 +15,11 @@ export class RateThisComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  rate(event) {
+  rate() {
+      this.db.
+  }
+
+  loggedIn() {
+      this.db.isLoggedIn();
   }
 }

@@ -18,12 +18,11 @@ export class LoginPageComponent implements OnInit {
     private db: DatabaseService,
     private route: ActivatedRoute,
     private toastr: ToastrService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      console.log(params.registered);
       if (params.registered === 'true') {
         this.toastr.success(
           'Signup successful. Please check your inbox for activationm link.'
@@ -33,11 +32,14 @@ export class LoginPageComponent implements OnInit {
   }
 
   login() {
-    this.db.login(this.payload).subscribe((res) => {
-      this.router.navigateByUrl('/');
-      this.toastr.success('Login successful');
-    }, (err) => {
-      this.toastr.error('Failed to log in: ' + err);
-    });
+    this.db.login(this.payload).subscribe(
+      (res) => {
+        this.router.navigateByUrl('/');
+        this.toastr.success('Login successful');
+      },
+      (err) => {
+        this.toastr.error('Failed to log in: ' + err.error.message);
+      }
+    );
   }
 }

@@ -15,11 +15,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JWTAuthFilter extends OncePerRequestFilter {
 
     private final JWTProvider provider;
@@ -36,8 +34,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         try {
             provider.validateJWT(jwt);
         } catch (JwtException | IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-
             jwtIsValid = false;
             SecurityContextHolder.clearContext();
         }
@@ -62,10 +58,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
     private String getJWTFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-
-        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
-            return header.substring(7); // returns jwt
-        }
 
         return header;
     }

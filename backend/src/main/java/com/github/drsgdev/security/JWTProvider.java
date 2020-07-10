@@ -29,7 +29,7 @@ public class JWTProvider {
     private KeyStore store;
 
     @Getter
-    private Long expireTime = 900000l; // 15m jwt expiration time
+    private Long expireTime = 20000l; // 15m jwt expiration time
 
     @PostConstruct
     public void init() {

@@ -1,14 +1,7 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ViewEncapsulation,
-  Input,
-} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DatabaseService } from '../database.service';
 import { NgbCarousel, NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
 
-// TODO: fix this component!
 @Component({
   selector: 'app-content-slider',
   templateUrl: './content-slider.component.html',
@@ -64,7 +57,7 @@ export class ContentSliderComponent implements OnInit {
     let end: number = start + this.objectsPerPage;
 
     if (end >= this.data.length) {
-      end = this.data.length - 1;
+      end = this.data.length;
     }
     return this.data.slice(start, end);
   }

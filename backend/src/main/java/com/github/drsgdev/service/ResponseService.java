@@ -7,8 +7,10 @@ import com.github.drsgdev.dto.RefreshTokenRequest;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.security.AuthService;
+import com.github.drsgdev.util.RatingException;
 import com.github.drsgdev.util.SignupFailedException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class ResponseService {
   private final DBObjectService db;
   private final CreditsService credits;
   private final AuthService authService;
+  private final RatingService ratingService;
 
   private HttpStatus status;
   private String message;
@@ -65,7 +68,7 @@ public class ResponseService {
     try {
       authService.signup(request);
     } catch (SignupFailedException ex) {
-      log.info(ex.getMessage());
+      log.warn(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
       message = ex.getMessage();
@@ -81,13 +84,13 @@ public class ResponseService {
     try {
       authService.verify(token);
     } catch (SignupFailedException ex) {
-      log.info(ex.getMessage());
+      log.warn(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
       message = ex.getMessage();
     }
 
-    return ResponseEntity.status(status).body(message);
+    return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
   }
 
   public ResponseEntity<AuthResponse> login(SignupRequest req) {
@@ -100,7 +103,7 @@ public class ResponseService {
     try {
       token = authService.login(req);
     } catch (SignupFailedException ex) {
-      log.info(ex.getMessage());
+      log.warn(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
       message = ex.getMessage();
@@ -128,7 +131,7 @@ public class ResponseService {
     try {
       token = authService.refresh(req);
     } catch (SignupFailedException ex) {
-      log.error(ex.getMessage());
+      log.warn(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
       message = ex.getMessage();
@@ -154,12 +157,39 @@ public class ResponseService {
     try {
       authService.logout(req);
     } catch (SignupFailedException ex) {
-      log.error(ex.getMessage());
+      log.warn(ex.getMessage());
 
       status = HttpStatus.BAD_REQUEST;
       message = ex.getMessage();
     }
 
-    return ResponseEntity.status(status).body(message);
+    return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+  }
+
+  public ResponseEntity<String> rateObject(Long id, Integer rate) {
+    status = HttpStatus.OK;
+    message = "Rating saved";
+
+    ratingService.rate(id, rate);
+
+    return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+  }
+
+  public ResponseEntity<DBObject> getRatingById(Long id) {
+    status = HttpStatus.OK;
+    
+    DBObject rating = new DBObject();
+    
+    try {
+        rating  = ratingService.getRatingById(id);
+
+        db.mapAttributes(rating);
+    } catch (RatingException ex) {
+        log.warn("{} for id {}", ex.getMessage(), id);
+
+        status = HttpStatus.NOT_FOUND;
+    }
+
+    return ResponseEntity.status(status).body(rating);
   }
 }

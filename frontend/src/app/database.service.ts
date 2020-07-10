@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { LocalStorageService } from 'ngx-webstorage';
@@ -9,7 +9,6 @@ import { Auth } from './auth';
   providedIn: 'root',
 })
 export class DatabaseService {
-
   constructor(private http: HttpClient, private storage: LocalStorageService) {}
 
   fetchAllByType(type: string) {
@@ -21,49 +20,69 @@ export class DatabaseService {
   }
 
   fetchCreditsById(id: number, type: string, creditType: string) {
-    return this.http.get(environment.apiUrl + "/" + type + "/credits/" + creditType + "?id=" + id);
+    return this.http.get(
+      environment.apiUrl + '/' + type + '/credits/' + creditType + '?id=' + id
+    );
   }
 
   signup(payload: any) {
-    console.log(payload);
-    return this.http.post(environment.apiUrl + "/auth/signup", payload);
+    console.log(JSON.stringify(payload));
+    return this.http.post(environment.apiUrl + '/api/auth/signup', payload, {
+        responseType: 'text'
+    });
   }
 
   login(payload: any) {
-    return this.http.post<Auth>(environment.apiUrl + "/auth/login", payload).pipe(map(data => {
-      this.storage.store('authToken', data.token);
-      this.storage.store('username', data.username);
-      this.storage.store('refreshToken', data.refreshToken);
-      this.storage.store('expiresAt', data.expiresAt);
+    return this.http
+      .post<Auth>(environment.apiUrl + '/api/auth/login', payload)
+      .pipe(
+        map((data) => {
+          this.storage.store('authToken', data.token);
+          this.storage.store('username', data.username);
+          this.storage.store('refreshToken', data.refreshToken);
+          this.storage.store('expiresAt', data.expiresAt);
 
-      return true;
-    }));
+          return true;
+        })
+      );
   }
 
   refreshToken() {
     let payload = {
       refreshToken: this.storage.retrieve('refreshToken'),
-      username: this.storage.retrieve('username')
-    }
+      username: this.storage.retrieve('username'),
+    };
 
-    return this.http.post<Auth>(environment.apiUrl + "/auth/refresh", payload).pipe(tap(res => {
-      this.storage.store('authToken', res.token);
-      this.storage.store('refreshToken', res.refreshToken);
-      this.storage.store('expiresAt', res.expiresAt);
-    }))
+    return this.http
+      .post<Auth>(environment.apiUrl + '/api/auth/refresh', payload)
+      .pipe(
+        tap((res) => {
+          this.storage.store('authToken', res.token);
+          this.storage.store('refreshToken', res.refreshToken);
+          this.storage.store('expiresAt', res.expiresAt);
+        })
+      );
   }
 
   logout() {
     let payload = {
       username: this.storage.retrieve('username'),
-      refreshToken: this.storage.retrieve('refreshToken')
-    }
+      token: this.storage.retrieve('refreshToken'),
+    };
 
-    this.http.post(environment.apiUrl + "/auth/logout", payload).pipe(tap(() => {
-      this.storage.clear('authToken');
-      this.storage.clear('refreshToken');
-      this.storage.clear('expiresAt');
-    }));
+    this.http
+      .post(environment.apiUrl + '/api/auth/logout', payload, {
+          responseType: 'text'
+      })
+      .subscribe(null, null, () => {
+        this.storage.clear('authToken');
+        this.storage.clear('refreshToken');
+        this.storage.clear('expiresAt');
+      });
+  }
+
+  rate(id: number, rate: number) {
+      return this.http.get(environment.apiUrl + '/rate?id=' + id + "&rate=" + rate);
   }
 
   getAuthToken() {

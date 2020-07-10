@@ -44,6 +44,13 @@ public class AuthService {
 
     public void signup(SignupRequest request) throws SignupFailedException {
 
+        if (request.getUsername().isEmpty() || request.getEmail().isEmpty()
+                || request.getPassword().isEmpty()) {
+            throw new SignupFailedException("Signup failed: Bad credentials");
+        }
+
+        log.info("New user: {} {}", request.getUsername(), request.getEmail());
+
         checkIfUserExists(request.getUsername(), request.getEmail());
 
         DBObject user = new DBObject();

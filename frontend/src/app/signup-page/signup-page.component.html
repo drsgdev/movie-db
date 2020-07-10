@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="border rounded col-5 position-fixed">
-    <form class="pt-3 pb-3">
+    <form class="pt-3 pb-3" (ngSubmit)="signup()">
       <div class="form-group mb-3">
         <label for="username_input">Username</label>
         <input
@@ -65,7 +65,7 @@
         </div>
       </div>
       <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary" (click)="signup()">
+        <button type="submit" class="btn btn-primary">
           Submit
         </button>
         <a class="navbar-brand mr-0" routerLink="/login"

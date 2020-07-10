@@ -31,8 +31,7 @@ export class SignupPageComponent implements OnInit {
         });
       },
       (err) => {
-        this.toastr.error('Registration failed: ' + err);
-      }
-    );
+        this.toastr.error('Registration failed: ' + err.error);
+      });
   }
 }

@@ -6,7 +6,7 @@
       <a class="navbar-brand" routerLink="/shows">Shows</a>
       <a class="navbar-brand" routerLink="/celebs">Celebrities</a>
     </nav>
-    <nav class="d-flex justify-content-right" *ngIf="!isLoggedIn()">
+    <nav class="d-flex justify-content-right" *ngIf="!loggedIn()">
       <a class="navbar-brand mr-3 btn btn-primary" routerLink="/signup"
         >Signup</a
       >
@@ -15,7 +15,7 @@
       >
     </nav>
     <button
-      *ngIf="isLoggedIn()"
+      *ngIf="loggedIn()"
       class="btn btn-outline-primary mr-0"
       (click)="logout()"
     >

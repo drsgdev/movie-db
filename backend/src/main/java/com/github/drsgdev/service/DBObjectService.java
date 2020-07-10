@@ -29,11 +29,11 @@ public class DBObjectService {
     private final AttributeTypeRepository attrTypes;
     private final AttributeValueRepository attrValues;
 
-    public static void mapAttributes(List<DBObject> list) {
+    public void mapAttributes(List<DBObject> list) {
         list.forEach((object) -> mapAttributes(object));
     }
 
-    public static void mapAttributes(DBObject obj) {
+    public void mapAttributes(DBObject obj) {
         Map<String, String> fields = obj.getAttributes().parallelStream().collect(Collectors.toMap(
                 (attr) -> attr.getType().getName(),
                 (attr) -> attr.getVal() == null ? attr.getDate_val().toString() : attr.getVal()));
@@ -69,11 +69,32 @@ public class DBObjectService {
         return objectList;
     }
 
+    public DBObject findObjOrCreate(String typeName, String descr) {
+        DBObjectType type = findObjTypeByNameOrCreate(typeName);
+
+        Optional<DBObject> objFromDB = objects.findByDescrAndTypeName(descr, typeName);
+
+        if (!objFromDB.isPresent()) {
+            log.warn("Object {} of type {} not found!", descr, typeName);
+
+            DBObject newObject = new DBObject();
+            newObject.setDescr(descr);
+            newObject.setType(type);
+
+            objects.save(newObject);
+            log.info("Saved new object {} of type {}", descr, typeName);
+
+            objFromDB = Optional.of(newObject);
+        }
+
+        return objFromDB.get();
+    }
+
     public DBObjectType findObjTypeByNameOrCreate(String name) {
         Optional<DBObjectType> objTypeFromDB = types.findByName(name);
 
         if (!objTypeFromDB.isPresent()) {
-            log.error("Object type {} not found!", name);
+            log.warn("Object type {} not found!", name);
 
             DBObjectType newType = new DBObjectType();
             newType.setName(name);
@@ -91,7 +112,7 @@ public class DBObjectService {
         Optional<AttributeType> attrTypeFromDB = attrTypes.findByName(name);
 
         if (!attrTypeFromDB.isPresent()) {
-            log.error("Attribute type {} not found!", name);
+            log.warn("Attribute type {} not found!", name);
 
             AttributeType newType = new AttributeType();
             newType.setName(name);
@@ -109,7 +130,7 @@ public class DBObjectService {
         Optional<Attribute> attributeFromDB = attributes.findByNameAndType(name, type);
 
         if (!attributeFromDB.isPresent()) {
-            log.error("Attribute {} of type {} not found!", name, type.getName());
+            log.warn("Attribute {} of type {} not found!", name, type.getName());
 
             Attribute newAttribute = new Attribute();
             newAttribute.setName(name);
