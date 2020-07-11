@@ -18,7 +18,7 @@
       ></ngb-rating>
       <b class="ml-3 h3 text-primary">{{ average.toPrecision(2) }}</b>
     </div>
-    <app-rate-this id="{{ id }}"></app-rate-this>
+    <app-rate-this id="{{ id }}" (onRateChange)="updateRating()"></app-rate-this>
   </div>
   <div *ngIf="ratings" id="full_ratings" [ngbCollapse]="isCollapsed">
     <ul class="list-group pr-3 pl-3 pb-3 mb-3">

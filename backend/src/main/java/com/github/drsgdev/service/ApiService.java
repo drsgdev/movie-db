@@ -54,7 +54,7 @@ public class ApiService {
             status = HttpStatus.valueOf(res.getStatus());
             json = res.getBody().getObject();
         } catch (UnirestException ex) {
-            log.error("Fetching failed!", ex);
+            log.warn("Fetching failed!", ex);
         }
 
         if (status != HttpStatus.OK) {

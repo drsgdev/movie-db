@@ -21,6 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
         registry.addMapping("/rate/**").allowedOrigins("*").maxAge(3600l).allowedHeaders("*")
                 .allowCredentials(true);
+        registry.addMapping("/review/**").allowedOrigins("*").maxAge(3600l).allowedHeaders("*")
+                .allowCredentials(true);
         registry.addMapping("/movie-db/**").allowedOrigins("*").maxAge(3600l).allowedHeaders("*")
                 .allowCredentials(true);
 

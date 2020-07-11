@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import com.github.drsgdev.dto.AuthResponse;
+import com.github.drsgdev.dto.RatingRequest;
 import com.github.drsgdev.dto.RefreshTokenRequest;
+import com.github.drsgdev.dto.ReviewRequest;
 import com.github.drsgdev.dto.SignupRequest;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.security.AuthService;
@@ -22,170 +24,202 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ResponseService {
 
-  private final DBObjectService db;
-  private final CreditsService credits;
-  private final AuthService authService;
-  private final RatingService ratingService;
+    private final DBObjectService db;
+    private final CreditsService credits;
+    private final PersonService people;
+    private final AuthService authService;
+    private final RatingService ratingService;
 
-  public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
-    if (!obj.isPresent()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
+        if (!obj.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.ok(obj.get());
     }
 
-    return ResponseEntity.ok(obj.get());
-  }
+    public ResponseEntity<DBObject> fetchObjectById(Long id) {
+        Optional<DBObject> object = db.findObjectById(id);
 
-  public ResponseEntity<DBObject> fetchObjectById(Long id) {
-    Optional<DBObject> object = db.findObjectById(id);
-
-    return createResponse(object);
-  }
-
-  public ResponseEntity<List<DBObject>> fetchAllObjectsByType(String type) {
-    Optional<List<DBObject>> objectList = db.findAllByType(type);
-
-    return createResponse(objectList);
-  }
-
-  public ResponseEntity<List<DBObject>> fetchCreditsByPersonId(String id, String type) {
-    Optional<List<DBObject>> castList = credits.findCreditsByPersonId(id, type);
-
-    return createResponse(castList);
-  }
-
-  public ResponseEntity<List<DBObject>> fetchCreditsByMovieId(String id, String type) {
-    Optional<List<DBObject>> castList = credits.findCreditsByMovieId(id, type);
-
-    return createResponse(castList);
-  }
-
-  public ResponseEntity<String> signup(SignupRequest request) {
-    HttpStatus status = HttpStatus.OK;
-    String message = "Signup complete";
-
-    try {
-      authService.signup(request);
-    } catch (SignupFailedException ex) {
-      log.warn(ex.getMessage());
-
-      status = HttpStatus.BAD_REQUEST;
-      message = ex.getMessage();
+        return createResponse(object);
     }
 
-    return ResponseEntity.status(status).body(message);
-  }
+    public ResponseEntity<List<DBObject>> fetchAllObjectsByType(String type) {
+        Optional<List<DBObject>> objectList = db.findAllByType(type);
 
-  public ResponseEntity<String> verifyUser(String token) {
-    HttpStatus status = HttpStatus.OK;
-    String message = "User activated";
-
-    try {
-      authService.verify(token);
-    } catch (SignupFailedException ex) {
-      log.warn(ex.getMessage());
-
-      status = HttpStatus.BAD_REQUEST;
-      message = ex.getMessage();
+        return createResponse(objectList);
     }
 
-    return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
-  }
+    public ResponseEntity<List<DBObject>> fetchCreditsByPersonId(String id, String type) {
+        Optional<List<DBObject>> castList = credits.findCreditsByPersonId(id, type);
 
-  public ResponseEntity<AuthResponse> login(SignupRequest req) {
-    HttpStatus status = HttpStatus.OK;
-    String message = "Login successful";
-
-
-    String token = "";
-
-    try {
-      token = authService.login(req);
-    } catch (SignupFailedException ex) {
-      log.warn(ex.getMessage());
-
-      status = HttpStatus.BAD_REQUEST;
-      message = ex.getMessage();
+        return createResponse(castList);
     }
 
-    AuthResponse res = new AuthResponse();
-    res.setUsername(req.getUsername());
-    res.setToken(token);
-    res.setMessage(message);
+    public ResponseEntity<List<DBObject>> fetchCreditsByMovieId(String id, String type) {
+        Optional<List<DBObject>> castList = credits.findCreditsByMovieId(id, type);
 
-    if (status != HttpStatus.BAD_REQUEST) {
-      res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
-      res.setRefreshToken(authService.refreshToken(req.getUsername()));
+        return createResponse(castList);
     }
 
-    return ResponseEntity.status(status).body(res);
-  }
+    public ResponseEntity<DBObject> fetchPersonById(Long id) {
+        Optional<DBObject> person = people.findPersonByUserId(id);
 
-  public ResponseEntity<AuthResponse> refresh(RefreshTokenRequest req) {
-    HttpStatus status = HttpStatus.OK;
-    String message = "Token refresh successful";
-
-    String token = "";
-
-    try {
-      token = authService.refresh(req);
-    } catch (SignupFailedException ex) {
-      log.warn(ex.getMessage());
-
-      status = HttpStatus.BAD_REQUEST;
-      message = ex.getMessage();
+        return createResponse(person);
     }
 
-    AuthResponse res = new AuthResponse();
-    res.setUsername(req.getUsername());
-    res.setToken(token);
-    res.setMessage(message);
+    public ResponseEntity<String> signup(SignupRequest request) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Signup complete";
 
-    if (status != HttpStatus.BAD_REQUEST) {
-      res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
-      res.setRefreshToken(authService.refreshToken(req.getUsername()));
+        try {
+            authService.signup(request);
+        } catch (SignupFailedException ex) {
+            log.warn(ex.getMessage());
+
+            status = HttpStatus.BAD_REQUEST;
+            message = ex.getMessage();
+        }
+
+        return ResponseEntity.status(status).body(message);
     }
 
-    return ResponseEntity.status(status).body(res);
-  }
+    public ResponseEntity<String> verifyUser(String token) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "User activated";
 
-  public ResponseEntity<String> logout(RefreshTokenRequest req) {
-    HttpStatus status = HttpStatus.OK;
-    String message = "User logged out";
+        try {
+            authService.verify(token);
+        } catch (SignupFailedException ex) {
+            log.warn(ex.getMessage());
 
-    try {
-      authService.logout(req);
-    } catch (SignupFailedException ex) {
-      log.warn(ex.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+            message = ex.getMessage();
+        }
 
-      status = HttpStatus.BAD_REQUEST;
-      message = ex.getMessage();
+        return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
     }
 
-    return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
-  }
+    public ResponseEntity<AuthResponse> login(SignupRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Login successful";
 
-  public ResponseEntity<String> rateObject(Long id, Integer rate, String username) {
-    HttpStatus status = HttpStatus.OK;
-    String message = "Rating saved";
 
-    ratingService.rate(id, rate, username);
+        String token = "";
 
-    return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
-  }
+        try {
+            token = authService.login(req);
+        } catch (SignupFailedException ex) {
+            log.warn(ex.getMessage());
 
-  public ResponseEntity<List<Integer>> getRatingById(Long id) {
-    HttpStatus status = HttpStatus.OK;
-    
-    List<Integer> rating = new ArrayList<>();
-    
-    try {
-        rating  = ratingService.getRatingById(id);
-    } catch (RatingException ex) {
-        log.warn("{} for id {}", ex.getMessage(), id);
+            status = HttpStatus.BAD_REQUEST;
+            message = ex.getMessage();
+        }
 
-        status = HttpStatus.NOT_FOUND;
+        AuthResponse res = new AuthResponse();
+        res.setUsername(req.getUsername());
+        res.setToken(token);
+        res.setMessage(message);
+
+        if (status != HttpStatus.BAD_REQUEST) {
+            res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
+            res.setRefreshToken(authService.refreshToken(req.getUsername()));
+        }
+
+        return ResponseEntity.status(status).body(res);
     }
 
-    return ResponseEntity.status(status).body(rating);
-  }
+    public ResponseEntity<AuthResponse> refresh(RefreshTokenRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Token refresh successful";
+
+        String token = "";
+
+        try {
+            token = authService.refresh(req);
+        } catch (SignupFailedException ex) {
+            log.warn(ex.getMessage());
+
+            status = HttpStatus.BAD_REQUEST;
+            message = ex.getMessage();
+        }
+
+        AuthResponse res = new AuthResponse();
+        res.setUsername(req.getUsername());
+        res.setToken(token);
+        res.setMessage(message);
+
+        if (status != HttpStatus.BAD_REQUEST) {
+            res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
+            res.setRefreshToken(authService.refreshToken(req.getUsername()));
+        }
+
+        return ResponseEntity.status(status).body(res);
+    }
+
+    public ResponseEntity<String> logout(RefreshTokenRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "User logged out";
+
+        try {
+            authService.logout(req);
+        } catch (SignupFailedException ex) {
+            log.warn(ex.getMessage());
+
+            status = HttpStatus.BAD_REQUEST;
+            message = ex.getMessage();
+        }
+
+        return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+    }
+
+    public ResponseEntity<String> rateObject(RatingRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Rating saved";
+
+        ratingService.rate(req);
+
+        return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+    }
+
+    public ResponseEntity<List<Integer>> getRatingById(Long id) {
+        HttpStatus status = HttpStatus.OK;
+
+        List<Integer> rating = new ArrayList<>();
+
+        try {
+            rating = ratingService.getRatingById(id);
+        } catch (RatingException ex) {
+            log.warn("{} for id {}", ex.getMessage(), id);
+
+            status = HttpStatus.NOT_FOUND;
+        }
+
+        return ResponseEntity.status(status).body(rating);
+    }
+
+    public ResponseEntity<String> reviewObject(ReviewRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Review saved";
+
+        ratingService.review(req);
+
+        return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+    }
+
+    public ResponseEntity<List<ReviewRequest>> getReviewsById(Long id) {
+        HttpStatus status = HttpStatus.OK;
+
+        List<ReviewRequest> reviews = new ArrayList<>();
+
+        try {
+            reviews = ratingService.getReviewsById(id);
+        } catch (RatingException ex) {
+            log.warn("{} for id {}", ex.getMessage(), id);
+
+            status = HttpStatus.NOT_FOUND;
+        }
+
+        return ResponseEntity.status(status).body(reviews);
+    }
 }

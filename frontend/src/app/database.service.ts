@@ -4,6 +4,9 @@ import { environment } from 'src/environments/environment';
 import { LocalStorageService } from 'ngx-webstorage';
 import { map, tap } from 'rxjs/operators';
 import { Auth } from './auth';
+import { Review } from './review';
+import { Rating } from './rating';
+import { RatingComponent } from './rating/rating.component';
 
 @Injectable({
   providedIn: 'root',
@@ -94,18 +97,34 @@ export class DatabaseService {
   }
 
   rate(id: number, rate: number) {
-    return this.http.get(environment.apiUrl + '/rate', {
-      params: {
-        id: id.toString(),
-        rate: rate.toString(),
-        username: this.storage.retrieve('username'),
-      },
+    let body = new Rating();
+    body.id = id;
+    body.rate = rate;
+    body.username = this.storage.retrieve('username');
+
+    return this.http.post(environment.apiUrl + '/rate', body, {
+      responseType: 'text',
+    });
+  }
+
+  review(payload: Review) {
+    payload.username = this.storage.retrieve('username');
+
+    return this.http.post(environment.apiUrl + '/review', payload, {
       responseType: 'text',
     });
   }
 
   getRating(id: number) {
     return this.http.get<number[]>(environment.apiUrl + '/rate/get', {
+      params: {
+        id: id.toString(),
+      },
+    });
+  }
+
+  getReviews(id: number) {
+    return this.http.get<Review[]>(environment.apiUrl + '/review/get', {
       params: {
         id: id.toString(),
       },

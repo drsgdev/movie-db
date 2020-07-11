@@ -6,6 +6,7 @@ import {
   distinctUntilChanged,
   tap,
   switchMap,
+  catchError,
 } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -18,32 +19,42 @@ import { Observable } from 'rxjs';
 export class RatingComponent implements OnInit {
   id: number;
   ratings: Observable<number[]>;
-  relative_ratings = new Array<number>(0, 0, 0, 0, 0);
-  total: number = 0;
-  average: number = 0;
+  relative_ratings: number[];
+  total: number;
+  average: number;
 
   isCollapsed = true;
 
   constructor(private db: DatabaseService) {}
 
   ngOnInit(): void {
-    this.ratings = this.db.getRating(this.id);
-
-    this.ratings.pipe(
-      map((res) => {
-        this.total = res.reduce((sum, curr) => sum += curr);
-        this.relative_ratings = res.slice();
-        this.relative_ratings.forEach((val, index) => {
-          this.average += val * (5 - index);
-          this.relative_ratings[index] = (val / this.total) * 100;
-        }, this);
-
-        this.average = this.average / this.total;
-      })
-    ).subscribe();
+    this.updateRating();
   }
 
   getFlooredGrade() {
     return Math.floor(this.average);
+  }
+
+  updateRating() {
+    this.total = 0;
+    this.average = 0;
+
+    this.ratings = this.db.getRating(this.id);
+
+    this.ratings
+      .pipe(
+        map((res) => {
+          this.total = res.reduce((sum, curr) => (sum += curr));
+          this.relative_ratings = res.slice();
+          this.relative_ratings.forEach((val, index) => {
+            this.average += val * (5 - index);
+            this.relative_ratings[index] = (val / this.total) * 100;
+          }, this);
+
+          this.average = this.average / this.total;
+        }),
+        catchError((err, caught) => caught)
+      )
+      .subscribe();
   }
 }

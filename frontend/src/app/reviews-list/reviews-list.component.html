@@ -39,7 +39,7 @@
           <div class="form-group mb-3">
             <label for="descr_input">Description</label>
             <textarea
-              [(ngModel)]="review.describpiton"
+              [(ngModel)]="review.description"
               name="descr_input"
               id="descr_input"
               cols="50"
@@ -86,45 +86,48 @@
       </div>
     </ng-template>
     <button
+      *ngIf="loggedIn()"
       class="btn btn-outline-primary"
       (click)="openReviewModal(review_form)"
     >
       Review this title...
     </button>
+    <button
+      *ngIf="!loggedIn()"
+      class="btn btn-outline-primary"
+      routerLink="/login"
+    >
+      Review this title...
+    </button>
   </div>
-  <div class="border rounded mb-3" *ngFor="let review of reviews; index as idx">
-    <div class="mb-4 pl-3 pt-3">
-      <span>
-        <svg
-          width="2em"
-          height="2em"
-          viewBox="0 0 16 16"
-          class="bi bi-star-fill"
-          fill="#007bff"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
-          />
-        </svg>
-      </span>
-      <span class="ml-2 h3 text-primary mb-0 pt-0 position-absolute">{{
-        review.rate
-      }}</span>
-    </div>
-    <div class="mb-3 pl-3">
-      <p class="h3">{{ review.title }}</p>
-      <span class="d-flex flex-row pl-1">
-        <a class="" routerLink="{{ '/user/' + review.user_id }}">{{
-          review.user_name
-        }}</a>
-        <p class="h5 ml-3">{{ review.date }}</p>
-      </span>
-    </div>
-    <div class="pl-3 pr-3">
-      <p class="text-wrap">
-        {{ review.description }}
-      </p>
+  <div *ngIf="reviews">
+    <div
+      class="border rounded mb-3"
+      *ngFor="let review of reviews; index as idx"
+    >
+      <div class="d-flex flex-row">
+        <ngb-rating
+          class="text-primary mb-4 pl-3 pt-3"
+          [max]="5"
+          [rate]="review.rate"
+          [readonly]="true"
+        ></ngb-rating>
+        <p class="ml-2 text-primary pt-3">{{ review.rate }}</p>
+      </div>
+      <div class="mb-3 pl-3">
+        <p class="h3">{{ review.title }}</p>
+        <span class="d-flex flex-row pl-1">
+          <a class="" routerLink="{{ '/user/' + review.username }}">{{
+            review.username
+          }}</a>
+          <p class="ml-3">{{ review.date | date }}</p>
+        </span>
+      </div>
+      <div class="pl-3 pr-3">
+        <p class="text-wrap text-truncate">
+          {{ review.description }}
+        </p>
+      </div>
     </div>
   </div>
 </div>

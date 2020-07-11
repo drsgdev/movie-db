@@ -22,7 +22,7 @@ public class PersonController {
 
   @GetMapping(value = "/find")
   public ResponseEntity<DBObject> getPersonById(@RequestParam Long id) {
-    return response.fetchObjectById(id);
+    return response.fetchPersonById(id);
   }
 
   @GetMapping(value = "/all")

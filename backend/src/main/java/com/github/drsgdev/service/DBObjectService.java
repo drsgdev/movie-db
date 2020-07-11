@@ -150,7 +150,8 @@ public class DBObjectService {
         AttributeType attrType = findAttrTypeByNameOrCreate(attrTypeName);
         Attribute attr = findAttrByNameAndTypeOrCreate(attrName, attrType);
 
-        Optional<AttributeValue> attrVal = attrValues.findByTypeNameAndObjectId(attrName, obj.getId());
+        Optional<AttributeValue> attrVal =
+                attrValues.findByTypeNameAndObjectId(attrName, obj.getId());
         if (attrVal.isPresent()) {
             attrVal.get().setVal(value);
 

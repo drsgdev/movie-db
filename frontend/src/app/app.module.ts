@@ -23,6 +23,7 @@ import { NgxWebstorageModule } from 'ngx-webstorage';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { InterceptorService } from './interceptor.service';
+import { PersonPageComponent } from './person-page/person-page.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { InterceptorService } from './interceptor.service';
     RateThisComponent,
     ReviewsListComponent,
     SignupPageComponent,
+    PersonPageComponent,
   ],
   imports: [
     BrowserModule,

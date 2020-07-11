@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../database.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Review } from '../review';
+import { map, catchError } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-reviews-list',
@@ -10,20 +13,18 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class ReviewsListComponent implements OnInit {
   id: number;
-  reviews = [];
+  reviews: any[];
 
-  review = {
-    rate : 0,
-    title : '',
-    describpiton : '',
-    date : new Date(),
-    user_id : 0,
-    object_id : 0,
-  }
+  review = new Review();
 
-  constructor(private db: DatabaseService, private modalService: NgbModal) {}
+  constructor(
+    private db: DatabaseService,
+    private modalService: NgbModal,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
+    this.updateReviewList();
   }
 
   openReviewModal(modal) {
@@ -31,8 +32,26 @@ export class ReviewsListComponent implements OnInit {
   }
 
   formSubmit() {
-    this.review.date = new Date();
-    this.review.user_id = 1;
-    this.review.object_id = this.id;
+    this.review.date = Date.now().toString();
+    this.review.id = this.id;
+
+    this.db.review(this.review).subscribe(
+      (res) => this.toastr.success(res),
+      (err) => this.toastr.error('Failed to save your review'),
+      () => this.updateReviewList()
+    );
+
+    this.updateReviewList();
+  }
+
+  loggedIn() {
+    return this.db.isLoggedIn();
+  }
+
+  updateReviewList() {
+    this.db.getReviews(this.id).subscribe(
+      (res) => (this.reviews = res),
+      () => {}
+    );
   }
 }
