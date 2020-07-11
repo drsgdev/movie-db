@@ -27,7 +27,7 @@ public class RatingService {
 
         @Override
         public String toString() {
-          return this.name().toLowerCase();
+            return this.name().toLowerCase();
         }
     };
 
@@ -40,14 +40,10 @@ public class RatingService {
         Optional<DBObject> objFromDB = objects.findById(id);
 
         DBObject rating = db.findObjOrCreate("rating", objFromDB.get().getDescr() + username);
-        rating.addAttribute("text", "id", id.toString());
-        rating.addAttribute("text", "username", username);
-        rating.addAttribute("text", "rate", rate.toString());
 
-        rating.getAttributes().forEach((attr) -> {
-            db.saveOrUpdateNewAttributeValue(attr.getVal(), attr.getType().getType().getName(),
-                    attr.getType().getName(), rating);
-        });
+        db.saveOrUpdateNewAttributeValue(id.toString(), "text", "id", rating);
+        db.saveOrUpdateNewAttributeValue(username, "text", "username", rating);
+        db.saveOrUpdateNewAttributeValue(rate.toString(), "text", "rate", rating);
     }
 
     public List<Integer> getRatingById(Long id) throws RatingException {
@@ -59,12 +55,12 @@ public class RatingService {
             throw new RatingException("Rating not found");
         }
 
-        db.mapAttributes(ratings.get());
+        ratings.get().parallelStream().forEach((rating) -> db.mapAttributes(rating));
 
         List<Integer> rates = Arrays.asList(0, 0, 0, 0, 0);
         ratings.get().parallelStream().forEach((rate) -> {
             Integer rateValue = Integer.parseInt(rate.getAttributeMap().get("rate"));
-            
+
             rates.set(rateValue - 1, rates.get(rateValue - 1) + 1);
         });
 

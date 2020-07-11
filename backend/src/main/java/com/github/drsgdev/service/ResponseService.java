@@ -27,9 +27,6 @@ public class ResponseService {
   private final AuthService authService;
   private final RatingService ratingService;
 
-  private HttpStatus status;
-  private String message;
-
   public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
     if (!obj.isPresent()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -63,8 +60,8 @@ public class ResponseService {
   }
 
   public ResponseEntity<String> signup(SignupRequest request) {
-    status = HttpStatus.OK;
-    message = "Signup complete";
+    HttpStatus status = HttpStatus.OK;
+    String message = "Signup complete";
 
     try {
       authService.signup(request);
@@ -79,8 +76,8 @@ public class ResponseService {
   }
 
   public ResponseEntity<String> verifyUser(String token) {
-    status = HttpStatus.OK;
-    message = "User activated";
+    HttpStatus status = HttpStatus.OK;
+    String message = "User activated";
 
     try {
       authService.verify(token);
@@ -95,8 +92,8 @@ public class ResponseService {
   }
 
   public ResponseEntity<AuthResponse> login(SignupRequest req) {
-    status = HttpStatus.OK;
-    message = "Login successful";
+    HttpStatus status = HttpStatus.OK;
+    String message = "Login successful";
 
 
     String token = "";
@@ -115,7 +112,7 @@ public class ResponseService {
     res.setToken(token);
     res.setMessage(message);
 
-    if (status == HttpStatus.OK) {
+    if (status != HttpStatus.BAD_REQUEST) {
       res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
       res.setRefreshToken(authService.refreshToken(req.getUsername()));
     }
@@ -124,8 +121,8 @@ public class ResponseService {
   }
 
   public ResponseEntity<AuthResponse> refresh(RefreshTokenRequest req) {
-    status = HttpStatus.OK;
-    message = "Token refresh successful";
+    HttpStatus status = HttpStatus.OK;
+    String message = "Token refresh successful";
 
     String token = "";
 
@@ -143,7 +140,7 @@ public class ResponseService {
     res.setToken(token);
     res.setMessage(message);
 
-    if (status == HttpStatus.OK) {
+    if (status != HttpStatus.BAD_REQUEST) {
       res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
       res.setRefreshToken(authService.refreshToken(req.getUsername()));
     }
@@ -152,8 +149,8 @@ public class ResponseService {
   }
 
   public ResponseEntity<String> logout(RefreshTokenRequest req) {
-    status = HttpStatus.OK;
-    message = "User logged out";
+    HttpStatus status = HttpStatus.OK;
+    String message = "User logged out";
 
     try {
       authService.logout(req);
@@ -168,8 +165,8 @@ public class ResponseService {
   }
 
   public ResponseEntity<String> rateObject(Long id, Integer rate, String username) {
-    status = HttpStatus.OK;
-    message = "Rating saved";
+    HttpStatus status = HttpStatus.OK;
+    String message = "Rating saved";
 
     ratingService.rate(id, rate, username);
 
@@ -177,7 +174,7 @@ public class ResponseService {
   }
 
   public ResponseEntity<List<Integer>> getRatingById(Long id) {
-    status = HttpStatus.OK;
+    HttpStatus status = HttpStatus.OK;
     
     List<Integer> rating = new ArrayList<>();
     

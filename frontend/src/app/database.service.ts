@@ -105,7 +105,7 @@ export class DatabaseService {
   }
 
   getRating(id: number) {
-    return this.http.get(environment.apiUrl + '/rate/get', {
+    return this.http.get<number[]>(environment.apiUrl + '/rate/get', {
       params: {
         id: id.toString(),
       },
