@@ -24,7 +24,7 @@ public class RatingService {
 
         public int value;
 
-        private Rate(int value) {
+        Rate(int value) {
             this.value = value;
         }
 

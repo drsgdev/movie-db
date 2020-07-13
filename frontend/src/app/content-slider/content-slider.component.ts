@@ -22,8 +22,6 @@ export class ContentSliderComponent implements OnInit {
   dataType: string;
   creditType: string;
 
-  isActive = true;
-
   objectsPerPage = 3;
   pages = 1;
 
@@ -60,5 +58,9 @@ export class ContentSliderComponent implements OnInit {
       end = this.data.length;
     }
     return this.data.slice(start, end);
+  }
+
+  isPersonCredits() {
+    return this.dataType === "person";
   }
 }

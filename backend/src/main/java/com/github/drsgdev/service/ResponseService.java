@@ -24,6 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ResponseService {
 
+    private enum RenewAction {
+        LOGIN, REFRESH, SIGNUP, VERIFY;
+    };
+
     private final DBObjectService db;
     private final CreditsService credits;
     private final PersonService people;
@@ -101,42 +105,32 @@ public class ResponseService {
     }
 
     public ResponseEntity<AuthResponse> login(SignupRequest req) {
-        HttpStatus status = HttpStatus.OK;
-        String message = "Login successful";
-
-
-        String token = "";
-
-        try {
-            token = authService.login(req);
-        } catch (SignupFailedException ex) {
-            log.warn(ex.getMessage());
-
-            status = HttpStatus.BAD_REQUEST;
-            message = ex.getMessage();
-        }
-
-        AuthResponse res = new AuthResponse();
-        res.setUsername(req.getUsername());
-        res.setToken(token);
-        res.setMessage(message);
-
-        if (status != HttpStatus.BAD_REQUEST) {
-            res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
-            res.setRefreshToken(authService.refreshToken(req.getUsername()));
-        }
-
-        return ResponseEntity.status(status).body(res);
+        return renew(req, RenewAction.LOGIN);
     }
 
     public ResponseEntity<AuthResponse> refresh(RefreshTokenRequest req) {
+        return renew(req, RenewAction.REFRESH);
+    }
+
+    private <T> ResponseEntity<AuthResponse> renew(T req, RenewAction action) {
         HttpStatus status = HttpStatus.OK;
         String message = "Token refresh successful";
 
         String token = "";
+        String username = "";
 
         try {
-            token = authService.refresh(req);
+            switch (action) {
+                case LOGIN:
+                    token = authService.login((SignupRequest)req);
+                    username = ((SignupRequest)req).getUsername();
+                    break;
+                case REFRESH:
+                    token = authService.refresh((RefreshTokenRequest)req);
+                    username = ((RefreshTokenRequest)req).getUsername();
+                default:
+                    break;
+            }
         } catch (SignupFailedException ex) {
             log.warn(ex.getMessage());
 
@@ -145,13 +139,13 @@ public class ResponseService {
         }
 
         AuthResponse res = new AuthResponse();
-        res.setUsername(req.getUsername());
+        res.setUsername(username);
         res.setToken(token);
         res.setMessage(message);
 
         if (status != HttpStatus.BAD_REQUEST) {
             res.setExpiresAt(authService.tokenExpirationDate(token).getTime());
-            res.setRefreshToken(authService.refreshToken(req.getUsername()));
+            res.setRefreshToken(authService.refreshToken(username));
         }
 
         return ResponseEntity.status(status).body(res);

@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AttributeTypeRepository extends JpaRepository<AttributeType, Long> {
-  public Optional<AttributeType> findByName(String name);
+  Optional<AttributeType> findByName(String name);
 }

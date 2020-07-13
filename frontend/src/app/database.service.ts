@@ -37,6 +37,14 @@ export class DatabaseService {
     );
   }
 
+  fetchPersonById(id: number) {
+    return this.http.get(environment.apiUrl + '/person/find', {
+      params: {
+        id: id.toString(),
+      },
+    });
+  }
+
   signup(payload: any) {
     return this.http.post(environment.apiUrl + '/api/auth/signup', payload, {
       responseType: 'text',

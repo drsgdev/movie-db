@@ -14,13 +14,13 @@
               src="{{ object.poster_path }}"
               class="img-fluid"
               alt="Banner"
-              *ngIf="object.poster_path"
+              *ngIf="isPersonCredits() || object.poster_path"
             />
             <img
               src="{{ object.profile_path }}"
               class="img-fluid"
               alt="Banner"
-              *ngIf="object.profile_path"
+              *ngIf="!isPersonCredits() && object.profile_path"
             />
             <div class="card-body p-3" *ngIf="!creditType">
               <p class="card-title h5">
@@ -30,9 +30,17 @@
                 {{ object.release_date | date }}
               </p>
             </div>
-            <div class="card-body p-3" *ngIf="creditType">
+            <div class="card-body p-3" *ngIf="creditType && !isPersonCredits()">
               <p class="card-title h5">
                 {{ object.name }}
+              </p>
+              <p class="card-text text-muted">
+                {{ object.character }}
+              </p>
+            </div>
+            <div class="card-body p-3" *ngIf="isPersonCredits()">
+              <p class="card-title h5">
+                {{ object.title }}
               </p>
               <p class="card-text text-muted">
                 {{ object.character }}
@@ -46,7 +54,12 @@
             <a
               routerLink="/person/{{ object.person_id }}"
               class="stretched-link"
-              *ngIf="creditType"
+              *ngIf="creditType && !isPersonCredits()"
+            ></a>
+            <a
+              routerLink="/find/{{ object.id }}"
+              class="stretched-link"
+              *ngIf="isPersonCredits()"
             ></a>
           </div>
         </div>

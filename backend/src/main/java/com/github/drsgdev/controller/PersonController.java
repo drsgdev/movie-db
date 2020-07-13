@@ -36,7 +36,7 @@ public class PersonController {
   }
 
   @GetMapping(value = "/credits/crew")
-  public ResponseEntity<List<DBObject>> getCreditsByPersonId(@RequestParam String id) {
+  public ResponseEntity<List<DBObject>> getCrewByPersonId(@RequestParam String id) {
     return response.fetchCreditsByPersonId(id, "crew");
   }
 }

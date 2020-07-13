@@ -8,6 +8,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ShowsPageComponent } from './shows-page/shows-page.component';
 import { ContentPageComponent } from './content-page/content-page.component';
 import { SignupPageComponent } from './signup-page/signup-page.component';
+import { PersonPageComponent } from './person-page/person-page.component';
 
 const routes: Routes = [
   { path: '', component: HomepageComponent },
@@ -17,6 +18,8 @@ const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'movie/:id', component: ContentPageComponent },
   { path: 'show/:id', component: ContentPageComponent },
+  { path: 'find/:id', component: ContentPageComponent },
+  { path: 'person/:id', component: PersonPageComponent },
   { path: 'signup', component: SignupPageComponent },
   { path: '**', component: NotFoundComponent },
 ];

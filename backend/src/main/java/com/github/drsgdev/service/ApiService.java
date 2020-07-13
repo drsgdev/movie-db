@@ -19,10 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ApiService {
-    private final String apiKey = "903ffebdb80a3af1d4c8a15ad338e3ea";
-    private final String apiPath = "https://api.themoviedb.org/3";
-    private final String imgPath = "https://image.tmdb.org/t/p/original";
-    private final String imgPlaceholderPath =
+    private final String API_KEY = "903ffebdb80a3af1d4c8a15ad338e3ea";
+    private final String API_PATH = "https://api.themoviedb.org/3";
+    private final String IMG_PATH = "https://image.tmdb.org/t/p/original";
+    private final String IMG_PLACEHOLDER_PATH =
             "https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-4-user-grey-d8fe957375e70239d6abdd549fd7568c89281b2179b5f4470e2e12895792dfa5.svg";
 
     private final DBObjectService db;
@@ -48,8 +48,8 @@ public class ApiService {
 
     private HttpStatus addObjectToDB(String id, String type) {
         try {
-            HttpResponse<JsonNode> res = Unirest.get(apiPath + "/" + type + "/{id}")
-                    .routeParam("id", id).queryString("api_key", apiKey).asJson();
+            HttpResponse<JsonNode> res = Unirest.get(API_PATH + "/" + type + "/{id}")
+                    .routeParam("id", id).queryString("api_key", API_KEY).asJson();
 
             status = HttpStatus.valueOf(res.getStatus());
             json = res.getBody().getObject();
@@ -65,29 +65,36 @@ public class ApiService {
 
         parseObject(type);
 
+        String poster_path = "";
+        if (json.has("poster_path")) {
+            poster_path = json.get("poster_path").toString();
+            poster_path = poster_path.equals(null) ? IMG_PLACEHOLDER_PATH : IMG_PATH + poster_path;
+        }
+
         if (type.equals("movie")) {
-            return addCreditsToDB(id, objId, "movie", json.get("title").toString());
+            return addCreditsToDB(id, objId, "movie", json.get("title").toString(), poster_path);
         } else if (type.equals("show")) {
-            return addCreditsToDB(id, objId, "tv", json.get("title").toString());
+            return addCreditsToDB(id, objId, "tv", json.get("title").toString(), poster_path);
         }
 
         return status;
     }
 
-    private HttpStatus addCreditsToDB(String id, String objId, String linkType, String title) {
+    public HttpStatus addCreditsToDB(String id, String objId, String linkType, String title,
+            String poster_path) {
         JSONArray cast = new JSONArray();
         JSONArray crew = new JSONArray();
 
         try {
             HttpResponse<JsonNode> res =
-                    Unirest.get(apiPath + "/{type}/{id}/credits").routeParam("id", id)
-                            .routeParam("type", linkType).queryString("api_key", apiKey).asJson();
+                    Unirest.get(API_PATH + "/{type}/{id}/credits").routeParam("id", id)
+                            .routeParam("type", linkType).queryString("api_key", API_KEY).asJson();
 
             status = HttpStatus.valueOf(res.getStatus());
             cast = res.getBody().getObject().getJSONArray("cast");
             crew = res.getBody().getObject().getJSONArray("crew");
         } catch (UnirestException ex) {
-            log.error("Fetching failed!", ex);
+            log.warn("Fetching failed!", ex.getMessage());
         }
 
         if (status != HttpStatus.OK) {
@@ -98,23 +105,27 @@ public class ApiService {
 
         for (int i = 0; i < cast.length(); i++) {
             json = cast.getJSONObject(i);
-            json.put("person_id", json.get("id"));
-            json.put("id", objId);
-            json.put("title", title);
+            addCreditInfo(id, objId, title, poster_path);
 
             parseObject("cast");
         }
 
         for (int i = 0; i < crew.length(); i++) {
             json = crew.getJSONObject(i);
-            json.put("person_id", json.get("id"));
-            json.put("id", objId);
-            json.put("title", title);
+            addCreditInfo(id, objId, title, poster_path);
 
             parseObject("crew");
         }
 
         return status;
+    }
+
+    private void addCreditInfo(String id, String objId, String title, String poster_path) {
+        json.put("person_id", json.get("id"));
+        json.put("id", objId);
+        json.put("api_id", id);
+        json.put("title", title);
+        json.put("poster_path", poster_path);
     }
 
     private void parseObject(String type) {
@@ -168,9 +179,9 @@ public class ApiService {
 
             if (key.contains("_path")) {
                 if (!value.equals("null")) {
-                    value = imgPath + value;
+                    value = IMG_PATH + value;
                 } else {
-                    value = imgPlaceholderPath;
+                    value = IMG_PLACEHOLDER_PATH;
                 }
             }
 
