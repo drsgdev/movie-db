@@ -45,6 +45,10 @@ export class DatabaseService {
     });
   }
 
+  fetchUser(username: string) {
+    return this.http.get(environment.apiUrl + '/user/' + username);
+  }
+
   signup(payload: any) {
     return this.http.post(environment.apiUrl + '/api/auth/signup', payload, {
       responseType: 'text',
@@ -123,6 +127,16 @@ export class DatabaseService {
     });
   }
 
+  favorite(id: number) {
+    let payload = {
+      id: id,
+      username: this.storage.retrieve('username'),
+    };
+    return this.http.post(environment.apiUrl + '/user/add_favorite', payload, {
+      responseType: 'text',
+    });
+  }
+
   getRating(id: number) {
     return this.http.get<number[]>(environment.apiUrl + '/rate/get', {
       params: {
@@ -139,12 +153,40 @@ export class DatabaseService {
     });
   }
 
+  getFavorites(username: string) {
+    return this.http.get<any[]>(environment.apiUrl + '/user/favorites', {
+      params: {
+        username: username,
+      },
+    });
+  }
+
+  getRated(username: string) {
+    return this.http.get<any[]>(environment.apiUrl + '/user/rated', {
+      params: {
+        username: username,
+      },
+    });
+  }
+
+  getReviewed(username: string) {
+    return this.http.get<any[]>(environment.apiUrl + '/user/reviewed', {
+      params: {
+        username: username,
+      },
+    });
+  }
+
   getAuthToken() {
     return this.storage.retrieve('authToken');
   }
 
   getExpirationDate() {
     return Number.parseInt(this.storage.retrieve('expiresAt'));
+  }
+
+  getUsername() {
+    return this.storage.retrieve('username');
   }
 
   isLoggedIn() {

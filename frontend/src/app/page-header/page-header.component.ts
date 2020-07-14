@@ -18,4 +18,8 @@ export class PageHeaderComponent implements OnInit {
   logout() {
     this.db.logout();
   }
+
+  username() {
+      return this.db.getUsername();
+  }
 }

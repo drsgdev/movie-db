@@ -14,12 +14,30 @@
         >Login</a
       >
     </nav>
-    <button
-      *ngIf="loggedIn()"
-      class="btn btn-outline-primary mr-0"
-      (click)="logout()"
-    >
-      Logout
-    </button>
+    <nav class="d-flex justify-content-right" *ngIf="loggedIn()">
+      <div
+        ngbDropdown
+        class="d-inline-block ml-auto mr-4"
+        placement="bottom"
+        autoClose="true"
+      >
+        <div ngbDropdownMenu class="mr-3 p-0" aria-labelledby="toggle">
+          <div ngbDropdownItem>
+            <a class="nav-link rounded" routerLink="/user/{{ username() }}">Profile</a>
+          </div>
+          <div ngbDropdownItem>
+            <a class="nav-link rounded" (click)="logout()">Logout</a>
+          </div>
+        </div>
+        <button
+          id="toggle"
+          type="button"
+          class="btn btn-outline-primary mt-1"
+          ngbDropdownToggle
+        >
+          {{ username() }}
+        </button>
+      </div>
+    </nav>
   </div>
 </div>

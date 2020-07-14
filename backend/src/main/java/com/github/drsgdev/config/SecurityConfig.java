@@ -19,33 +19,34 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final UserDetailsService userDetails;
-  private final JWTAuthFilter jwtAuthFilter;
+    private final UserDetailsService userDetails;
+    private final JWTAuthFilter jwtAuthFilter;
 
-  @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder builder) throws Exception {
-    builder.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
-  }
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder builder) throws Exception {
+        builder.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
+    }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable();
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
 
-    http.authorizeRequests()
-        .antMatchers("/**").permitAll()
-        .antMatchers("/rate", "/review").authenticated()
-        .and()
-        .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-  }
+        http.authorizeRequests()
+                .antMatchers("/movie/**", "/show/**", "/person/**", "/api/add/**", "/api/auth/**",
+                        "/rate/get", "/review/get", "/find/**", "/user/**").permitAll()
+                .antMatchers("/rate", "/review", "/api/auth/refresh").permitAll().anyRequest().authenticated()
+                .and()
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+    }
 
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean(BeanIds.AUTHENTICATION_MANAGER)
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 }

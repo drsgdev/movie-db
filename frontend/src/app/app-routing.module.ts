@@ -9,6 +9,7 @@ import { ShowsPageComponent } from './shows-page/shows-page.component';
 import { ContentPageComponent } from './content-page/content-page.component';
 import { SignupPageComponent } from './signup-page/signup-page.component';
 import { PersonPageComponent } from './person-page/person-page.component';
+import { ProfilePageComponent } from './profile-page/profile-page.component';
 
 const routes: Routes = [
   { path: '', component: HomepageComponent },
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'show/:id', component: ContentPageComponent },
   { path: 'find/:id', component: ContentPageComponent },
   { path: 'person/:id', component: PersonPageComponent },
+  { path: 'user/:username', component: ProfilePageComponent },
   { path: 'signup', component: SignupPageComponent },
   { path: '**', component: NotFoundComponent },
 ];

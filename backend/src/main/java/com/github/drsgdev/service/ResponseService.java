@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import com.github.drsgdev.dto.AuthResponse;
+import com.github.drsgdev.dto.FavoriteRequest;
 import com.github.drsgdev.dto.RatingRequest;
 import com.github.drsgdev.dto.RefreshTokenRequest;
 import com.github.drsgdev.dto.ReviewRequest;
 import com.github.drsgdev.dto.SignupRequest;
+import com.github.drsgdev.dto.UserProfileResponse;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.security.AuthService;
 import com.github.drsgdev.util.RatingException;
 import com.github.drsgdev.util.SignupFailedException;
+import com.github.drsgdev.util.UserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +31,16 @@ public class ResponseService {
         LOGIN, REFRESH, SIGNUP, VERIFY;
     };
 
+    private enum UserListType {
+        FAVORITE, RATED, REVIEWED;
+    }
+
     private final DBObjectService db;
     private final CreditsService credits;
     private final PersonService people;
     private final AuthService authService;
     private final RatingService ratingService;
+    private final UserService userService;
 
     public static <T> ResponseEntity<T> createResponse(Optional<T> obj) {
         if (!obj.isPresent()) {
@@ -70,6 +78,24 @@ public class ResponseService {
         Optional<DBObject> person = people.findPersonByUserId(id);
 
         return createResponse(person);
+    }
+
+    public ResponseEntity<UserProfileResponse> fetchUserProfile(String username) {
+        Optional<DBObject> user = userService.findUser(username);
+        HttpStatus status = HttpStatus.OK;
+        UserProfileResponse res = new UserProfileResponse();
+
+        if (user.isPresent()) {
+            db.mapAttributes(user.get());
+
+            res.setUsername(username);
+            res.setEmail(user.get().getAttributeMap().get("email"));
+            res.setCreated(user.get().getAttributeMap().get("created"));
+        } else {
+            status = HttpStatus.NOT_FOUND;
+        }
+
+        return ResponseEntity.status(status).body(res);
     }
 
     public ResponseEntity<String> signup(SignupRequest request) {
@@ -122,12 +148,12 @@ public class ResponseService {
         try {
             switch (action) {
                 case LOGIN:
-                    token = authService.login((SignupRequest)req);
-                    username = ((SignupRequest)req).getUsername();
+                    token = authService.login((SignupRequest) req);
+                    username = ((SignupRequest) req).getUsername();
                     break;
                 case REFRESH:
-                    token = authService.refresh((RefreshTokenRequest)req);
-                    username = ((RefreshTokenRequest)req).getUsername();
+                    token = authService.refresh((RefreshTokenRequest) req);
+                    username = ((RefreshTokenRequest) req).getUsername();
                 default:
                     break;
             }
@@ -215,5 +241,52 @@ public class ResponseService {
         }
 
         return ResponseEntity.status(status).body(reviews);
+    }
+
+    public ResponseEntity<String> addTitleToFavorites(FavoriteRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Title was added to your favorites";
+
+        userService.addFavorite(req);
+
+        return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+    }
+
+    public ResponseEntity<List<DBObject>> getUserFavorites(String username) {
+        return getUserTitles(username, UserListType.FAVORITE);
+    }
+
+    public ResponseEntity<List<DBObject>> getUserRated(String username) {
+        return getUserTitles(username, UserListType.RATED);
+    }
+
+    public ResponseEntity<List<DBObject>> getUserReviewed(String username) {
+        return getUserTitles(username, UserListType.REVIEWED);
+    }
+
+    private ResponseEntity<List<DBObject>> getUserTitles(String username, UserListType type) {
+        HttpStatus status = HttpStatus.OK;
+
+        List<DBObject> res = new ArrayList<>();
+
+        try {
+            switch (type) {
+                case FAVORITE:
+                    res = userService.getFavorites(username);
+                    break;
+                case RATED:
+                    res = userService.getRated(username);
+                    break;
+                case REVIEWED:
+                    res = userService.getReviewed(username);
+                    break;
+            }
+        } catch (UserException ex) {
+            log.warn(ex.getMessage());
+
+            status = HttpStatus.NOT_FOUND;
+        }
+
+        return ResponseEntity.status(status).body(res);
     }
 }

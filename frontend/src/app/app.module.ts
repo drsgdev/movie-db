@@ -24,6 +24,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { InterceptorService } from './interceptor.service';
 import { PersonPageComponent } from './person-page/person-page.component';
+import { ProfilePageComponent } from './profile-page/profile-page.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { PersonPageComponent } from './person-page/person-page.component';
     ReviewsListComponent,
     SignupPageComponent,
     PersonPageComponent,
+    ProfilePageComponent,
   ],
   imports: [
     BrowserModule,

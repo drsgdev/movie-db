@@ -8,10 +8,21 @@
     <div class="d-flex flex-column pb-1">
       <p class="h5 mt-1">Release date</p>
       <p>{{ content.release_date | date }}</p>
+      <p class="h5 mt-1">Run time</p>
+      <p>{{ floor(content.runtime / 60) }}h {{ content.runtime % 60 }}m</p>
       <p class="h5 mt-1">Budget</p>
-      <p>{{ content.budget | currency }}</p>
+      <p *ngIf="content.budget !== '0'; else not_specified">
+        {{ content.budget | currency }}
+      </p>
       <p class="h5 mt-1">Revenue</p>
-      <p>{{ content.revenue | currency }}</p>
+      <p *ngIf="content.revenue !== '0'; else not_specified">
+        {{ content.revenue | currency }}
+      </p>
+      <p class="h5 mt-1" *ngIf="content.homepage !== ''">Homepage</p>
+      <a *ngIf="content.homepage !== ''" href="{{ content.homepage }}">{{
+        content.homepage
+      }}</a>
+      <ng-template #not_specified><p>Not specified</p></ng-template>
     </div>
   </div>
   <div class="col-7 flex-fill d-flex flex-column">
@@ -28,6 +39,22 @@
       <p class="text-wrap mt-2 pt-0 pr-5 pb-3">
         {{ content.overview }}
       </p>
+    </div>
+    <div class="mt-3">
+      <button
+        class="btn btn-outline-success"
+        *ngIf="isLoggedIn()"
+        (click)="favorite()"
+      >
+        Add to favorites...
+      </button>
+      <button
+        class="btn btn-outline-success"
+        *ngIf="!isLoggedIn()"
+        routerLink="/login"
+      >
+        Add to favorites...
+      </button>
     </div>
   </div>
 </div>
@@ -46,15 +73,15 @@
   ></app-content-slider>
 </div>
 <div class="border-bottom pr-3 pl-3">
-    <label class="h2 ml-3 mt-3 mb-3">Crew</label>
-    <app-content-slider
-      [id]="id"
-      [data-type]="type"
-      credit-type="crew"
-      name="cast-slider"
-      [page-size]="6"
-    ></app-content-slider>
-  </div>
+  <label class="h2 ml-3 mt-3 mb-3">Crew</label>
+  <app-content-slider
+    [id]="id"
+    [data-type]="type"
+    credit-type="crew"
+    name="cast-slider"
+    [page-size]="6"
+  ></app-content-slider>
+</div>
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Reviews</label>
   <app-reviews-list [id]="id"></app-reviews-list>
