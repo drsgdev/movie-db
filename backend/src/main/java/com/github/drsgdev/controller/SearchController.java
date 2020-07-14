@@ -29,4 +29,14 @@ public class SearchController {
             @PathVariable(value = "type") String type) {
         return response.fetchAllObjectsByType(type);
     }
+
+    @GetMapping(value = "find/credits/cast")
+    public ResponseEntity<List<DBObject>> getCastByMovieId(@RequestParam String id) {
+        return response.fetchCreditsByMovieId(id, "cast");
+    }
+
+    @GetMapping(value = "find/credits/crew")
+    public ResponseEntity<List<DBObject>> getCrewByMovieId(@RequestParam String id) {
+        return response.fetchCreditsByMovieId(id, "crew");
+    }
 }

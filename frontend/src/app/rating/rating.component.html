@@ -22,7 +22,7 @@
   </div>
   <div *ngIf="ratings" id="full_ratings" [ngbCollapse]="isCollapsed">
     <ul class="list-group pr-3 pl-3 pb-3 mb-3">
-      <li class="list-group-item" *ngFor="let rating of ratings | async; index as idx">
+      <li class="list-group-item" *ngFor="let rating of ratings; index as idx">
         <div class="d-flex flex-row">
           <div class="col-2 d-flex">
             <div *ngFor="let index of [].constructor(5 - idx)" class="mr-1">

@@ -61,6 +61,10 @@ export class ContentSliderComponent implements OnInit {
   }
 
   isPersonCredits() {
-    return this.dataType === "person";
+    return this.dataType === 'person';
+  }
+
+  isMovieList() {
+      return !this.isPersonCredits() && !this.creditType;
   }
 }

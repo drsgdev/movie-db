@@ -13,13 +13,13 @@
             <img
               src="{{ object.poster_path }}"
               class="img-fluid"
-              alt="Banner"
-              *ngIf="isPersonCredits() || object.poster_path"
+              alt="{{ object.title }}"
+              *ngIf="isPersonCredits() || isMovieList()"
             />
             <img
               src="{{ object.profile_path }}"
               class="img-fluid"
-              alt="Banner"
+              alt="{{ object.name }}"
               *ngIf="!isPersonCredits() && object.profile_path"
             />
             <div class="card-body p-3" *ngIf="!creditType">
@@ -34,8 +34,11 @@
               <p class="card-title h5">
                 {{ object.name }}
               </p>
-              <p class="card-text text-muted">
+              <p class="card-text text-muted" *ngIf="object.character">
                 {{ object.character }}
+              </p>
+              <p class="card-text text-muted" *ngIf="object.job">
+                {{ object.job }}
               </p>
             </div>
             <div class="card-body p-3" *ngIf="isPersonCredits()">

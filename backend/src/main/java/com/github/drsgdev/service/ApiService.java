@@ -68,7 +68,6 @@ public class ApiService {
         String poster_path = "";
         if (json.has("poster_path")) {
             poster_path = json.get("poster_path").toString();
-            poster_path = poster_path.equals(null) ? IMG_PLACEHOLDER_PATH : IMG_PATH + poster_path;
         }
 
         if (type.equals("movie")) {

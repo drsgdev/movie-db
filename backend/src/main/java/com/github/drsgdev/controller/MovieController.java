@@ -34,7 +34,7 @@ public class MovieController {
     }
 
     @GetMapping(value = "/credits/crew")
-    public ResponseEntity<List<DBObject>> getCreditsByMovieId(@RequestParam String id) {
+    public ResponseEntity<List<DBObject>> getCrewByMovieId(@RequestParam String id) {
         return response.fetchCreditsByMovieId(id, "crew");
     }
 }

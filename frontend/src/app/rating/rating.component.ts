@@ -18,7 +18,7 @@ import { Observable } from 'rxjs';
 })
 export class RatingComponent implements OnInit {
   id: number;
-  ratings: Observable<number[]>;
+  ratings: number[];
   relative_ratings: number[];
   total: number;
   average: number;
@@ -39,12 +39,11 @@ export class RatingComponent implements OnInit {
     this.total = 0;
     this.average = 0;
 
-    this.ratings = this.db.getRating(this.id);
+    this.db.getRating(this.id).subscribe(
+        res => {
+            this.ratings = res;
 
-    this.ratings
-      .pipe(
-        map((res) => {
-          this.total = res.reduce((sum, curr) => (sum += curr));
+            this.total = res.reduce((sum, curr) => (sum += curr));
           this.relative_ratings = res.slice();
           this.relative_ratings.forEach((val, index) => {
             this.average += val * (5 - index);
@@ -52,9 +51,8 @@ export class RatingComponent implements OnInit {
           }, this);
 
           this.average = this.average / this.total;
-        }),
-        catchError((err, caught) => caught)
-      )
-      .subscribe();
+        },
+        err => {}
+    );
   }
 }
