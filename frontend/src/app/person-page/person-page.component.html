@@ -10,8 +10,12 @@
       <p>{{ person.gender === 1 ? "Female" : "Male" }}</p>
       <p class="h5 mt-1">Birthday</p>
       <p>{{ person.birthday | date }}</p>
-      <p class="h5 mt-1">Place of birth</p>
-      <p>{{ person.place_of_birth }}</p>
+      <p class="h5 mt-1" *ngIf="person.place_of_birth !== 'null'">
+        Place of birth
+      </p>
+      <p *ngIf="person.place_of_birth !== 'null'">
+        {{ person.place_of_birth }}
+      </p>
       <p class="h5 mt-1" *ngIf="person.deathday !== 'null'">Died</p>
       <p *ngIf="person.deathday !== 'null'">{{ person.deathday }}</p>
       <p class="h5 mt-1">Known for</p>
@@ -26,8 +30,11 @@
     </div>
     <div>
       <p class="mt-2 h3">Biography</p>
-      <p class="text-wrap mt-2 pt-0 pr-5 pb-3">
+      <p class="text-wrap mt-2 pt-0 pr-5 pb-3" *ngIf="person.biography !== ''">
         {{ person.biography }}
+      </p>
+      <p class="text-wrap mt-2 pt-0 pr-5 pb-3" *ngIf="person.biography === ''">
+        We dont have any biography for this person :(
       </p>
     </div>
   </div>

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -25,6 +25,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { InterceptorService } from './interceptor.service';
 import { PersonPageComponent } from './person-page/person-page.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
+import { ContentListComponent } from './content-list/content-list.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
     SignupPageComponent,
     PersonPageComponent,
     ProfilePageComponent,
+    ContentListComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,6 +56,7 @@ import { ProfilePageComponent } from './profile-page/profile-page.component';
     NgxWebstorageModule.forRoot(),
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
+    ReactiveFormsModule,
   ],
   providers: [
     {

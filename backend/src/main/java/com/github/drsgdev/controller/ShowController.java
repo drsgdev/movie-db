@@ -21,13 +21,13 @@ public class ShowController {
   private final ResponseService response;
 
   @GetMapping(value = "/find")
-  public ResponseEntity<DBObject> getMovieById(@RequestParam Long id) {
+  public ResponseEntity<DBObject> getShowById(@RequestParam Long id) {
     return response.fetchObjectById(id);
   }
 
   @GetMapping(value = "/all")
-  public ResponseEntity<List<DBObject>> getAllMovies() {
-    return response.fetchAllObjectsByType("show");
+  public ResponseEntity<List<DBObject>> getAllShows() {
+    return response.fetchAllObjectsByType("tv");
   }
 
   @GetMapping(value = "/credits/cast")

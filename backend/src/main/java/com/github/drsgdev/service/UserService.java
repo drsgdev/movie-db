@@ -47,7 +47,7 @@ public class UserService {
 
     public List<DBObject> getFavorites(String username) {
         DBObject user = findUser(username).get();
-        Optional<AttributeValue> favorites = findFavorites(user.getId());;
+        Optional<AttributeValue> favorites = findFavorites(user.getId());
 
         if (!favorites.isPresent()) {
             throw new UserException("User " + username + " has no favorites");

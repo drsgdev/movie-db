@@ -7,17 +7,28 @@
     />
     <div class="d-flex flex-column pb-1">
       <p class="h5 mt-1">Release date</p>
-      <p>{{ content.release_date | date }}</p>
-      <p class="h5 mt-1">Run time</p>
-      <p>{{ floor(content.runtime / 60) }}h {{ content.runtime % 60 }}m</p>
-      <p class="h5 mt-1">Budget</p>
-      <p *ngIf="content.budget !== '0'; else not_specified">
-        {{ content.budget | currency }}
-      </p>
-      <p class="h5 mt-1">Revenue</p>
-      <p *ngIf="content.revenue !== '0'; else not_specified">
-        {{ content.revenue | currency }}
-      </p>
+      <p *ngIf="content.release_date">{{ content.release_date | date }}</p>
+      <p *ngIf="content.first_air_date">{{ content.first_air_date | date }}</p>
+      <div *ngIf="content.runtime">
+        <p class="h5 mt-1">Run time</p>
+        <p>{{ floor(content.runtime / 60) }}h {{ content.runtime % 60 }}m</p>
+      </div>
+      <div *ngIf="content.number_of_seasons">
+        <p class="h5 mt-1">Number of seasons</p>
+        <p>{{ content.number_of_seasons }}</p>
+        <p class="h5 mt-1">Number of episodes</p>
+        <p>{{ content.number_of_episodes }}</p>
+      </div>
+      <div *ngIf="content.budget">
+        <p class="h5 mt-1">Budget</p>
+        <p *ngIf="content.budget !== '0'; else not_specified">
+          {{ content.budget | currency }}
+        </p>
+        <p class="h5 mt-1">Revenue</p>
+        <p *ngIf="content.revenue !== '0'; else not_specified">
+          {{ content.revenue | currency }}
+        </p>
+      </div>
       <p class="h5 mt-1" *ngIf="content.homepage !== ''">Homepage</p>
       <a *ngIf="content.homepage !== ''" href="{{ content.homepage }}">{{
         content.homepage

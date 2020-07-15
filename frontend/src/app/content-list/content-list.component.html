@@ -1,0 +1,70 @@
+<label class="h2 mt-2 mb-3"
+  >All {{ type === "person" ? "people" : type + "s" }}</label
+>
+<div *ngIf="items; else not_found">
+  <form>
+    <div class="form-group">
+      Search:
+      <input class="form-control ml-2" type="text" [formControl]="filter" />
+    </div>
+  </form>
+  <table class="table table-striped mb-2">
+    <thead *ngIf="type !== 'person'">
+      <tr>
+        <th scope="col">Title</th>
+        <th scope="col">Release date</th>
+        <th scope="col">Budget</th>
+      </tr>
+    </thead>
+    <thead *ngIf="type === 'person'">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Known for</th>
+        <th scope="col">Birthday</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        class="text-decoration-none"
+        *ngFor="
+          let data of itemsToOutput
+            | async
+            | slice: (page - 1) * pageSize:(page - 1) * pageSize + pageSize
+        "
+        routerLink="/{{ type }}/{{ data.id }}"
+        style="cursor: pointer;"
+      >
+        <td *ngIf="type === 'movie'">{{ data.title }}</td>
+        <td *ngIf="type !== 'movie'">{{ data.name }}</td>
+        <td *ngIf="type === 'movie'">
+          {{ data.release_date | date }}
+        </td>
+        <td *ngIf="type === 'show'">
+            {{ data.first_air_date | date }}
+          </td>
+        <td *ngIf="type !== 'person'">
+          {{ data.budget === '0' ? 'Not specified' : (data.budget | currency) }}
+        </td>
+        <td *ngIf="type === 'person'">
+          {{ data.known_for_department }}
+        </td>
+        <td *ngIf="type === 'person'">{{ data.birthday | date }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-between">
+    <ngb-pagination
+      [(page)]="page"
+      [pageSize]="pageSize"
+      [collectionSize]="items.length"
+    ></ngb-pagination>
+    <select class="custom-select" style="width: auto;" [(ngModel)]="pageSize">
+      <option [ngValue]="5">5 items per page</option>
+      <option [ngValue]="10">10 items per page</option>
+      <option [ngValue]="15">15 items per page</option>
+    </select>
+  </div>
+</div>
+<ng-template #not_found>
+  <div>Nothing to show here :(</div>
+</ng-template>

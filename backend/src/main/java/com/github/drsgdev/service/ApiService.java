@@ -39,7 +39,7 @@ public class ApiService {
     }
 
     public HttpStatus addShowToDB(String id) {
-        return addObjectToDB(id, "show");
+        return addObjectToDB(id, "tv");
     }
 
     public HttpStatus addPersonToDB(String id) {
@@ -72,8 +72,8 @@ public class ApiService {
 
         if (type.equals("movie")) {
             return addCreditsToDB(id, objId, "movie", json.get("title").toString(), poster_path);
-        } else if (type.equals("show")) {
-            return addCreditsToDB(id, objId, "tv", json.get("title").toString(), poster_path);
+        } else if (type.equals("tv")) {
+            return addCreditsToDB(id, objId, "tv", json.get("name").toString(), poster_path);
         }
 
         return status;
@@ -185,7 +185,7 @@ public class ApiService {
             }
 
             if (key.equals("id") && (object.getType().getName().equals("movie")
-                    || object.getType().getName().equals("show"))) {
+                    || object.getType().getName().equals("tv"))) {
                 value = objId;
             }
 
@@ -200,8 +200,8 @@ public class ApiService {
             case "movie":
                 description = json.get("title").toString();
                 break;
-            case "show":
-                description = json.get("title").toString();
+            case "tv":
+                description = json.get("name").toString();
                 break;
             case "person":
                 description = json.get("name").toString();
