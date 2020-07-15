@@ -24,7 +24,7 @@ public class AuthController {
   private final ResponseService response;
 
   @PostMapping(value = "/signup")
-  public ResponseEntity<String> signup(@RequestBody SignupRequest req) {
+  public ResponseEntity<String> signup(@Valid @RequestBody SignupRequest req) {
     return response.signup(req);
   }
 
@@ -34,7 +34,7 @@ public class AuthController {
   }
 
   @PostMapping(value = "/login")
-  public ResponseEntity<AuthResponse> login(@RequestBody SignupRequest req) {
+  public ResponseEntity<AuthResponse> login(@Valid @RequestBody SignupRequest req) {
     return response.login(req);
   }
 

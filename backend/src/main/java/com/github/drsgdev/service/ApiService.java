@@ -4,6 +4,7 @@ import java.util.Optional;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.model.DBObjectType;
 import com.github.drsgdev.repository.DBObjectRepository;
+import com.github.drsgdev.util.Types;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -35,20 +36,20 @@ public class ApiService {
     private String objId;
 
     public HttpStatus addMovieToDB(String id) {
-        return addObjectToDB(id, "movie");
+        return addObjectToDB(id, Types.MOVIE);
     }
 
     public HttpStatus addShowToDB(String id) {
-        return addObjectToDB(id, "tv");
+        return addObjectToDB(id, Types.SHOW);
     }
 
     public HttpStatus addPersonToDB(String id) {
-        return addObjectToDB(id, "person");
+        return addObjectToDB(id, Types.PERSON);
     }
 
-    private HttpStatus addObjectToDB(String id, String type) {
+    private HttpStatus addObjectToDB(String id, Types type) {
         try {
-            HttpResponse<JsonNode> res = Unirest.get(API_PATH + "/" + type + "/{id}")
+            HttpResponse<JsonNode> res = Unirest.get(API_PATH + "/" + type.getValue() + "/{id}")
                     .routeParam("id", id).queryString("api_key", API_KEY).asJson();
 
             status = HttpStatus.valueOf(res.getStatus());
@@ -60,7 +61,7 @@ public class ApiService {
         if (status != HttpStatus.OK) {
             return status;
         } else {
-            log.info("Fetched " + type + ": {}, status: {}", description(type), status.toString());
+            log.info("Fetched " + type.getValue() + ": {}, status: {}", description(type), status.toString());
         }
 
         parseObject(type);
@@ -70,16 +71,16 @@ public class ApiService {
             poster_path = json.get("poster_path").toString();
         }
 
-        if (type.equals("movie")) {
-            return addCreditsToDB(id, objId, "movie", json.get("title").toString(), poster_path);
-        } else if (type.equals("tv")) {
-            return addCreditsToDB(id, objId, "tv", json.get("name").toString(), poster_path);
+        if (type == Types.MOVIE) {
+            return addCreditsToDB(id, objId, type, json.get("title").toString(), poster_path);
+        } else if (type == Types.SHOW) {
+            return addCreditsToDB(id, objId, type, json.get("name").toString(), poster_path);
         }
 
         return status;
     }
 
-    public HttpStatus addCreditsToDB(String id, String objId, String linkType, String title,
+    public HttpStatus addCreditsToDB(String id, String objId, Types linkType, String title,
             String poster_path) {
         JSONArray cast = new JSONArray();
         JSONArray crew = new JSONArray();
@@ -87,11 +88,11 @@ public class ApiService {
         try {
             HttpResponse<JsonNode> res =
                     Unirest.get(API_PATH + "/{type}/{id}/credits").routeParam("id", id)
-                            .routeParam("type", linkType).queryString("api_key", API_KEY).asJson();
+                            .routeParam("type", linkType.getValue()).queryString("api_key", API_KEY).asJson();
 
             status = HttpStatus.valueOf(res.getStatus());
-            cast = res.getBody().getObject().getJSONArray("cast");
-            crew = res.getBody().getObject().getJSONArray("crew");
+            cast = res.getBody().getObject().getJSONArray(Types.CAST.getValue());
+            crew = res.getBody().getObject().getJSONArray(Types.CREW.getValue());
         } catch (UnirestException ex) {
             log.warn("Fetching failed!", ex.getMessage());
         }
@@ -106,14 +107,14 @@ public class ApiService {
             json = cast.getJSONObject(i);
             addCreditInfo(id, objId, title, poster_path);
 
-            parseObject("cast");
+            parseObject(Types.CAST);
         }
 
         for (int i = 0; i < crew.length(); i++) {
             json = crew.getJSONObject(i);
             addCreditInfo(id, objId, title, poster_path);
 
-            parseObject("crew");
+            parseObject(Types.CREW);
         }
 
         return status;
@@ -127,10 +128,10 @@ public class ApiService {
         json.put("poster_path", poster_path);
     }
 
-    private void parseObject(String type) {
+    private void parseObject(Types type) {
         DBObject newObject;
 
-        Optional<DBObject> objFromDB = objects.findByDescrAndTypeName(description(type), type);
+        Optional<DBObject> objFromDB = objects.findByDescrAndTypeName(description(type), type.getValue());
 
         if (objFromDB.isPresent()) {
             newObject = objFromDB.get();
@@ -139,7 +140,7 @@ public class ApiService {
             objects.save(newObject);
             objId = Long.toString(newObject.getId());
 
-            log.info("Saved new {} id {}", type, objId);
+            log.info("Saved new {} id {}", type.getValue(), objId);
 
             parseAttributes(newObject);
         } else {
@@ -154,7 +155,7 @@ public class ApiService {
         objects.save(newObject);
         objId = Long.toString(newObject.getId());
 
-        log.info("Saved new {} id {}", type, objId);
+        log.info("Saved new {} id {}", type.getValue(), objId);
 
         parseAttributes(newObject);
     }
@@ -184,8 +185,8 @@ public class ApiService {
                 }
             }
 
-            if (key.equals("id") && (object.getType().getName().equals("movie")
-                    || object.getType().getName().equals("tv"))) {
+            if (key.equals("id") && (object.getType().getName().equals(Types.MOVIE.getValue())
+                    || object.getType().getName().equals(Types.SHOW.getValue()))) {
                 value = objId;
             }
 
@@ -193,24 +194,24 @@ public class ApiService {
         });
     }
 
-    private String description(String type) {
+    private String description(Types type) {
         String description = "";
 
         switch (type) {
-            case "movie":
+            case MOVIE:
                 description = json.get("title").toString();
                 break;
-            case "tv":
+            case SHOW:
                 description = json.get("name").toString();
                 break;
-            case "person":
+            case PERSON:
                 description = json.get("name").toString();
                 break;
-            case "cast":
+            case CAST:
                 description = json.get("name").toString() + " as "
                         + json.get("character").toString() + " in " + json.get("title").toString();
                 break;
-            case "crew":
+            case CREW:
                 description = json.get("name").toString() + " as " + json.get("job").toString()
                         + " in " + json.get("title").toString();
                 break;

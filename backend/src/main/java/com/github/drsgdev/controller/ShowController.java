@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.service.ResponseService;
-
+import com.github.drsgdev.util.Types;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,17 +27,17 @@ public class ShowController {
 
   @GetMapping(value = "/all")
   public ResponseEntity<List<DBObject>> getAllShows() {
-    return response.fetchAllObjectsByType("tv");
+    return response.fetchAllObjectsByType(Types.SHOW);
   }
 
   @GetMapping(value = "/credits/cast")
   public ResponseEntity<List<DBObject>> getCastByMovieId(@RequestParam String id) {
-    return response.fetchCreditsByMovieId(id, "cast");
+    return response.fetchCreditsByMovieId(id, Types.CAST);
   }
 
   @GetMapping(value = "/credits/crew")
   public ResponseEntity<List<DBObject>> getCreditsByMovieId(@RequestParam String id) {
-    return response.fetchCreditsByMovieId(id, "crew");
+    return response.fetchCreditsByMovieId(id, Types.CREW);
   }
 
 }

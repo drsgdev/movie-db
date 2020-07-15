@@ -14,6 +14,7 @@ import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.security.AuthService;
 import com.github.drsgdev.util.RatingException;
 import com.github.drsgdev.util.SignupFailedException;
+import com.github.drsgdev.util.Types;
 import com.github.drsgdev.util.UserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,19 +57,19 @@ public class ResponseService {
         return createResponse(object);
     }
 
-    public ResponseEntity<List<DBObject>> fetchAllObjectsByType(String type) {
+    public ResponseEntity<List<DBObject>> fetchAllObjectsByType(Types type) {
         Optional<List<DBObject>> objectList = db.findAllByType(type);
 
         return createResponse(objectList);
     }
 
-    public ResponseEntity<List<DBObject>> fetchCreditsByPersonId(String id, String type) {
+    public ResponseEntity<List<DBObject>> fetchCreditsByPersonId(String id, Types type) {
         Optional<List<DBObject>> castList = credits.findCreditsByPersonId(id, type);
 
         return createResponse(castList);
     }
 
-    public ResponseEntity<List<DBObject>> fetchCreditsByMovieId(String id, String type) {
+    public ResponseEntity<List<DBObject>> fetchCreditsByMovieId(String id, Types type) {
         Optional<List<DBObject>> castList = credits.findCreditsByMovieId(id, type);
 
         return createResponse(castList);

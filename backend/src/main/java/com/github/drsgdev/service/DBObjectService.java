@@ -14,6 +14,7 @@ import com.github.drsgdev.repository.AttributeTypeRepository;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
+import com.github.drsgdev.util.Types;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,8 +56,8 @@ public class DBObjectService {
         return object;
     }
 
-    public Optional<List<DBObject>> findAllByType(String type) {
-        Optional<List<DBObject>> objectList = objects.findAllByTypeName(type);
+    public Optional<List<DBObject>> findAllByType(Types type) {
+        Optional<List<DBObject>> objectList = objects.findAllByTypeName(type.getValue());
 
         if (!objectList.isPresent()) {
             return Optional.empty();
@@ -69,20 +70,20 @@ public class DBObjectService {
         return objectList;
     }
 
-    public DBObject findObjOrCreate(String typeName, String descr) {
+    public DBObject findObjOrCreate(Types typeName, String descr) {
         DBObjectType type = findObjTypeByNameOrCreate(typeName);
 
-        Optional<DBObject> objFromDB = objects.findByDescrAndTypeName(descr, typeName);
+        Optional<DBObject> objFromDB = objects.findByDescrAndTypeName(descr, typeName.getValue());
 
         if (!objFromDB.isPresent()) {
-            log.warn("Object {} of type {} not found!", descr, typeName);
+            log.warn("Object {} of type {} not found!", descr, typeName.getValue());
 
             DBObject newObject = new DBObject();
             newObject.setDescr(descr);
             newObject.setType(type);
 
             objects.save(newObject);
-            log.info("Saved new object {} of type {}", descr, typeName);
+            log.info("Saved new object {} of type {}", descr, typeName.getValue());
 
             objFromDB = Optional.of(newObject);
         }
@@ -90,17 +91,17 @@ public class DBObjectService {
         return objFromDB.get();
     }
 
-    public DBObjectType findObjTypeByNameOrCreate(String name) {
-        Optional<DBObjectType> objTypeFromDB = types.findByName(name);
+    public DBObjectType findObjTypeByNameOrCreate(Types typeName) {
+        Optional<DBObjectType> objTypeFromDB = types.findByName(typeName.getValue());
 
         if (!objTypeFromDB.isPresent()) {
-            log.warn("Object type {} not found!", name);
+            log.warn("Object type {} not found!", typeName.getValue());
 
             DBObjectType newType = new DBObjectType();
-            newType.setName(name);
+            newType.setName(typeName.getValue());
 
             types.save(newType);
-            log.info("Saved new type: {}", name);
+            log.info("Saved new type: {}", typeName.getValue());
 
             objTypeFromDB = Optional.of(newType);
         }

@@ -1,6 +1,7 @@
 package com.github.drsgdev.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import com.github.drsgdev.dto.FavoriteRequest;
 import com.github.drsgdev.dto.UserProfileResponse;
 import com.github.drsgdev.model.DBObject;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping(value = "add_favorite")
-    public ResponseEntity<String> addTitleToFavorites(@RequestBody FavoriteRequest req) {
+    public ResponseEntity<String> addTitleToFavorites(@Valid @RequestBody FavoriteRequest req) {
         return res.addTitleToFavorites(req);
     }
 

@@ -10,6 +10,7 @@ import com.github.drsgdev.dto.ReviewRequest;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.util.RatingException;
+import com.github.drsgdev.util.Types;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class RatingService {
         Optional<DBObject> objFromDB = objects.findById(req.getId());
 
         DBObject rating =
-                db.findObjOrCreate("rating", objFromDB.get().getDescr() + req.getUsername());
+                db.findObjOrCreate(Types.RATING, objFromDB.get().getDescr() + req.getUsername());
 
         db.saveOrUpdateNewAttributeValue(req.getId().toString(), "text", "id", rating);
         db.saveOrUpdateNewAttributeValue(req.getUsername(), "text", "username", rating);
@@ -53,7 +54,7 @@ public class RatingService {
 
     public List<Integer> getRatingById(Long id) throws RatingException {
         Optional<List<DBObject>> ratings =
-                objects.findAllByTypeNameAndAttributesTypeNameAndAttributesVal("rating", "id",
+                objects.findAllByTypeNameAndAttributesTypeNameAndAttributesVal(Types.RATING.getValue(), "id",
                         id.toString());
 
         if (!ratings.isPresent()) {
@@ -81,7 +82,7 @@ public class RatingService {
         Optional<DBObject> objFromDB = objects.findById(req.getId());
 
         DBObject review =
-                db.findObjOrCreate("review", objFromDB.get().getDescr() + req.getUsername());
+                db.findObjOrCreate(Types.REVIEW, objFromDB.get().getDescr() + req.getUsername());
 
         db.saveOrUpdateNewAttributeValue(req.getId().toString(), "text", "id", review);
         db.saveOrUpdateNewAttributeValue(req.getUsername(), "text", "username", review);

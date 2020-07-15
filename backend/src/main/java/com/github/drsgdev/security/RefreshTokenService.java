@@ -8,6 +8,7 @@ import com.github.drsgdev.model.DBObjectType;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.service.DBObjectService;
+import com.github.drsgdev.util.Types;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +25,7 @@ public class RefreshTokenService {
     public String generateToken(String username) {
         String token = UUID.randomUUID().toString();
 
-        DBObjectType type = db.findObjTypeByNameOrCreate("refresh_token");
+        DBObjectType type = db.findObjTypeByNameOrCreate(Types.REFRESH_TOKEN);
 
         DBObject tokenObject = new DBObject();
         tokenObject.setType(type);

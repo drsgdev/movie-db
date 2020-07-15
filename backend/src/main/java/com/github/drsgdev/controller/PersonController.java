@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.service.ResponseService;
-
+import com.github.drsgdev.util.Types;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,16 +27,16 @@ public class PersonController {
 
   @GetMapping(value = "/all")
   public ResponseEntity<List<DBObject>> getAllPersons() {
-    return response.fetchAllObjectsByType("person");
+    return response.fetchAllObjectsByType(Types.PERSON);
   }
 
   @GetMapping(value = "/credits/cast")
   public ResponseEntity<List<DBObject>> getCastByPersonId(@RequestParam String id) {
-    return response.fetchCreditsByPersonId(id, "cast");
+    return response.fetchCreditsByPersonId(id, Types.CAST);
   }
 
   @GetMapping(value = "/credits/crew")
   public ResponseEntity<List<DBObject>> getCrewByPersonId(@RequestParam String id) {
-    return response.fetchCreditsByPersonId(id, "crew");
+    return response.fetchCreditsByPersonId(id, Types.CREW);
   }
 }
