@@ -9,6 +9,7 @@ import com.github.drsgdev.dto.RatingRequest;
 import com.github.drsgdev.dto.ReviewRequest;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.repository.DBObjectRepository;
+import com.github.drsgdev.util.AttrTypes;
 import com.github.drsgdev.util.RatingException;
 import com.github.drsgdev.util.Types;
 import org.springframework.stereotype.Service;
@@ -45,9 +46,9 @@ public class RatingService {
         DBObject rating =
                 db.findObjOrCreate(Types.RATING, objFromDB.get().getDescr() + req.getUsername());
 
-        db.saveOrUpdateNewAttributeValue(req.getId().toString(), "text", "id", rating);
-        db.saveOrUpdateNewAttributeValue(req.getUsername(), "text", "username", rating);
-        db.saveOrUpdateNewAttributeValue(req.getRate().toString(), "text", "rate", rating);
+        db.saveOrUpdateNewAttributeValue(req.getId().toString(), AttrTypes.TEXT, "id", rating);
+        db.saveOrUpdateNewAttributeValue(req.getUsername(), AttrTypes.TEXT, "username", rating);
+        db.saveOrUpdateNewAttributeValue(req.getRate().toString(), AttrTypes.TEXT, "rate", rating);
 
         log.info("User {} rated {} for {}", req.getUsername(), req.getId(), req.getRate());
     }
@@ -84,12 +85,12 @@ public class RatingService {
         DBObject review =
                 db.findObjOrCreate(Types.REVIEW, objFromDB.get().getDescr() + req.getUsername());
 
-        db.saveOrUpdateNewAttributeValue(req.getId().toString(), "text", "id", review);
-        db.saveOrUpdateNewAttributeValue(req.getUsername(), "text", "username", review);
-        db.saveOrUpdateNewAttributeValue(req.getTitle(), "text", "title", review);
-        db.saveOrUpdateNewAttributeValue(req.getDescription(), "text", "description", review);
-        db.saveOrUpdateNewAttributeValue(req.getRate().toString(), "text", "rate", review);
-        db.saveOrUpdateNewAttributeValue(req.getDate(), "text", "created", review);
+        db.saveOrUpdateNewAttributeValue(req.getId().toString(), AttrTypes.TEXT, "id", review);
+        db.saveOrUpdateNewAttributeValue(req.getUsername(), AttrTypes.TEXT, "username", review);
+        db.saveOrUpdateNewAttributeValue(req.getTitle(), AttrTypes.TEXT, "title", review);
+        db.saveOrUpdateNewAttributeValue(req.getDescription(), AttrTypes.TEXT, "description", review);
+        db.saveOrUpdateNewAttributeValue(req.getRate().toString(), AttrTypes.TEXT, "rate", review);
+        db.saveOrUpdateNewAttributeValue(req.getDate(), AttrTypes.TEXT, "created", review);
 
         log.info("User {} reviewed {} as {}", req.getUsername(), req.getId(), req.getTitle());
     }

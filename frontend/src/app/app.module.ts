@@ -26,6 +26,7 @@ import { InterceptorService } from './interceptor.service';
 import { PersonPageComponent } from './person-page/person-page.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { ContentListComponent } from './content-list/content-list.component';
+import { VisitedListComponent } from './visited-list/visited-list.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { ContentListComponent } from './content-list/content-list.component';
     PersonPageComponent,
     ProfilePageComponent,
     ContentListComponent,
+    VisitedListComponent,
   ],
   imports: [
     BrowserModule,

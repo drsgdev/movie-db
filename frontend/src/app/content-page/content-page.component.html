@@ -54,7 +54,7 @@
     <div class="mt-3">
       <button
         class="btn btn-outline-success"
-        *ngIf="isLoggedIn()"
+        *ngIf="isLoggedIn() && !isFavorite"
         (click)="favorite()"
       >
         Add to favorites...
@@ -65,6 +65,13 @@
         routerLink="/login"
       >
         Add to favorites...
+      </button>
+      <button
+        class="btn btn-outline-danger"
+        *ngIf="isLoggedIn() && isFavorite"
+        (click)="removeFromFavorite()"
+      >
+        Remove from favorites...
       </button>
     </div>
   </div>
@@ -96,4 +103,8 @@
 <div class="border-bottom pr-3 pl-3">
   <label class="h2 ml-3 mt-3 mb-3">Reviews</label>
   <app-reviews-list [id]="id"></app-reviews-list>
+</div>
+<div class="border-bottom pr-3 pl-3">
+  <label class="h2 ml-3 mt-3 mb-3">Last visited</label>
+  <app-visited-list></app-visited-list>
 </div>

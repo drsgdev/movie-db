@@ -14,6 +14,7 @@ import com.github.drsgdev.repository.AttributeTypeRepository;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
+import com.github.drsgdev.util.AttrTypes;
 import com.github.drsgdev.util.Types;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -146,9 +147,9 @@ public class DBObjectService {
         return attributeFromDB.get();
     }
 
-    public void saveOrUpdateNewAttributeValue(String value, String attrTypeName, String attrName,
+    public void saveOrUpdateNewAttributeValue(String value, AttrTypes attrTypeName, String attrName,
             DBObject obj) {
-        AttributeType attrType = findAttrTypeByNameOrCreate(attrTypeName);
+        AttributeType attrType = findAttrTypeByNameOrCreate(attrTypeName.getValue());
         Attribute attr = findAttrByNameAndTypeOrCreate(attrName, attrType);
 
         Optional<AttributeValue> attrVal =

@@ -16,6 +16,7 @@ export class ContentPageComponent implements OnInit {
   id = 0;
   type: string;
   content: any;
+  isFavorite: boolean;
 
   constructor(
     private db: DatabaseService,
@@ -31,10 +32,11 @@ export class ContentPageComponent implements OnInit {
       this.type = url[0].path;
     });
 
+    this.checkIfFavorite();
+    this.db.addVisited(this.id);
+
     this.db.fetchById(this.id).subscribe((res) => (this.content = res));
   }
-
-  ngOnViewInit() {}
 
   floor(n: number) {
     return Math.floor(n);
@@ -48,6 +50,26 @@ export class ContentPageComponent implements OnInit {
     this.db.favorite(this.id).subscribe(
       (res) => this.toastr.success('This title was added to your favorites'),
       (err) => this.toastr.error('Failed to add this title to your favorites')
+    );
+
+    this.isFavorite = true;
+  }
+
+  removeFromFavorite() {
+    this.db.removeFromFavorite(this.id).subscribe(
+      (res) =>
+        this.toastr.success('This title was removed from your favorites'),
+      (err) =>
+        this.toastr.error('Failed to remove this title from your favorites')
+    );
+
+    this.isFavorite = false;
+  }
+
+  checkIfFavorite() {
+    this.db.isFavorite(this.id).subscribe(
+      (res) => (this.isFavorite = true),
+      (err) => (this.isFavorite = false)
     );
   }
 }

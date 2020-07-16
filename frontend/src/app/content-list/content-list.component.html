@@ -4,8 +4,8 @@
 <div *ngIf="items; else not_found">
   <form>
     <div class="form-group">
-      Search:
-      <input class="form-control ml-2" type="text" [formControl]="filter" />
+      <label>Search</label>
+      <input class="form-control pl-3 pr-3" type="text" [formControl]="filter" />
     </div>
   </form>
   <table class="table table-striped mb-2">

@@ -4,6 +4,7 @@ import java.util.Optional;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.model.DBObjectType;
 import com.github.drsgdev.repository.DBObjectRepository;
+import com.github.drsgdev.util.AttrTypes;
 import com.github.drsgdev.util.Types;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -190,7 +191,7 @@ public class ApiService {
                 value = objId;
             }
 
-            db.saveOrUpdateNewAttributeValue(value, "text", key, object);
+            db.saveOrUpdateNewAttributeValue(value, AttrTypes.TEXT, key, object);
         });
     }
 

@@ -14,6 +14,33 @@ import { RatingComponent } from './rating/rating.component';
 export class DatabaseService {
   constructor(private http: HttpClient, private storage: LocalStorageService) {}
 
+  isFavorite(id: number) {
+    let payload = {
+      id: id,
+      username: this.getUsername(),
+    };
+
+    return this.http.post(environment.apiUrl + '/user/has_favorite', payload);
+  }
+
+  addVisited(id: number) {
+    let payload = {
+      id: id,
+      username: this.getUsername(),
+    };
+    this.http
+      .post(environment.apiUrl + '/user/add_visited', payload)
+      .subscribe();
+  }
+
+  fetchVisited() {
+    return this.http.get<any[]>(environment.apiUrl + '/user/visited', {
+      params: {
+        username: this.getUsername(),
+      },
+    });
+  }
+
   fetchAllByType(type: string) {
     return this.http.get(environment.apiUrl + '/' + type + '/all');
   }
@@ -130,11 +157,26 @@ export class DatabaseService {
   favorite(id: number) {
     let payload = {
       id: id,
-      username: this.storage.retrieve('username'),
+      username: this.getUsername(),
     };
     return this.http.post(environment.apiUrl + '/user/add_favorite', payload, {
       responseType: 'text',
     });
+  }
+
+  removeFromFavorite(id: number) {
+    let payload = {
+      id: id,
+      username: this.getUsername(),
+    };
+
+    return this.http.patch(
+      environment.apiUrl + '/user/favorite/remove',
+      payload,
+      {
+        responseType: 'text',
+      }
+    );
   }
 
   getRating(id: number) {

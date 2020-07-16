@@ -47,5 +47,6 @@
     data-type="person"
     [credit-type]="person.known_for_department != 'Acting' ? 'crew' : 'cast'"
     page-size="5"
+    *ngIf="person"
   ></app-content-slider>
 </div>

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import com.github.drsgdev.dto.AuthResponse;
 import com.github.drsgdev.dto.FavoriteRequest;
+import com.github.drsgdev.dto.LastVisitedRequest;
 import com.github.drsgdev.dto.RatingRequest;
 import com.github.drsgdev.dto.RefreshTokenRequest;
 import com.github.drsgdev.dto.ReviewRequest;
@@ -13,9 +14,11 @@ import com.github.drsgdev.dto.UserProfileResponse;
 import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.security.AuthService;
 import com.github.drsgdev.util.RatingException;
+import com.github.drsgdev.util.RenewAction;
 import com.github.drsgdev.util.SignupFailedException;
 import com.github.drsgdev.util.Types;
 import com.github.drsgdev.util.UserException;
+import com.github.drsgdev.util.UserListTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,14 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ResponseService {
-
-    private enum RenewAction {
-        LOGIN, REFRESH, SIGNUP, VERIFY;
-    };
-
-    private enum UserListType {
-        FAVORITE, RATED, REVIEWED;
-    }
 
     private final DBObjectService db;
     private final CreditsService credits;
@@ -253,26 +248,43 @@ public class ResponseService {
         return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
     }
 
+    public ResponseEntity<String> removeTitleFromFavorites(FavoriteRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Title was removed from your favorites";
+
+        userService.removeFavorite(req);
+
+        return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+      }
+
+    public void addTitleToLastVisited(LastVisitedRequest req) {
+        userService.addLastVisited(req);
+    }
+
+    public ResponseEntity<List<DBObject>> getUserLastVisited(String username) {
+        return getUserTitles(username, UserListTypes.LAST_VISITED);
+    }
+
     public ResponseEntity<List<DBObject>> getUserFavorites(String username) {
-        return getUserTitles(username, UserListType.FAVORITE);
+        return getUserTitles(username, UserListTypes.FAVORITES);
     }
 
     public ResponseEntity<List<DBObject>> getUserRated(String username) {
-        return getUserTitles(username, UserListType.RATED);
+        return getUserTitles(username, UserListTypes.RATED);
     }
 
     public ResponseEntity<List<DBObject>> getUserReviewed(String username) {
-        return getUserTitles(username, UserListType.REVIEWED);
+        return getUserTitles(username, UserListTypes.REVIEWED);
     }
 
-    private ResponseEntity<List<DBObject>> getUserTitles(String username, UserListType type) {
+    private ResponseEntity<List<DBObject>> getUserTitles(String username, UserListTypes type) {
         HttpStatus status = HttpStatus.OK;
 
         List<DBObject> res = new ArrayList<>();
 
         try {
             switch (type) {
-                case FAVORITE:
+                case FAVORITES:
                     res = userService.getFavorites(username);
                     break;
                 case RATED:
@@ -280,6 +292,9 @@ public class ResponseService {
                     break;
                 case REVIEWED:
                     res = userService.getReviewed(username);
+                    break;
+                case LAST_VISITED:
+                    res = userService.getLastVisited(username);
                     break;
             }
         } catch (UserException ex) {
@@ -289,5 +304,16 @@ public class ResponseService {
         }
 
         return ResponseEntity.status(status).body(res);
+    }
+
+    public ResponseEntity<Boolean> isInFavorites(FavoriteRequest req) {
+        HttpStatus status = HttpStatus.OK;
+
+        boolean isFavorite = userService.hasInFavorites(req);
+        if (!isFavorite) {
+            status = HttpStatus.NOT_FOUND;
+        }
+
+        return ResponseEntity.status(status).body(isFavorite);
     }
 }

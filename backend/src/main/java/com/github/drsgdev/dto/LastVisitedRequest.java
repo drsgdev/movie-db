@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FavoriteRequest implements UserListRequest {
+public class LastVisitedRequest implements UserListRequest {
 
     @NotBlank
     private String id;

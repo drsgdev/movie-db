@@ -23,7 +23,6 @@ export class PersonPageComponent implements OnInit {
       this.id = params['id'];
     });
 
-
     this.db.fetchPersonById(this.id).subscribe(
       (res) => {
         this.person = res;

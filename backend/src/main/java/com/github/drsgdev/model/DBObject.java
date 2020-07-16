@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
+import com.github.drsgdev.util.AttrTypes;
 import org.hibernate.annotations.DynamicUpdate;
 
 import lombok.Data;
@@ -65,9 +65,9 @@ public class DBObject {
     this.attributeMap.put(name, value);
   }
 
-  public void addAttribute(String type, String name, String value) {
+  public void addAttribute(AttrTypes type, String name, String value) {
     AttributeType attrType = new AttributeType();
-    attrType.setName(type);
+    attrType.setName(type.getValue());
 
     Attribute attr = new Attribute();
     attr.setName(name);

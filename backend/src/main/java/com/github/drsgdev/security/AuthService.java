@@ -15,6 +15,7 @@ import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.repository.DBObjectTypeRepository;
 import com.github.drsgdev.service.DBObjectService;
 import com.github.drsgdev.service.EmailService;
+import com.github.drsgdev.util.AttrTypes;
 import com.github.drsgdev.util.SignupFailedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,19 +62,20 @@ public class AuthService {
 
         user.setType(type);
         user.setDescr(request.getUsername());
-        user.addAttribute("text", "username", request.getUsername());
-        user.addAttribute("text", "password", encoder.encode(request.getPassword()));
-        user.addAttribute("text", "email", request.getEmail());
-        user.addAttribute("text", "created", Instant.now().toString());
-        user.addAttribute("text", "enabled", Boolean.toString(false));
+        user.addAttribute(AttrTypes.TEXT, "username", request.getUsername());
+        user.addAttribute(AttrTypes.TEXT, "password", encoder.encode(request.getPassword()));
+        user.addAttribute(AttrTypes.TEXT, "email", request.getEmail());
+        user.addAttribute(AttrTypes.TEXT, "created", Instant.now().toString());
+        user.addAttribute(AttrTypes.TEXT, "enabled", Boolean.toString(false));
 
         String token = generateVerificationToken(user);
 
         objTypes.save(user.getType());
         objects.save(user);
         user.getAttributes().forEach((attr) -> {
-            db.saveOrUpdateNewAttributeValue(attr.getVal(), attr.getType().getType().getName(),
-                    attr.getType().getName(), user);
+            db.saveOrUpdateNewAttributeValue(attr.getVal(),
+                    AttrTypes.valueOf(attr.getType().getType().getName()), attr.getType().getName(),
+                    user);
         });
 
         log.info("Saved new user: {}", request.getUsername());
@@ -182,7 +184,7 @@ public class AuthService {
     private String generateVerificationToken(DBObject user) {
         String token = UUID.randomUUID().toString();
 
-        user.addAttribute("text", "verification_token", token);
+        user.addAttribute(AttrTypes.TEXT, "verification_token", token);
 
         return token;
     }

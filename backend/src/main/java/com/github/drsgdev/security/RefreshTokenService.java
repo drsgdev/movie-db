@@ -8,6 +8,7 @@ import com.github.drsgdev.model.DBObjectType;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.service.DBObjectService;
+import com.github.drsgdev.util.AttrTypes;
 import com.github.drsgdev.util.Types;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class RefreshTokenService {
 
         objects.save(tokenObject);
 
-        db.saveOrUpdateNewAttributeValue(username, "text", "username", tokenObject);
+        db.saveOrUpdateNewAttributeValue(username, AttrTypes.TEXT, "username", tokenObject);
 
         return token;
     }
