@@ -21,30 +21,45 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-  private final ResponseService response;
+    private final ResponseService response;
 
-  @PostMapping(value = "/signup")
-  public ResponseEntity<String> signup(@Valid @RequestBody SignupRequest req) {
-    return response.signup(req);
-  }
+    @PostMapping(value = "/signup")
+    public ResponseEntity<String> signup(@Valid @RequestBody SignupRequest req) {
+        return response.signup(req);
+    }
 
-  @GetMapping(value = "/verify")
-  public ResponseEntity<String> verify(@RequestParam String token) {
-    return response.verifyUser(token);
-  }
+    @GetMapping(value = "/verify")
+    public ResponseEntity<String> verify(@RequestParam String token) {
+        return response.verifyUser(token);
+    }
 
-  @PostMapping(value = "/login")
-  public ResponseEntity<AuthResponse> login(@Valid @RequestBody SignupRequest req) {
-    return response.login(req);
-  }
+    @PostMapping(value = "/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody SignupRequest req) {
+        return response.login(req);
+    }
 
-  @PostMapping(value = "/logout")
-  public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest req) {
-    return response.logout(req);
-  }
+    @PostMapping(value = "/logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest req) {
+        return response.logout(req);
+    }
 
-  @PostMapping(value = "/refresh")
-  public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest req) {
-    return response.refresh(req);
-  }
+    @PostMapping(value = "/refresh")
+    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest req) {
+        return response.refresh(req);
+    }
+
+    @GetMapping(value = "/status")
+    public ResponseEntity<String> status(@RequestParam String username) {
+        return response.status(username);
+    }
+
+    @GetMapping(value = "/ban")
+    public ResponseEntity<String> banUser(@RequestParam String username) {
+        return response.ban(username);
+    }
+
+    @GetMapping(value = "/unban")
+    public ResponseEntity<String> unbanUser(@RequestParam String username) {
+        return response.unban(username);
+    }
 }

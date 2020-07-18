@@ -3,6 +3,7 @@ package com.github.drsgdev.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import com.github.drsgdev.dto.AuthResponse;
 import com.github.drsgdev.dto.FavoriteRequest;
 import com.github.drsgdev.dto.LastVisitedRequest;
@@ -64,8 +65,8 @@ public class ResponseService {
         return createResponse(castList);
     }
 
-    public ResponseEntity<List<DBObject>> fetchCreditsByMovieId(String id, Types type) {
-        Optional<List<DBObject>> castList = credits.findCreditsByMovieId(id, type);
+    public ResponseEntity<List<DBObject>> fetchCreditsByTitleId(String id, Types type) {
+        Optional<List<DBObject>> castList = credits.findCreditsByTitleId(id, type);
 
         return createResponse(castList);
     }
@@ -87,6 +88,33 @@ public class ResponseService {
             res.setUsername(username);
             res.setEmail(user.get().getAttributeMap().get("email"));
             res.setCreated(user.get().getAttributeMap().get("created"));
+            res.setLocked(user.get().getAttributeMap().get("locked"));
+            res.setRole(user.get().getAttributeMap().get("role"));
+        } else {
+            status = HttpStatus.NOT_FOUND;
+        }
+
+        return ResponseEntity.status(status).body(res);
+    }
+
+    public ResponseEntity<List<UserProfileResponse>> fetchAllUsers() {
+        Optional<List<DBObject>> users = userService.findAllUsers();
+        HttpStatus status = HttpStatus.OK;
+        List<UserProfileResponse> res = new ArrayList<>();
+
+        if (users.isPresent()) {
+            db.mapAttributes(users.get());
+
+            res = users.get().parallelStream().map(user -> {
+                UserProfileResponse profile = new UserProfileResponse();
+                profile.setUsername(user.getDescr());
+                profile.setEmail(user.getAttributeMap().get("email"));
+                profile.setCreated(user.getAttributeMap().get("created"));
+                profile.setLocked(user.getAttributeMap().get("locked"));
+                profile.setRole(user.getAttributeMap().get("role"));
+
+                return profile;
+            }).collect(Collectors.toList());
         } else {
             status = HttpStatus.NOT_FOUND;
         }
@@ -189,6 +217,39 @@ public class ResponseService {
         return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
     }
 
+    public ResponseEntity<String> status(String username) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "User is logged in";
+
+        try {
+            authService.status(username);
+        } catch (UserException ex) {
+            status = HttpStatus.BAD_REQUEST;
+            message = ex.getMessage();
+        }
+
+        return ResponseEntity.status(status).body(message);
+    }
+
+    public ResponseEntity<String> ban(String username) {
+        if (username.equals("admin")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Admin cannot be banned");
+        }
+        String message = "User banned";
+
+        authService.ban(username);
+
+        return ResponseEntity.ok(message);
+    }
+
+    public ResponseEntity<String> unban(String username) {
+        String message = "User unbanned";
+
+        authService.unban(username);
+
+        return ResponseEntity.ok(message);
+    }
+
     public ResponseEntity<String> rateObject(RatingRequest req) {
         HttpStatus status = HttpStatus.OK;
         String message = "Rating saved";
@@ -255,7 +316,7 @@ public class ResponseService {
         userService.removeFavorite(req);
 
         return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
-      }
+    }
 
     public void addTitleToLastVisited(LastVisitedRequest req) {
         userService.addLastVisited(req);

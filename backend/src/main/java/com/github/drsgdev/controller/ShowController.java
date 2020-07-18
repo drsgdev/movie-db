@@ -31,13 +31,13 @@ public class ShowController {
   }
 
   @GetMapping(value = "/credits/cast")
-  public ResponseEntity<List<DBObject>> getCastByMovieId(@RequestParam String id) {
-    return response.fetchCreditsByMovieId(id, Types.CAST);
+  public ResponseEntity<List<DBObject>> getCastByShowId(@RequestParam String id) {
+    return response.fetchCreditsByTitleId(id, Types.CAST);
   }
 
   @GetMapping(value = "/credits/crew")
-  public ResponseEntity<List<DBObject>> getCreditsByMovieId(@RequestParam String id) {
-    return response.fetchCreditsByMovieId(id, Types.CREW);
+  public ResponseEntity<List<DBObject>> getCreditsByShowId(@RequestParam String id) {
+    return response.fetchCreditsByTitleId(id, Types.CREW);
   }
 
 }

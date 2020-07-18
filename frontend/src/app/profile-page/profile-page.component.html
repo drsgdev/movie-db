@@ -85,6 +85,9 @@
   </div>
 </div>
 <div class="mt-3 pr-3 pl-3 border-bottom">
-  <label class="h2 ml-2 mb-3">Last visited</label>
+  <label class="h2 mb-3">Last visited</label>
   <app-visited-list></app-visited-list>
+</div>
+<div class="mt-3 pr-3 pl-3 border-bottom" *ngIf="user && user.role === 'admin' && loggedIn()">
+    <app-admin-panel></app-admin-panel>
 </div>

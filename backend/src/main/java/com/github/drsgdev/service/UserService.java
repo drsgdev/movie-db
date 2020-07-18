@@ -12,6 +12,7 @@ import com.github.drsgdev.model.DBObject;
 import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.util.AttrTypes;
+import com.github.drsgdev.util.Types;
 import com.github.drsgdev.util.UserException;
 import com.github.drsgdev.util.UserListRequest;
 import com.github.drsgdev.util.UserListTypes;
@@ -154,7 +155,11 @@ public class UserService {
     }
 
     public Optional<DBObject> findUser(String username) {
-        return objects.findByDescrAndTypeName(username, "user");
+        return objects.findByDescrAndTypeName(username, Types.USER.getValue());
+    }
+
+    public Optional<List<DBObject>> findAllUsers() {
+        return objects.findAllByTypeName(Types.USER.getValue());
     }
 
     public Optional<AttributeValue> findUserList(Long userId, UserListTypes listType) {

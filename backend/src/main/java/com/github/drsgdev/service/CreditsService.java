@@ -18,7 +18,7 @@ public class CreditsService {
     return findCredits(id, type, "person_id");
   }
 
-  public Optional<List<DBObject>> findCreditsByMovieId(String id, Types type) {
+  public Optional<List<DBObject>> findCreditsByTitleId(String id, Types type) {
     return findCredits(id, type, "id");
   }
 

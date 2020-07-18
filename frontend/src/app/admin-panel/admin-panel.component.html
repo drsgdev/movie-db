@@ -1,0 +1,74 @@
+<label class="h2 mt-2 mb-3">All users</label>
+<div *ngIf="items; else not_found">
+  <form>
+    <div class="form-group">
+      <label>Search</label>
+      <input
+        class="form-control pl-3 pr-3"
+        type="text"
+        [formControl]="filter"
+      />
+    </div>
+  </form>
+  <table class="table table-striped mb-2">
+    <thead>
+      <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Role</th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        class="text-decoration-none"
+        *ngFor="
+          let data of itemsToOutput
+            | async
+            | slice: (page - 1) * pageSize:(page - 1) * pageSize + pageSize
+        "
+      >
+        <td
+          class="nav-link"
+          routerLink="/user/{{ data.username }}"
+          style="cursor: pointer;"
+        >
+          {{ data.username }}
+        </td>
+        <td>{{ data.email }}</td>
+        <td>{{ data.role }}</td>
+        <td>
+          <button
+            class="btn btn-outline-success"
+            (click)="ban(data.username)"
+            *ngIf="data.locked === 'false'"
+          >
+            Unlocked
+          </button>
+          <button
+            class="btn btn-outline-danger"
+            (click)="unban(data.username)"
+            *ngIf="data.locked === 'true'"
+          >
+            Banned
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-between">
+    <ngb-pagination
+      [(page)]="page"
+      [pageSize]="pageSize"
+      [collectionSize]="items.length"
+    ></ngb-pagination>
+    <select class="custom-select" style="width: auto;" [(ngModel)]="pageSize">
+      <option [ngValue]="5">5 items per page</option>
+      <option [ngValue]="10">10 items per page</option>
+      <option [ngValue]="15">15 items per page</option>
+    </select>
+  </div>
+</div>
+<ng-template #not_found>
+  <div>Nothing to show here :(</div>
+</ng-template>

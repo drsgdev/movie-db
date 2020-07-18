@@ -11,4 +11,6 @@ public class UserProfileResponse {
     private String username;
     private String email;
     private String created;
+    private String locked;
+    private String role;
 }

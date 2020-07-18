@@ -17,11 +17,14 @@ import com.github.drsgdev.service.DBObjectService;
 import com.github.drsgdev.service.EmailService;
 import com.github.drsgdev.util.AttrTypes;
 import com.github.drsgdev.util.SignupFailedException;
+import com.github.drsgdev.util.Types;
+import com.github.drsgdev.util.UserException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,7 @@ public class AuthService {
     private final EmailService email;
     private final AuthenticationManager auth;
     private final JWTProvider jwtProvider;
+    private final UserDetailsServiceImpl userDetails;
 
     private final RefreshTokenService refreshService;
     private final DBObjectService db;
@@ -60,13 +64,18 @@ public class AuthService {
         DBObjectType type = new DBObjectType();
         type.setName("user");
 
+        String role = request.getUsername().equals("admin") ? "admin" : "user";
+        String enabled = request.getUsername().equals("admin") ? "true" : "false";
+
         user.setType(type);
         user.setDescr(request.getUsername());
         user.addAttribute(AttrTypes.TEXT, "username", request.getUsername());
         user.addAttribute(AttrTypes.TEXT, "password", encoder.encode(request.getPassword()));
         user.addAttribute(AttrTypes.TEXT, "email", request.getEmail());
         user.addAttribute(AttrTypes.TEXT, "created", Instant.now().toString());
-        user.addAttribute(AttrTypes.TEXT, "enabled", Boolean.toString(false));
+        user.addAttribute(AttrTypes.TEXT, "enabled", enabled);
+        user.addAttribute(AttrTypes.TEXT, "locked", Boolean.toString(false));
+        user.addAttribute(AttrTypes.TEXT, "role", role);
 
         String token = generateVerificationToken(user);
 
@@ -74,14 +83,16 @@ public class AuthService {
         objects.save(user);
         user.getAttributes().forEach((attr) -> {
             db.saveOrUpdateNewAttributeValue(attr.getVal(),
-                    AttrTypes.valueOf(attr.getType().getType().getName()), attr.getType().getName(),
-                    user);
+                    AttrTypes.parseValue(attr.getType().getType().getName()),
+                    attr.getType().getName(), user);
         });
 
         log.info("Saved new user: {}", request.getUsername());
 
-        email.send(new SignupEmail(request.getEmail(), "Please activate your account",
-                "http://localhost:8081/api/auth/verify?token=" + token));
+        if (request.getUsername() != "admin") {
+            email.send(new SignupEmail(request.getEmail(), "Please activate your account",
+                    "http://localhost:8081/api/auth/verify?token=" + token));
+        }
     }
 
     public void verify(String token) throws SignupFailedException {
@@ -107,8 +118,7 @@ public class AuthService {
 
         Authentication authentication;
         try {
-            log.info("Trying to log user {} with password {}", request.getUsername(),
-                    request.getPassword());
+            log.info("Trying to log user {}", request.getUsername());
             authentication =
                     auth.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
                             request.getPassword()));
@@ -125,6 +135,25 @@ public class AuthService {
         String token = jwtProvider.generateJWT(authentication);
 
         return token;
+    }
+
+    public void status(String username) throws UserException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null) {
+            throw new UserException("User is not authenticated");
+        }
+
+        UserDetails user = userDetails.loadUserByUsername(username);
+        if (!user.isEnabled()) {
+            throw new UserException("User is disabled");
+        }
+        if (!user.isAccountNonLocked()) {
+            throw new UserException("User is banned");
+        }
+        if (!refreshService.validateToken(username)) {
+            throw new UserException("User is logged out");
+        }
     }
 
     public String refresh(RefreshTokenRequest request) throws SignupFailedException {
@@ -187,5 +216,18 @@ public class AuthService {
         user.addAttribute(AttrTypes.TEXT, "verification_token", token);
 
         return token;
+    }
+
+    public void ban(String username) {
+        setLocked(username, true);
+    }
+
+    public void unban(String username) {
+        setLocked(username, false);
+    }
+
+    private void setLocked(String username, Boolean value) {
+        DBObject user = objects.findByDescrAndTypeName(username, Types.USER.getValue()).get();
+        db.saveOrUpdateNewAttributeValue(value.toString(), AttrTypes.TEXT, "locked", user);
     }
 }

@@ -33,15 +33,21 @@ export class ContentSliderComponent implements OnInit {
     if (this.creditType) {
       this.db
         .fetchCreditsById(this.id, this.dataType, this.creditType)
-        .subscribe((res) => {
+        .subscribe(
+          (res) => {
+            this.data = <any[]>res;
+            this.pages = Math.ceil(this.data.length / this.objectsPerPage);
+          },
+          (err) => {}
+        );
+    } else {
+      this.db.fetchAllByType(this.dataType).subscribe(
+        (res) => {
           this.data = <any[]>res;
           this.pages = Math.ceil(this.data.length / this.objectsPerPage);
-        });
-    } else {
-      this.db.fetchAllByType(this.dataType).subscribe((res) => {
-        this.data = <any[]>res;
-        this.pages = Math.ceil(this.data.length / this.objectsPerPage);
-      });
+        },
+        (err) => {}
+      );
     }
   }
 
@@ -65,6 +71,6 @@ export class ContentSliderComponent implements OnInit {
   }
 
   isMovieList() {
-      return !this.isPersonCredits() && !this.creditType;
+    return !this.isPersonCredits() && !this.creditType;
   }
 }

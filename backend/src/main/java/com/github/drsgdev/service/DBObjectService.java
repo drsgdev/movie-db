@@ -64,7 +64,7 @@ public class DBObjectService {
             return Optional.empty();
         }
 
-        log.info("Found {} objects: {}", objectList.get().size(), objectList.get());
+        log.info("Found {} objects of type {}", objectList.get().size(), type.getValue());
 
         mapAttributes(objectList.get());
 

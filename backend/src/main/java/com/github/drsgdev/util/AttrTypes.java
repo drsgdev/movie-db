@@ -11,4 +11,8 @@ public enum AttrTypes {
     AttrTypes(String value) {
         this.value = value;
     }
+
+    public static AttrTypes parseValue(String arg) {
+        return valueOf(arg.toUpperCase());
+    }
 }

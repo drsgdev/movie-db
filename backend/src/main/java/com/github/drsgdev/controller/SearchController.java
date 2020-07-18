@@ -28,16 +28,16 @@ public class SearchController {
     @GetMapping(value = "/{type}")
     public ResponseEntity<List<DBObject>> getObjectByType(
             @PathVariable(value = "type") String type) {
-        return response.fetchAllObjectsByType(Types.valueOf(type));
+        return response.fetchAllObjectsByType(Types.parseValue(type));
     }
 
     @GetMapping(value = "/credits/cast")
-    public ResponseEntity<List<DBObject>> getCastByMovieId(@RequestParam String id) {
-        return response.fetchCreditsByMovieId(id, Types.CAST);
+    public ResponseEntity<List<DBObject>> getCastByTitleId(@RequestParam String id) {
+        return response.fetchCreditsByTitleId(id, Types.CAST);
     }
 
     @GetMapping(value = "/credits/crew")
-    public ResponseEntity<List<DBObject>> getCrewByMovieId(@RequestParam String id) {
-        return response.fetchCreditsByMovieId(id, Types.CREW);
+    public ResponseEntity<List<DBObject>> getCrewByTitleId(@RequestParam String id) {
+        return response.fetchCreditsByTitleId(id, Types.CREW);
     }
 }

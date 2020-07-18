@@ -12,4 +12,8 @@ public enum Types {
     Types(String value) {
         this.value = value;
     }
+
+    public static Types parseValue(String arg) {
+        return valueOf(arg.toUpperCase());
+    }
 }

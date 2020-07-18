@@ -1,12 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { LocalStorageService } from 'ngx-webstorage';
 import { map, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { Auth } from './auth';
-import { Review } from './review';
 import { Rating } from './rating';
-import { RatingComponent } from './rating/rating.component';
+import { Review } from './review';
 
 @Injectable({
   providedIn: 'root',
@@ -215,7 +214,26 @@ export class DatabaseService {
     return this.http.get<any[]>(environment.apiUrl + '/user/reviewed', {
       params: {
         username: username,
+        responseType: 'text',
       },
+    });
+  }
+
+  ban(username: string) {
+    return this.http.get(environment.apiUrl + '/api/auth/ban', {
+      params: {
+        username: username,
+      },
+      responseType: 'text',
+    });
+  }
+
+  unban(username: string) {
+    return this.http.get(environment.apiUrl + '/api/auth/unban', {
+      params: {
+        username: username,
+      },
+      responseType: 'text',
     });
   }
 

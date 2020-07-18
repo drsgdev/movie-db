@@ -20,13 +20,22 @@ export class ProfilePageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    route.params.subscribe((params) => (this.username = params['username']));
+    route.params.subscribe((params) => {
+      this.username = params['username'];
+      this.updateInfo();
+    });
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  loggedIn() {
+    return this.db.isLoggedIn();
+  }
+
+  updateInfo() {
     this.db.fetchUser(this.username).subscribe(
       (res) => (this.user = res),
-      (err) => this.router.navigate(['/404'])
+      (err) => this.router.navigateByUrl('/404')
     );
 
     this.db.getFavorites(this.username).subscribe(

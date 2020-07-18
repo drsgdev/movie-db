@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -21,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class JWTAuthFilter extends OncePerRequestFilter {
 
     private final JWTProvider provider;
-    private final UserDetailsService userDetails;
+    private final UserDetailsServiceImpl userDetails;
     private final RefreshTokenService refreshService;
 
     @Override
@@ -35,15 +34,15 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             provider.validateJWT(jwt);
         } catch (JwtException | IllegalArgumentException ex) {
             jwtIsValid = false;
-            SecurityContextHolder.clearContext();
         }
 
-        if (StringUtils.hasText(jwt) && jwtIsValid) {
+        if (StringUtils.hasText(jwt) && jwtIsValid
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
             String username = provider.getUsernameFromJWT(jwt);
 
             UserDetails user = userDetails.loadUserByUsername(username);
 
-            if (user.isEnabled() && refreshService.validateToken(username)) {
+            if (user.isEnabled() && user.isAccountNonLocked() && refreshService.validateToken(username)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(user.getUsername(), null,
                                 user.getAuthorities());

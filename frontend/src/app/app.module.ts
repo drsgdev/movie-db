@@ -27,6 +27,7 @@ import { PersonPageComponent } from './person-page/person-page.component';
 import { ProfilePageComponent } from './profile-page/profile-page.component';
 import { ContentListComponent } from './content-list/content-list.component';
 import { VisitedListComponent } from './visited-list/visited-list.component';
+import { AdminPanelComponent } from './admin-panel/admin-panel.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { VisitedListComponent } from './visited-list/visited-list.component';
     ProfilePageComponent,
     ContentListComponent,
     VisitedListComponent,
+    AdminPanelComponent,
   ],
   imports: [
     BrowserModule,

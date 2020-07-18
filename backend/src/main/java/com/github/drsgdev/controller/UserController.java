@@ -27,6 +27,11 @@ public class UserController {
 
     private final ResponseService res;
 
+    @GetMapping(value = "/all")
+    public ResponseEntity<List<UserProfileResponse>> getAllUsers() {
+        return res.fetchAllUsers();
+    }
+
     @GetMapping(value = "/{username}")
     public ResponseEntity<UserProfileResponse> findUser(@PathVariable("username") String username) {
         return res.fetchUserProfile(username);
@@ -68,7 +73,8 @@ public class UserController {
     }
 
     @PatchMapping(value = "/favorite/remove")
-    public ResponseEntity<String> removeTitleFromFavorites(@Valid @RequestBody FavoriteRequest req) {
+    public ResponseEntity<String> removeTitleFromFavorites(
+            @Valid @RequestBody FavoriteRequest req) {
         return res.removeTitleFromFavorites(req);
     }
 }

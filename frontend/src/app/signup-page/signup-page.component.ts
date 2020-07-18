@@ -26,7 +26,7 @@ export class SignupPageComponent implements OnInit {
   signup() {
     this.db.signup(this.payload).subscribe(
       () => {
-        this.router.navigate(['/login'], {
+        this.router.navigateByUrl('/login', {
           queryParams: { registered: 'true' },
         });
       },

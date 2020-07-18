@@ -28,7 +28,7 @@ export class PersonPageComponent implements OnInit {
         this.person = res;
       },
       (err) => {
-        this.router.navigate(['404']);
+        this.router.navigateByUrl('404');
       }
     );
   }

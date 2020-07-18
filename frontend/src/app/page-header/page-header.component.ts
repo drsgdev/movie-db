@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../database.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-page-header',
@@ -7,7 +8,7 @@ import { DatabaseService } from '../database.service';
   styleUrls: ['./page-header.component.scss'],
 })
 export class PageHeaderComponent implements OnInit {
-  constructor(private db: DatabaseService) {}
+  constructor(private db: DatabaseService, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -17,9 +18,10 @@ export class PageHeaderComponent implements OnInit {
 
   logout() {
     this.db.logout();
+    this.router.navigate(['/']);
   }
 
   username() {
-      return this.db.getUsername();
+    return this.db.getUsername();
   }
 }
