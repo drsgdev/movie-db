@@ -102,8 +102,13 @@ public class UserService {
     }
 
     private List<DBObject> getList(String username, UserListTypes listType) {
-        DBObject user = findUser(username).get();
-        Optional<AttributeValue> favorites = findUserList(user.getId(), listType);
+        Optional<DBObject> user = findUser(username);
+
+        if (!user.isPresent()) {
+            throw new UserException("User " + username + " not found");
+        }
+
+        Optional<AttributeValue> favorites = findUserList(user.get().getId(), listType);
 
         if (!favorites.isPresent()) {
             throw new UserException("User " + username + " has no " + listType.getValue());

@@ -38,10 +38,13 @@
   </div>
   <div class="col-7 flex-fill d-flex flex-column">
     <div>
-      <p class="h2 mt-2">
+      <p class="h2 mt-2" *ngIf="content.title">
         {{ content.title }}
       </p>
-      <p class="lead">
+      <p class="h2 mt-2" *ngIf="content.name">
+        {{ content.name }}
+      </p>
+      <p class="lead" *ngIf="content.tagline">
         {{ content.tagline }}
       </p>
     </div>

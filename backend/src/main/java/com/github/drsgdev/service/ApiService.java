@@ -151,9 +151,10 @@ public class ApiService {
             creditList.add(json);
         }
 
-        parseObject(creditType, creditList.get(0));
-
-        creditList.parallelStream().forEach(record -> parseObject(creditType, record));
+        if (!creditList.isEmpty()) {
+            parseObject(creditType, creditList.get(0));
+            creditList.parallelStream().forEach(record -> parseObject(creditType, record));
+        }
 
         return status;
     }
