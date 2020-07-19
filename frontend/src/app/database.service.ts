@@ -154,12 +154,16 @@ export class DatabaseService {
       .post(environment.apiUrl + '/api/auth/logout', payload, {
         responseType: 'text',
       })
-      .subscribe(null, null, () => {
-        this.storage.clear('authToken');
-        this.storage.clear('refreshToken');
-        this.storage.clear('expiresAt');
-        this.updateLoginState();
-      });
+      .subscribe(
+        null,
+        (err) => this.updateLoginState(),
+        () => {
+          this.storage.clear('authToken');
+          this.storage.clear('refreshToken');
+          this.storage.clear('expiresAt');
+          this.updateLoginState();
+        }
+      );
   }
 
   role() {

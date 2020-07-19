@@ -1,4 +1,4 @@
-<div *ngIf="visited">
+<div *ngIf="visited && isLoggedIn">
   <label class="h2 ml-3 mt-3 mb-3">Last visited</label>
   <div class="d-flex overflow-auto m-3">
     <div class="col-3" *ngFor="let obj of visited; index as favIdx">

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../database.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-visited-list',
@@ -9,9 +10,17 @@ import { DatabaseService } from '../database.service';
 export class VisitedListComponent implements OnInit {
   visited: any[];
 
-  constructor(private db: DatabaseService) {}
+  loginSubscription: Subscription;
+  isLoggedIn: boolean;
+
+  constructor(private db: DatabaseService) {
+    this.loginSubscription = this.db.isLoggedIn$.subscribe((res) => {
+      this.isLoggedIn = res;
+    });
+  }
 
   ngOnInit(): void {
+    this.db.updateLoginState();
     this.db.fetchVisited().subscribe(
       (res) => (this.visited = res),
       (err) => {}
