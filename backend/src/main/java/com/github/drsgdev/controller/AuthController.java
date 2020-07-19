@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @GetMapping(value = "/status")
-    public ResponseEntity<String> status(@RequestParam String username) {
+    public ResponseEntity<Boolean> status(@RequestParam String username) {
         return response.status(username);
     }
 

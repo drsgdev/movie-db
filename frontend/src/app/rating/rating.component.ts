@@ -1,14 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService } from '../database.service';
-import {
-  map,
-  debounceTime,
-  distinctUntilChanged,
-  tap,
-  switchMap,
-  catchError,
-} from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-rating',
@@ -40,19 +31,19 @@ export class RatingComponent implements OnInit {
     this.average = 0;
 
     this.db.getRating(this.id).subscribe(
-        res => {
-            this.ratings = res;
+      (res) => {
+        this.ratings = res;
 
-            this.total = res.reduce((sum, curr) => (sum += curr));
-          this.relative_ratings = res.slice();
-          this.relative_ratings.forEach((val, index) => {
-            this.average += val * (5 - index);
-            this.relative_ratings[index] = (val / this.total) * 100;
-          }, this);
+        this.total = res.reduce((sum, curr) => (sum += curr));
+        this.relative_ratings = res.slice();
+        this.relative_ratings.forEach((val, index) => {
+          this.average += val * (5 - index);
+          this.relative_ratings[index] = (val / this.total) * 100;
+        }, this);
 
-          this.average = this.average / this.total;
-        },
-        err => {}
+        this.average = this.average / this.total;
+      },
+      (err) => {}
     );
   }
 }

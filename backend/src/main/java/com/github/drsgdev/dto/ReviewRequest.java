@@ -2,6 +2,7 @@ package com.github.drsgdev.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,9 +20,11 @@ public class ReviewRequest {
     private Integer rate = 0;
 
     @NotBlank
+    @Size(max = 50)
     private String title;
 
     @NotBlank
+    @Size(min = 50)
     private String description;
 
     private String date;

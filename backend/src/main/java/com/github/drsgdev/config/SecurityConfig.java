@@ -36,10 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/rate",
                              "/review")
                     .authenticated()
-                .antMatchers("/api/auth/ban/**",
-                             "/api/auth/unban/**",
-                             "/review/delete/**",
-                             "/user/all/**")
+                .antMatchers("/api/auth/ban",
+                             "/api/auth/unban",
+                             "/review/delete",
+                             "/user/all")
                     .hasAuthority("admin")
                 .antMatchers("/movie/**",
                              "/show/**",

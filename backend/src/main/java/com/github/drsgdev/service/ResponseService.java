@@ -217,18 +217,18 @@ public class ResponseService {
         return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
     }
 
-    public ResponseEntity<String> status(String username) {
+    public ResponseEntity<Boolean> status(String username) {
         HttpStatus status = HttpStatus.OK;
-        String message = "User is logged in";
+        Boolean loggedIn = true;
 
         try {
             authService.status(username);
         } catch (UserException ex) {
             status = HttpStatus.BAD_REQUEST;
-            message = ex.getMessage();
+            loggedIn = false;
         }
 
-        return ResponseEntity.status(status).body(message);
+        return ResponseEntity.status(status).body(loggedIn);
     }
 
     public ResponseEntity<String> ban(String username) {
@@ -280,6 +280,15 @@ public class ResponseService {
         String message = "Review saved";
 
         ratingService.review(req);
+
+        return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
+    }
+
+    public ResponseEntity<String> deleteReview(ReviewRequest req) {
+        HttpStatus status = HttpStatus.OK;
+        String message = "Review deleted";
+
+        ratingService.deleteReview(req);
 
         return ResponseEntity.status(status).contentType(MediaType.TEXT_PLAIN).body(message);
     }

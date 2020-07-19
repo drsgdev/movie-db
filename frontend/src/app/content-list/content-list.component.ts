@@ -1,9 +1,8 @@
-import { Component, OnInit, PipeTransform } from '@angular/core';
-import { DatabaseService } from '../database.service';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
-import { DecimalPipe } from '@angular/common';
+import { map, startWith } from 'rxjs/operators';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-content-list',

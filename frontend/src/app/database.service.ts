@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from 'ngx-webstorage';
+import { BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Auth } from './auth';
@@ -11,6 +12,12 @@ import { Review } from './review';
   providedIn: 'root',
 })
 export class DatabaseService {
+  private roleSubject = new BehaviorSubject<boolean>(false);
+  isAdmin$ = this.roleSubject.asObservable();
+
+  private loginSubject = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.loginSubject.asObservable();
+
   constructor(private http: HttpClient, private storage: LocalStorageService) {}
 
   isFavorite(id: number) {
@@ -81,6 +88,20 @@ export class DatabaseService {
     });
   }
 
+  updateRole() {
+    this.role().subscribe(
+      (res) => this.roleSubject.next(res),
+      (err) => {}
+    );
+  }
+
+  updateLoginState() {
+    this.status().subscribe(
+      (res) => this.loginSubject.next(res),
+      (err) => this.loginSubject.next(false)
+    );
+  }
+
   login(payload: any) {
     return this.http
       .post<Auth>(environment.apiUrl + '/api/auth/login', payload)
@@ -131,7 +152,22 @@ export class DatabaseService {
         this.storage.clear('authToken');
         this.storage.clear('refreshToken');
         this.storage.clear('expiresAt');
+        this.updateLoginState();
       });
+  }
+
+  role() {
+    return this.http
+      .get<any>(environment.apiUrl + '/user/' + this.getUsername())
+      .pipe(map((res) => res.role === 'admin'));
+  }
+
+  status() {
+    return this.http.get<boolean>(environment.apiUrl + '/api/auth/status', {
+      params: {
+        username: this.getUsername(),
+      },
+    });
   }
 
   rate(id: number, rate: number) {
@@ -149,6 +185,12 @@ export class DatabaseService {
     payload.username = this.storage.retrieve('username');
 
     return this.http.post(environment.apiUrl + '/review', payload, {
+      responseType: 'text',
+    });
+  }
+
+  deleteReview(payload: Review) {
+    return this.http.post(environment.apiUrl + '/review/delete', payload, {
       responseType: 'text',
     });
   }
@@ -214,7 +256,6 @@ export class DatabaseService {
     return this.http.get<any[]>(environment.apiUrl + '/user/reviewed', {
       params: {
         username: username,
-        responseType: 'text',
       },
     });
   }
@@ -242,18 +283,14 @@ export class DatabaseService {
   }
 
   getExpirationDate() {
-    return Number.parseInt(this.storage.retrieve('expiresAt'));
+    return <number>this.storage.retrieve('expiresAt');
   }
 
   getUsername() {
     return this.storage.retrieve('username');
   }
 
-  isLoggedIn() {
-    if (this.storage.retrieve('authToken') != null) {
-      return true;
-    }
-
-    return false;
+  hasToken() {
+    return this.getAuthToken() != null;
   }
 }

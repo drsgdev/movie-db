@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DatabaseService } from '../database.service';
 import { NgbCarousel, NgbCarouselConfig } from '@ng-bootstrap/ng-bootstrap';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-content-slider',

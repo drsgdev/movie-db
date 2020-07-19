@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService } from '../database.service';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-signup-page',
@@ -26,12 +26,13 @@ export class SignupPageComponent implements OnInit {
   signup() {
     this.db.signup(this.payload).subscribe(
       () => {
-        this.router.navigateByUrl('/login', {
+        this.router.navigate(['/login'], {
           queryParams: { registered: 'true' },
         });
       },
       (err) => {
         this.toastr.error('Registration failed: ' + err.error);
-      });
+      }
+    );
   }
 }

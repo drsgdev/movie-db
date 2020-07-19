@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService } from '../database.service';
 import { ActivatedRoute } from '@angular/router';
-import { Content } from '@angular/compiler/src/render3/r3_ast';
-import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-content-page',
@@ -17,6 +15,9 @@ export class ContentPageComponent implements OnInit {
   type: string;
   content: any;
   isFavorite: boolean;
+
+  loginSubscription: Subscription;
+  isLoggedIn: boolean;
 
   constructor(
     private db: DatabaseService,
@@ -32,18 +33,22 @@ export class ContentPageComponent implements OnInit {
       this.type = url[0].path;
     });
 
-    this.checkIfFavorite();
-    this.db.addVisited(this.id);
+    this.loginSubscription = this.db.isLoggedIn$.subscribe(
+      (res) => (this.isLoggedIn = res)
+    );
+
+    this.db.updateLoginState();
+
+    if (this.isLoggedIn) {
+      this.checkIfFavorite();
+      this.db.addVisited(this.id);
+    }
 
     this.db.fetchById(this.id).subscribe((res) => (this.content = res));
   }
 
   floor(n: number) {
     return Math.floor(n);
-  }
-
-  isLoggedIn() {
-    return this.db.isLoggedIn();
   }
 
   favorite() {

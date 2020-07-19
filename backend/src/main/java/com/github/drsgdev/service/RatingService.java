@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
 import com.github.drsgdev.dto.RatingRequest;
 import com.github.drsgdev.dto.ReviewRequest;
 import com.github.drsgdev.model.DBObject;
+import com.github.drsgdev.repository.AttributeValueRepository;
 import com.github.drsgdev.repository.DBObjectRepository;
 import com.github.drsgdev.util.AttrTypes;
 import com.github.drsgdev.util.RatingException;
@@ -37,6 +39,7 @@ public class RatingService {
     };
 
     private final DBObjectRepository objects;
+    private final AttributeValueRepository values;
 
     private final DBObjectService db;
 
@@ -55,8 +58,8 @@ public class RatingService {
 
     public List<Integer> getRatingById(Long id) throws RatingException {
         Optional<List<DBObject>> ratings =
-                objects.findAllByTypeNameAndAttributesTypeNameAndAttributesVal(Types.RATING.getValue(), "id",
-                        id.toString());
+                objects.findAllByTypeNameAndAttributesTypeNameAndAttributesVal(
+                        Types.RATING.getValue(), "id", id.toString());
 
         if (!ratings.isPresent()) {
             throw new RatingException("Rating not found");
@@ -88,11 +91,23 @@ public class RatingService {
         db.saveOrUpdateNewAttributeValue(req.getId().toString(), AttrTypes.TEXT, "id", review);
         db.saveOrUpdateNewAttributeValue(req.getUsername(), AttrTypes.TEXT, "username", review);
         db.saveOrUpdateNewAttributeValue(req.getTitle(), AttrTypes.TEXT, "title", review);
-        db.saveOrUpdateNewAttributeValue(req.getDescription(), AttrTypes.TEXT, "description", review);
+        db.saveOrUpdateNewAttributeValue(req.getDescription(), AttrTypes.TEXT, "description",
+                review);
         db.saveOrUpdateNewAttributeValue(req.getRate().toString(), AttrTypes.TEXT, "rate", review);
         db.saveOrUpdateNewAttributeValue(req.getDate(), AttrTypes.TEXT, "created", review);
 
         log.info("User {} reviewed {} as {}", req.getUsername(), req.getId(), req.getTitle());
+    }
+
+    @Transactional
+    public void deleteReview(ReviewRequest req) {
+        Optional<DBObject> objFromDB = objects.findById(req.getId());
+        Optional<DBObject> review =
+                objects.findByDescrAndTypeName(objFromDB.get().getDescr() + req.getUsername(),
+                        Types.REVIEW.getValue());
+
+        values.deleteAllByObjectId(review.get().getId());
+        objects.delete(review.get());
     }
 
     public List<ReviewRequest> getReviewsById(Long id) {

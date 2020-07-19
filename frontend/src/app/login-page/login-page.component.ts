@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { DatabaseService } from '../database.service';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-login-page',
@@ -13,6 +13,9 @@ export class LoginPageComponent implements OnInit {
     username: '',
     password: '',
   };
+
+  @Output()
+  onlogin = new EventEmitter();
 
   constructor(
     private db: DatabaseService,
@@ -39,6 +42,10 @@ export class LoginPageComponent implements OnInit {
       },
       (err) => {
         this.toastr.error('Failed to log in: ' + err.error.message);
+      },
+      () => {
+        this.db.updateRole();
+        this.db.updateLoginState();
       }
     );
   }

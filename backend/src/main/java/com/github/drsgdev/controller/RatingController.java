@@ -34,6 +34,11 @@ public class RatingController {
         return response.reviewObject(req);
     }
 
+    @PostMapping(value = "/review/delete")
+    public ResponseEntity<String> deleteReview(@Valid @RequestBody ReviewRequest req) {
+        return response.deleteReview(req);
+    }
+
     @GetMapping(value = "/review/get")
     public ResponseEntity<List<ReviewRequest>> getReviews(@RequestParam Long id) {
         return response.getReviewsById(id);

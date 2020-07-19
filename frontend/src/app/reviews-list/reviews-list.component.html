@@ -5,7 +5,7 @@
         <h4 class="modal-title">Write your review</h4>
       </div>
       <div class="modal-body">
-        <form>
+        <form ngForm>
           <div class="form-group mb-3">
             <label>Your rate</label>
             <div class="border rounded p-1 w-min-content">
@@ -69,6 +69,12 @@
           <button
             type="submit"
             class="btn btn-primary"
+            [disabled]="
+              !title_input.valid ||
+              !title_input.touched ||
+              !descr_input.valid ||
+              !descr_input.touched
+            "
             (click)="formSubmit(); modal.close('Close click')"
           >
             Submit
@@ -86,14 +92,14 @@
       </div>
     </ng-template>
     <button
-      *ngIf="loggedIn()"
+      *ngIf="isLoggedIn"
       class="btn btn-outline-primary"
       (click)="openReviewModal(review_form)"
     >
       Review this title...
     </button>
     <button
-      *ngIf="!loggedIn()"
+      *ngIf="!isLoggedIn"
       class="btn btn-outline-primary"
       routerLink="/login"
     >
@@ -105,14 +111,25 @@
       class="border rounded mb-3"
       *ngFor="let review of reviews; index as idx"
     >
-      <div class="d-flex flex-row">
-        <ngb-rating
-          class="text-primary mb-4 pl-3 pt-3"
-          [max]="5"
-          [rate]="review.rate"
-          [readonly]="true"
-        ></ngb-rating>
-        <p class="ml-2 text-primary pt-3">{{ review.rate }}</p>
+      <div class="d-flex flex-row justify-content-between">
+        <div>
+          <ngb-rating
+            class="text-primary mb-4 pl-3 pt-3"
+            [max]="5"
+            [rate]="review.rate"
+            [readonly]="true"
+          ></ngb-rating>
+          <p class="ml-2 text-primary pt-3">{{ review.rate }}</p>
+        </div>
+        <div>
+          <button
+            class="btn btn-outline-danger"
+            *ngIf="isLoggedIn && isAdmin"
+            (click)="deleteReview(review)"
+          >
+            Delete
+          </button>
+        </div>
       </div>
       <div class="mb-3 pl-3">
         <p class="h3">{{ review.title }}</p>

@@ -5,7 +5,7 @@
     <p class="mt-3 h5">Email</p>
     <p>{{ user.email }}</p>
   </div>
-  <div class="border-bottom pr-3 pl-3">
+  <div class="border-bottom pr-3 pl-3" *ngIf="favorites">
     <label class="h2 mt-3 mb-3">Favorites</label>
     <div class="d-flex overflow-auto">
       <div
@@ -31,7 +31,7 @@
       </div>
     </div>
   </div>
-  <div class="border-bottom pr-3 pl-3">
+  <div class="border-bottom pr-3 pl-3" *ngIf="rated">
     <label class="h2 mt-3 mb-3">Rated</label>
     <div class="d-flex overflow-auto">
       <div
@@ -57,7 +57,7 @@
       </div>
     </div>
   </div>
-  <div class="border-bottom pr-3 pl-3">
+  <div class="border-bottom pr-3 pl-3" *ngIf="reviewed">
     <label class="h2 mt-3 mb-3">Reviewed</label>
     <div class="d-flex overflow-auto">
       <div
@@ -85,9 +85,5 @@
   </div>
 </div>
 <div class="mt-3 pr-3 pl-3 border-bottom">
-  <label class="h2 mb-3">Last visited</label>
   <app-visited-list></app-visited-list>
-</div>
-<div class="mt-3 pr-3 pl-3 border-bottom" *ngIf="user && user.role === 'admin' && loggedIn()">
-    <app-admin-panel></app-admin-panel>
 </div>

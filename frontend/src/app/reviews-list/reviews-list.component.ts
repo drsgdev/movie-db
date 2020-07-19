@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService } from '../database.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Review } from '../review';
-import { map, catchError } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
+import { DatabaseService } from '../database.service';
+import { Review } from '../review';
 
 @Component({
   selector: 'app-reviews-list',
@@ -15,6 +15,12 @@ export class ReviewsListComponent implements OnInit {
   id: number;
   reviews: any[];
 
+  loginSubscription: Subscription;
+  isLoggedIn: boolean;
+
+  isAdmin: boolean;
+  roleSubscription: Subscription;
+
   review = new Review();
 
   constructor(
@@ -24,6 +30,15 @@ export class ReviewsListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loginSubscription = this.db.isLoggedIn$.subscribe(
+      (res) => (this.isLoggedIn = res)
+    );
+    this.roleSubscription = this.db.isAdmin$.subscribe(
+      (res) => (this.isAdmin = res)
+    );
+
+    this.db.updateLoginState();
+    this.db.updateRole();
     this.updateReviewList();
   }
 
@@ -40,18 +55,20 @@ export class ReviewsListComponent implements OnInit {
       (err) => this.toastr.error('Failed to save your review'),
       () => this.updateReviewList()
     );
-
-    this.updateReviewList();
-  }
-
-  loggedIn() {
-    return this.db.isLoggedIn();
   }
 
   updateReviewList() {
     this.db.getReviews(this.id).subscribe(
       (res) => (this.reviews = res),
-      () => {}
+      (err) => (this.reviews = null)
+    );
+  }
+
+  deleteReview(review: any) {
+    this.db.deleteReview(review).subscribe(
+      (res) => this.toastr.success(res),
+      (err) => this.toastr.error('Failed to delete review'),
+      () => this.updateReviewList()
     );
   }
 }

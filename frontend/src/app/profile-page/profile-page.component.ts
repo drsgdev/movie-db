@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService } from '../database.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -27,10 +27,6 @@ export class ProfilePageComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-
-  loggedIn() {
-    return this.db.isLoggedIn();
-  }
 
   updateInfo() {
     this.db.fetchUser(this.username).subscribe(

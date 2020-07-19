@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService } from '../database.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-page-header',
@@ -8,17 +9,29 @@ import { Router } from '@angular/router';
   styleUrls: ['./page-header.component.scss'],
 })
 export class PageHeaderComponent implements OnInit {
-  constructor(private db: DatabaseService, private router: Router) {}
+  isAdmin: boolean;
+  roleSubscription: Subscription;
 
-  ngOnInit(): void {}
+  loginSubscription: Subscription;
+  isLoggedIn: boolean;
 
-  loggedIn() {
-    return this.db.isLoggedIn();
+  constructor(private db: DatabaseService, private router: Router) {
+    this.roleSubscription = this.db.isAdmin$.subscribe(
+      (res) => (this.isAdmin = res)
+    );
+    this.loginSubscription = this.db.isLoggedIn$.subscribe((res) => {
+      this.isLoggedIn = res;
+    });
+  }
+
+  ngOnInit(): void {
+    this.db.updateLoginState();
+    this.db.updateRole();
   }
 
   logout() {
     this.db.logout();
-    this.router.navigate(['/']);
+    this.router.navigateByUrl('/');
   }
 
   username() {

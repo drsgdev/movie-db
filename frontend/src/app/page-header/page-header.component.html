@@ -6,7 +6,7 @@
       <a class="navbar-brand" routerLink="/shows">Shows</a>
       <a class="navbar-brand" routerLink="/celebs">People</a>
     </nav>
-    <nav class="d-flex justify-content-right" *ngIf="!loggedIn()">
+    <nav class="d-flex justify-content-right" *ngIf="!isLoggedIn; else profile; ">
       <a class="navbar-brand mr-3 btn btn-primary" routerLink="/signup"
         >Signup</a
       >
@@ -14,30 +14,42 @@
         >Login</a
       >
     </nav>
-    <nav class="d-flex justify-content-right" *ngIf="loggedIn()">
-      <div
-        ngbDropdown
-        class="d-inline-block ml-auto mr-4"
-        placement="bottom"
-        autoClose="true"
-      >
-        <div ngbDropdownMenu class="mr-3 p-0" aria-labelledby="toggle">
-          <div ngbDropdownItem>
-            <a class="nav-link rounded" routerLink="/user/{{ username() }}">Profile</a>
-          </div>
-          <div ngbDropdownItem>
-            <a class="nav-link rounded" (click)="logout()">Logout</a>
-          </div>
-        </div>
-        <button
-          id="toggle"
-          type="button"
-          class="btn btn-outline-primary mt-1"
-          ngbDropdownToggle
+    <ng-template #profile>
+      <nav class="d-flex justify-content-right">
+        <div
+          ngbDropdown
+          class="d-inline-block ml-auto mr-4"
+          placement="bottom"
+          autoClose="true"
         >
-          {{ username() }}
-        </button>
-      </div>
-    </nav>
+          <div ngbDropdownMenu class="mr-3 p-0" aria-labelledby="toggle">
+            <div ngbDropdownItem>
+              <a class="nav-link rounded" routerLink="/user/{{ username() }}"
+                >Profile</a
+              >
+            </div>
+            <div ngbDropdownItem *ngIf="isAdmin">
+              <a class="nav-link rounded" routerLink="/admin">Admin panel</a>
+            </div>
+            <div ngbDropdownItem>
+              <a
+                class="nav-link rounded"
+                (click)="logout()"
+                style="cursor: pointer;"
+                >Logout</a
+              >
+            </div>
+          </div>
+          <button
+            id="toggle"
+            type="button"
+            class="btn btn-outline-primary mt-1"
+            ngbDropdownToggle
+          >
+            {{ username() }}
+          </button>
+        </div>
+      </nav>
+    </ng-template>
   </div>
 </div>
