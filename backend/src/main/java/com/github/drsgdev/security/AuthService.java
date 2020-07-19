@@ -1,5 +1,7 @@
 package com.github.drsgdev.security;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
@@ -90,8 +92,15 @@ public class AuthService {
         log.info("Saved new user: {}", request.getUsername());
 
         if (request.getUsername() != "admin") {
+            String ip = "";
+            try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            } catch (UnknownHostException ex) {
+                log.warn(ex.getMessage());
+            }
+
             email.send(new SignupEmail(request.getEmail(), "Please activate your account",
-                    "http://localhost:8081/api/auth/verify?token=" + token));
+                    "http://" + ip + "/api/auth/verify?token=" + token));
         }
     }
 
