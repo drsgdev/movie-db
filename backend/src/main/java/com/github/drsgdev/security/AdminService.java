@@ -14,7 +14,7 @@ public class AdminService {
     private final AuthService auth;
 
     @PostConstruct
-    private void createAdmin() {
+    public void createAdmin() {
         SignupRequest req = new SignupRequest();
         req.setUsername("admin");
         req.setPassword("admin");
