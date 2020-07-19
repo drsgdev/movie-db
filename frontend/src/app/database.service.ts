@@ -97,7 +97,13 @@ export class DatabaseService {
 
   updateLoginState() {
     this.status().subscribe(
-      (res) => this.loginSubject.next(res),
+      (res) => {
+        if (!this.hasToken()) {
+          this.loginSubject.next(false);
+        } else {
+          this.loginSubject.next(res);
+        }
+      },
       (err) => this.loginSubject.next(false)
     );
   }
