@@ -119,9 +119,8 @@
             [rate]="review.rate"
             [readonly]="true"
           ></ngb-rating>
-          <p class="ml-2 text-primary pt-3">{{ review.rate }}</p>
         </div>
-        <div>
+        <div class="p-3">
           <button
             class="btn btn-outline-danger"
             *ngIf="isLoggedIn && isAdmin"
