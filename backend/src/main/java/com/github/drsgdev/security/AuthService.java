@@ -100,7 +100,7 @@ public class AuthService {
             }
 
             email.send(new SignupEmail(request.getEmail(), "Please activate your account",
-                    "http://" + ip + "/api/auth/verify?token=" + token));
+                    "http://" + ip + ":8081/api/auth/verify?token=" + token));
         }
     }
 
